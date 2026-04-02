@@ -1,0 +1,38 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "40aa46d4-c0e6-46c1-bd16-fec8e8e6fdc4")
+	(paper "A4")
+	(lib_symbols)
+	(text "2026-03-14"
+		(exclude_from_sim no)
+		(at 212.598 193.548 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "6b351edc-baee-43dc-96fa-263634710893")
+	)
+	(text "Orion68-VID"
+		(exclude_from_sim no)
+		(at 195.58 189.738 0)
+		(effects
+			(font
+				(size 2 2)
+			)
+		)
+		(uuid "acd59000-6a1a-4716-86e3-4a20d4a2d770")
+	)
+	(text "Video card board"
+		(exclude_from_sim no)
+		(at 190.754 168.402 0)
+		(effects
+			(font
+				(size 2 2)
+			)
+		)
+		(uuid "ffeb3e41-05ef-4f1b-8bcc-6d97d89e34b8")
+	)
+)

@@ -1,0 +1,38 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "6a22fb7a-280e-4bfc-be0e-2e2c59e45777")
+	(paper "A4")
+	(lib_symbols)
+	(text "2026-03-14"
+		(exclude_from_sim no)
+		(at 212.852 193.294 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "07f940fc-dab8-427b-9ea9-c56bacc05b97")
+	)
+	(text "IO board"
+		(exclude_from_sim no)
+		(at 184.15 169.164 0)
+		(effects
+			(font
+				(size 2 2)
+			)
+		)
+		(uuid "2ed5b1b8-49b0-437c-ace2-76ff75a5e385")
+	)
+	(text "Orion68-IO"
+		(exclude_from_sim no)
+		(at 195.326 189.738 0)
+		(effects
+			(font
+				(size 2 2)
+			)
+		)
+		(uuid "31393146-8eef-4811-94d1-b79cd6252fb7")
+	)
+)

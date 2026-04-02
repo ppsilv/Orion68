@@ -1,0 +1,38 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "0cc72016-af6d-4039-a56f-ba4a130f877b")
+	(paper "A4")
+	(lib_symbols)
+	(text "Orion68-MEM"
+		(exclude_from_sim no)
+		(at 197.358 189.738 0)
+		(effects
+			(font
+				(size 2 2)
+			)
+		)
+		(uuid "1f04136a-525c-4139-a1f1-080e8b3e396c")
+	)
+	(text "Memory board"
+		(exclude_from_sim no)
+		(at 188.214 169.164 0)
+		(effects
+			(font
+				(size 2 2)
+			)
+		)
+		(uuid "3551bb89-6574-4b9c-8abf-354f99216044")
+	)
+	(text "2026-03-14"
+		(exclude_from_sim no)
+		(at 212.852 193.294 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "3ce4a7f8-b59f-461d-b5e8-99e577a2b740")
+	)
+)
