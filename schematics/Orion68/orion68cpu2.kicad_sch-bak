@@ -10808,16 +10808,6 @@
 	)
 	(wire
 		(pts
-			(xy 170.18 124.46) (xy 171.45 124.46)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "86dfc622-9758-4568-8fb6-c2b77766077d")
-	)
-	(wire
-		(pts
 			(xy 157.48 132.08) (xy 157.48 144.78)
 		)
 		(stroke
@@ -18803,16 +18793,6 @@
 			(justify left bottom)
 		)
 		(uuid "1ff8bba8-066c-4f8a-a508-f1e26c30e641")
-	)
-	(label "{slash}BERR"
-		(at 170.18 124.46 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "20679e39-4ebb-4e2d-b01e-c4db8c237e93")
 	)
 	(label "{slash}HALT"
 		(at 355.6 78.74 0)
