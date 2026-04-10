@@ -3829,7 +3829,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3c485802-810a-4fbc-98ab-36f7c771165e")
-		(property "Reference" "J?"
+		(property "Reference" "J0"
 			(at 254.635 15.24 0)
 			(effects
 				(font
@@ -4163,7 +4163,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8"
-					(reference "J?")
+					(reference "J0")
 					(unit 1)
 				)
 			)
@@ -4179,7 +4179,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "6f52fa0a-bf69-478c-8a80-7cdc263e31c0")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR02"
 			(at 256.54 105.41 0)
 			(effects
 				(font
@@ -4229,7 +4229,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8"
-					(reference "#PWR?")
+					(reference "#PWR02")
 					(unit 1)
 				)
 			)
@@ -4245,7 +4245,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "becc0930-7a17-493b-9d98-88d5de322e43")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR01"
 			(at 245.11 105.41 0)
 			(effects
 				(font
@@ -4295,7 +4295,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8"
-					(reference "#PWR?")
+					(reference "#PWR01")
 					(unit 1)
 				)
 			)
@@ -4311,7 +4311,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c1b50d4f-4394-401c-811c-f67756c0d7b8")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR03"
 			(at 266.7 105.41 0)
 			(effects
 				(font
@@ -4361,7 +4361,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8"
-					(reference "#PWR?")
+					(reference "#PWR03")
 					(unit 1)
 				)
 			)
@@ -4489,48 +4489,6 @@
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8"
 					(page "4")
-				)
-			)
-		)
-	)
-	(sheet
-		(at 20.32 24.13)
-		(size 32.385 15.875)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(stroke
-			(width 0.1524)
-			(type solid)
-		)
-		(fill
-			(color 0 0 0 0.0000)
-		)
-		(uuid "d6f2e0dc-69a7-4446-8016-b67c6f630a63")
-		(property "Sheetname" "Orion68-CPU"
-			(at 20.32 23.4184 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left bottom)
-			)
-		)
-		(property "Sheetfile" "orion68cpu.kicad_sch"
-			(at 20.32 40.5896 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left top)
-			)
-		)
-		(instances
-			(project "Orion68"
-				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8"
-					(page "2")
 				)
 			)
 		)
