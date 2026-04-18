@@ -1,0 +1,71 @@
+GAL16V8
+ORION68K
+
+; Entradas
+; 1      2      3      4      5      6      7      8        9      10
+4MHZ     A20    A21    A22    A23    AS     NC     RESETIN  BOOTIN GND
+
+; Saídas (Pinos 12 a 19)
+; 11     12     13     14     15          16     17     18     19       20
+  GND1   D1  DTACK  RESET     TESTOUT     KILLBT IOCS   RAMCS  ROMCS    VCC
+
+;EQUATIONS
+
+; Saída para "matar" o boot no 74HC74 (Pino 15)
+; Ativa quando acessa o espaço de I/O em F00000
+KILLBT = A23 & A22 & A21 & A20 & !AS
+
+; ROM_CS (Ativa em 0xE00000 ou em 0x000000 se BOOTIN=1)
+; Nota: Usei BOOTIN (vinda do 74HC74) no lugar de BOOT interno
+
+; ROM_CS (Ativa em E00000 ou no endereço 0 se BOOTIN=1)
+;!ROMCS = !AS & A23 & A22 & A21 & !A20 # !AS & !A23 & !A22 & !A21 & !A20 & BOOTIN
+
+; Força a ROM a responder no endereço 0 independente do BOOTIN
+!ROMCS = !AS & A23 & A22 & A21 & !A20 # !AS & !A23 & !A22 & !A21 & !A20
+
+
+; RAM_CS (Ativa se for área 000000-1FFFFF E NÃO for a janela de BOOT da ROM)
+!RAMCS = !AS & !A23 & !A22 & !A21 & !BOOTIN # !AS & !A23 & !A22 & !A21 & A20
+
+; Exemplo de IOCS para periféricos em F00000
+!IOCS = A23 & A22 & A21 & A20 & !AS
+
+; Na GAL16V8 modo registrado: Pino 1 = Clock (4MHz), Pino 11 = /OE (GND)
+
+; Criamos um "shift register" interno
+; D1 vai a zero assim que o AS desce, mas sincronizado com o clock
+D1.R = AS
+
+; DTACK só desce um ciclo de clock depois de D1
+DTACK.R = D1
+
+RESET = !RESETIN
+
+; Pino 12 agora é um sinal de teste (TEST_OUT)
+; Ativa quando acessa F10000
+TESTOUT = A23 & A22 & A21 & !A20 & !AS
+
+;!RD = RW
+
+DESCRIPTION
+Decodificador combinacional para Orion68k usando Flip-Flop externo.
+
+Mudanças:
+
+
+O Mapa de Memória do Orion68 ficou assim:
+Faixa de Endereço    Dispositivo                         Sinal Ativo
+0x000000 - 0x0FFFFF  ROM (se BOOT=1) / RAM (se BOOT=0)   !ROMCS / !RAMCS
+0x100000 - 0x1FFFFF  RAM (Sempre)                        !RAMCS
+0xE00000 - 0xEFFFFF  ROM (Sempre - Espaço de BIOS)       !ROMCS
+0xF00000 - 0xFFFFFF  I/O (CH376, VGAPico, etc)           !IOCS
+
+
+
+
+Síntese
+galasm orion68kV1_0.pld
+
+Gravação
+minipro -p GAL16V8B -w orion68kV1_0.jed

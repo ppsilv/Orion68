@@ -1,0 +1,70 @@
+Sections:
+00: ".vectors" (0-8)
+01: ".jumptable" (0-0)
+02: ".text" (0-24)
+
+
+Source: "test.asm"
+                            	     1:             SECTION .vectors
+                            	     2:             ORG     $00000000
+                            	     3: 
+                            	     4:             ; Vetores de Reset
+00:00000000 00020000        	     5:             DC.L $00020000    ; Initial Stack Pointer (Topo da sua RAM)
+00:00000004 00001000        	     6:             DC.L START        ; Initial Program Counter (Onde o código começa)
+                            	     7: 
+                            	     8:             SECTION .jumptable
+                            	     9:             ORG     $0400
+                            	    10: 
+                            	    11:             SECTION .text
+                            	    12:             ORG $00001000
+                            	    13: 
+                            	    14: START:
+                            	    15:     ; 1. Mata o BOOT (Move a ROM para E00000)
+                            	    16:     ; Após este comando, a ROM some do endereço 0x00 e aparece em 0xE0
+02:00001000 4A3900F00000    	    17:     TST.B $F00000
+                            	    18: 
+                            	    19:     ; 2. Salto para o endereço "real" da ROM
+                            	    20:     ; Precisamos de um jump absoluto para cair no novo endereço da ROM
+02:00001006 4EF900E00020    	    21:     JMP $E00020       ; Endereço aproximado após o salto (ajuste conforme seu código)
+                            	    22: 
+                            	    23:     ORG $E00020
+                            	    24: AT_HIGH_ROM:
+                            	    25:     ; 3. Se chegamos aqui, a ROM está mapeada em E00000 corretamente!
+                            	    26:     ; Pulsamos o pino 12 para comemorar no osciloscópio
+02:00E00020 4A3900F10000    	    27:     TST.B $F10000
+                            	    28: 
+02:00E00026 60F8            	    29:     BRA AT_HIGH_ROM   ; Fica pulsando o pino 12 em loop
+                            	    30: 
+                            	    31: 
+                            	    32: 
+                            	    33: 
+                            	    34: START2:
+                            	    35:     ; O 68k começa aqui logo após o reset
+                            	    36: LOOP:
+                            	    37:     ; Acessa o endereço que ativa o KILLBT na GAL (F00000)
+                            	    38:     ; Usamos TST.B para apenas ler o endereço sem alterar registradores
+02:00E00028 4A3900F00000    	    39:     TST.B $F00000
+                            	    40: 
+                            	    41:     ; Delay para o LED não piscar rápido demais
+02:00E0002E 72044841        	    42:     MOVE.L #$40000,D1
+                            	    43: DELAY:
+02:00E00032 5381            	    44:     SUBQ.L #1,D1
+02:00E00034 66FC            	    45:     BNE DELAY
+                            	    46: 
+02:00E00036 60F0            	    47:     BRA LOOP
+                            	    48: 
+
+
+Symbols by name:
+AT_HIGH_ROM                      A:00E00020
+DELAY                            A:00E00032
+LOOP                             A:00E00028
+START                            A:00001000
+START2                           A:00E00028
+
+Symbols by value:
+00001000 START
+00E00020 AT_HIGH_ROM
+00E00028 LOOP
+00E00028 START2
+00E00032 DELAY

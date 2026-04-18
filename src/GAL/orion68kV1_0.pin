@@ -1,0 +1,25 @@
+
+
+ Pin # | Name     | Pin Type
+-----------------------------
+   1   | 4MHZ     | Clock
+   2   | A20      | Input
+   3   | A21      | Input
+   4   | A22      | Input
+   5   | A23      | Input
+   6   | AS       | Input
+   7   | NC       | Input
+   8   | RESETIN  | Input
+   9   | BOOTIN   | Input
+  10   | GND      | GND
+  11   | GND1     | /OE
+  12   | D1       | Output
+  13   | DTACK    | Output
+  14   | RESET    | Output
+  15   | TESTOUT  | Output
+  16   | KILLBT   | Output
+  17   | IOCS     | Output
+  18   | RAMCS    | Output
+  19   | ROMCS    | Output
+  20   | VCC      | VCC
+
