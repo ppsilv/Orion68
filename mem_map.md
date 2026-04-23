@@ -23,10 +23,12 @@ F00000 – FFFFFF   I/O space
 
 # I/O mapeado                  
 
-F00000 – F000FF   UART0
-F00100 – F001FF   UART1
-F00200 – F002FF   UART2
-F00300 – F003FF   UART3
+F00000 – Bottin address rom acess this address to change its address from 0x00000 to 0xE00000
+F00001 – F000FF   Free
+F00100 – F000FF   UART0
+F00200 – F001FF   UART1
+F00300 – F002FF   UART2
+F00400 – F003FF   UART3
 
 F10000 – F1FFFF   Video interface (RPi Pico)
 

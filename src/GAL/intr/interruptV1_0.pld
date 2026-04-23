@@ -1,0 +1,38 @@
+Name     interrupV;
+PartNo   01;
+Date     19/04/26;
+Revision 01;
+Designer pdsilva (aka pgordao);
+Company  Open Software;
+Assembly my lab;
+Location my lab;
+Device   G22V10;
+
+/* Pinos de entrada */
+PIN 1  = CLK;
+PIN 2  = TICK_IN;
+PIN 3  = FC0;
+PIN 4  = FC1;
+PIN 5  = FC2;
+PIN 6  = AS;
+PIN 7  = A1;
+PIN 8  = A2;
+PIN 9  = A3;
+
+/* Pinos de saida - Mudamos para o pino 18 (mais forte) */
+PIN 18 = IRQ_S;
+PIN 23 = IPL0;
+PIN 22 = IPL1;
+PIN 21 = IPL2;
+
+/* Logica de controle */
+/* Criamos uma variavel intermediaria de limpeza */
+CLR_IRQ = FC2 & FC1 & FC0 & !A3 & !A2 & A1 & !AS;
+
+/* Latch com realimentacao no pino de 16 termos */
+IRQ_S = (TICK_IN # IRQ_S) & !CLR_IRQ;
+
+/* Saidas para o 68000 */
+IPL2 = 'b'1;
+IPL1 = 'b'1;
+IPL0 = !IRQ_S;

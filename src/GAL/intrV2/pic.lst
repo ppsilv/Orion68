@@ -1,0 +1,88 @@
+LISTING FOR LOGIC DESCRIPTION FILE: pic.pld                          Page 1
+
+CUPL(WM): Universal Compiler for Programmable Logic
+Version 5.0a Serial# MW-10400000
+Copyright (c) 1983, 1998 Logical Devices, Inc.
+Created Sun Apr 19 16:04:03 2026
+
+  1:Name     ORION_INT;
+  2:PartNo   02;
+  3:Date     19/04/26;
+  4:Revision 01;
+  5:Designer PDSILVA;
+  6:Company  HOME;
+  7:Assembly NONE;
+  8:Location NONE;
+  9:Device   G20V8B;
+ 10:
+ 11:
+ 12:
+ 13:/* ***************** INPUT PINS ***************** */
+ 14:PIN 1  = TICK_IN;   /* Sinal do Timer (74HC393)       */
+ 15:PIN 2  = A0_148;    /* Saida A0 do 74148              */
+ 16:PIN 3  = A1_148;    /* Saida A1 do 74148              */
+ 17:PIN 4  = A2_148;    /* Saida A2 do 74148              */
+ 18:PIN 5  = GS_148;    /* Sinal GS do 74148 (Ativo em 0) */
+ 19:PIN 6  = FC0;       /* Function Codes para IACK       */
+ 20:PIN 7  = FC1;
+ 21:PIN 8  = FC2;
+ 22:PIN 9  = AS;        /* Address Strobe                 */
+ 23:PIN 10 = A1;        /* Enderecos para identificar     */
+ 24:PIN 11 = A2;        /* o nivel da interrupcao no IACK */
+ 25:PIN 13 = A3;        /* Usando pino 13 como entrada    */
+ 26:
+ 27:/* **************** OUTPUT PINS ***************** */
+ 28:PIN 23 = IPL0;      /* Para o 68000                   */
+ 29:PIN 22 = IPL1;      
+ 30:PIN 21 = IPL2;      
+ 31:PIN 18 = IRQ_T;     /* Estado interno do Timer        */
+ 32:
+ 33:/* ****************** LOGIC ********************* */
+ 34:
+ 35:/* 1. Inversao de sinais do 74148 para logica positiva interna */
+ 36:/* O 74148 entrega sinais invertidos (ativo em 0)              */
+ 37:INT_148_ATIVA = !GS_148;
+ 38:LVL0 = !A0_148;
+ 39:LVL1 = !A1_148;
+ 40:LVL2 = !A2_148;
+ 41:
+ 42:/* 2. Ciclo de Reconhecimento (IACK) para o Timer (Nivel 1)    */
+ 43:CLR_TICK = FC2 & FC1 & FC0 & !A3 & !A2 & A1 & !AS;
+ 44:
+ 45:/* 3. Latch do Timer (Mantem a interrupcao ate o IACK)         */
+ 46:IRQ_T = (TICK_IN # IRQ_T) & !CLR_TICK;
+ 47:
+ 48:/* 4. Codificador de Prioridade Final                          */
+ 49:/* Se o Timer estiver ativo (IRQ_T), ele eh Nivel 1.           */
+ 50:/* Se o 74148 estiver ativo (GS), ele tem a prioridade dele.   */
+ 51:/* O 68000 quer IPL=000 para Nivel 7 e IPL=111 para NENHUMA.   */
+ 52:
+ 53:/* Logica para IPL2 (Bit mais significativo) */
+
+LISTING FOR LOGIC DESCRIPTION FILE: pic.pld                          Page 2
+
+CUPL(WM): Universal Compiler for Programmable Logic
+Version 5.0a Serial# MW-10400000
+Copyright (c) 1983, 1998 Logical Devices, Inc.
+Created Sun Apr 19 16:04:03 2026
+
+ 54:IPL2 = !( (INT_148_ATIVA & LVL2) );
+ 55:
+ 56:/* Logica para IPL1 */
+ 57:IPL1 = !( (INT_148_ATIVA & LVL1) );
+ 58:
+ 59:/* Logica para IPL0 */
+ 60:/* Ativa se for Nivel 1 do Timer OU se for um nivel impar do 74148 */
+ 61:IPL0 = !( IRQ_T # (INT_148_ATIVA & LVL0) );
+ 62:
+ 63:
+ 64:/*
+ 65:
+ 66:minipro -p GAL20V8B -w pic.jed
+ 67:*/
+ 68:
+
+
+
+Jedec Fuse Checksum       (765f)
+Jedec Transmit Checksum   (6e54)

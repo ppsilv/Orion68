@@ -1,0 +1,61 @@
+%SIGNAL
+PIN   7 =  A1 
+PIN   8 =  A2 
+PIN   9 =  A3 
+PIN   6 =  AS 
+PIN   1 =  CLK 
+PIN   3 =  FC0 
+PIN   4 =  FC1 
+PIN   5 =  FC2 
+PIN  23 =  IPL0 
+PIN  22 =  IPL1 
+PIN  21 =  IPL2 
+PIN  18 =  IRQ_S 
+PIN   2 =  TICK_IN 
+%END
+
+%FIELD
+%END
+
+%EQUATION
+CLR_IRQ =>
+    A1 & !A2 & !A3 & !AS & FC0 & FC1 & FC2
+
+IPL0 =>
+    !IRQ_S
+
+IPL1 =>
+    1 
+
+IPL2 =>
+    1 
+
+IRQ_S =>
+    !FC2 & TICK_IN
+  # !FC2 & IRQ_S
+  # !FC1 & TICK_IN
+  # !FC1 & IRQ_S
+  # !FC0 & TICK_IN
+  # !FC0 & IRQ_S
+  # A3 & TICK_IN
+  # A3 & IRQ_S
+  # A2 & TICK_IN
+  # A2 & IRQ_S
+  # !A1 & TICK_IN
+  # !A1 & IRQ_S
+  # AS & TICK_IN
+  # AS & IRQ_S
+
+IPL0.oe  =>
+    1 
+
+IPL1.oe  =>
+    1 
+
+IPL2.oe  =>
+    1 
+
+IRQ_S.oe  =>
+    1 
+
+%END

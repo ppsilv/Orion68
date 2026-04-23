@@ -1,0 +1,51 @@
+LISTING FOR LOGIC DESCRIPTION FILE: interruptV1_0.pld                Page 1
+
+CUPL(WM): Universal Compiler for Programmable Logic
+Version 5.0a Serial# MW-10400000
+Copyright (c) 1983, 1998 Logical Devices, Inc.
+Created Sun Apr 19 11:53:05 2026
+
+  1:Name     ORION;
+  2:PartNo   01;
+  3:Date     19/04/26;
+  4:Revision 01;
+  5:Designer PDSILVA;
+  6:Company  HOME;
+  7:Assembly NONE;
+  8:Location NONE;
+  9:Device   G22V10;
+ 10:
+ 11:/* Pinos de entrada */
+ 12:PIN 1  = CLK;
+ 13:PIN 2  = TICK_IN;
+ 14:PIN 3  = FC0;
+ 15:PIN 4  = FC1;
+ 16:PIN 5  = FC2;
+ 17:PIN 6  = AS;
+ 18:PIN 7  = A1;
+ 19:PIN 8  = A2;
+ 20:PIN 9  = A3;
+ 21:
+ 22:/* Pinos de saida - Mudamos para o pino 18 (mais forte) */
+ 23:PIN 18 = IRQ_S;
+ 24:PIN 23 = IPL0;
+ 25:PIN 22 = IPL1;
+ 26:PIN 21 = IPL2;
+ 27:
+ 28:/* Logica de controle */
+ 29:/* Criamos uma variavel intermediaria de limpeza */
+ 30:CLR_IRQ = FC2 & FC1 & FC0 & !A3 & !A2 & A1 & !AS;
+ 31:
+ 32:/* Latch com realimentacao no pino de 16 termos */
+ 33:IRQ_S = (TICK_IN # IRQ_S) & !CLR_IRQ;
+ 34:
+ 35:/* Saidas para o 68000 */
+ 36:IPL2 = 'b'1;
+ 37:IPL1 = 'b'1;
+ 38:IPL0 = !IRQ_S;
+ 39:
+
+
+
+Jedec Fuse Checksum       (716d)
+Jedec Transmit Checksum   (653d)
