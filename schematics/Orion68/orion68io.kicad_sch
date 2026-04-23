@@ -12340,7 +12340,7 @@
 		(uuid "044ceb62-0370-4e36-acfc-c276b0a57be6")
 	)
 	(label "BA0A"
-		(at 64.77 254 180)
+		(at 66.04 311.15 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -12350,7 +12350,7 @@
 		(uuid "057e3955-cc78-440c-8a3a-e905150400dd")
 	)
 	(label "{slash}BLDS"
-		(at 64.77 261.62 180)
+		(at 66.04 318.77 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -12450,7 +12450,7 @@
 		(uuid "0a5866d3-e430-4baf-97d5-7e80594daf9b")
 	)
 	(label "{slash}IO_CS"
-		(at 64.77 266.7 180)
+		(at 66.04 323.85 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -12580,7 +12580,7 @@
 		(uuid "17a9e963-47eb-4245-bc8e-0714cd3827de")
 	)
 	(label "{slash}BAS"
-		(at 64.77 259.08 180)
+		(at 66.04 316.23 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -12860,7 +12860,7 @@
 		(uuid "39a3ec41-49cf-408e-8ef0-4b0586ba44dd")
 	)
 	(label "{slash}CS_IDE"
-		(at 90.17 246.38 0)
+		(at 91.44 303.53 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -13130,7 +13130,7 @@
 		(uuid "5cbdbb8c-0c68-47c8-9a2a-d4413330d6df")
 	)
 	(label "BA09"
-		(at 64.77 251.46 180)
+		(at 66.04 308.61 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -13260,7 +13260,7 @@
 		(uuid "729e895b-6e9c-4f75-9e68-24744ba74a38")
 	)
 	(label "BA0B"
-		(at 64.77 256.54 180)
+		(at 66.04 313.69 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -13270,7 +13270,7 @@
 		(uuid "72b910ec-da8d-43c6-8681-424782eb6013")
 	)
 	(label "BA07"
-		(at 64.77 246.38 180)
+		(at 66.04 303.53 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -13750,7 +13750,7 @@
 		(uuid "9d6c3499-8622-4e48-a2f2-494ee92b0607")
 	)
 	(label "{slash}BUDS"
-		(at 64.77 264.16 180)
+		(at 66.04 321.31 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -13800,7 +13800,7 @@
 		(uuid "a054ebf1-556f-4722-b50c-9a3016bad347")
 	)
 	(label "BA08"
-		(at 64.77 248.92 180)
+		(at 66.04 306.07 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -13940,7 +13940,7 @@
 		(uuid "ac8f3924-5652-42a5-ab24-9dd90f37f847")
 	)
 	(label "{slash}CS_SDCARD"
-		(at 90.17 254 0)
+		(at 45.72 260.35 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14020,7 +14020,7 @@
 		(uuid "b705f874-ceef-4d01-b500-d09805f78b86")
 	)
 	(label "BA06"
-		(at 64.77 243.84 180)
+		(at 66.04 300.99 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14100,7 +14100,7 @@
 		(uuid "bc3a0277-2d17-4fd4-9023-6726402067cd")
 	)
 	(label "{slash}CS_RTC"
-		(at 90.17 248.92 0)
+		(at 91.44 306.07 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14130,7 +14130,7 @@
 		(uuid "c0b22d03-6e04-4b6f-a637-38d099dea460")
 	)
 	(label "B{slash}cpurw"
-		(at 64.77 274.32 180)
+		(at 66.04 331.47 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14160,7 +14160,7 @@
 		(uuid "c47811f2-6683-4c89-bbec-873780577ba9")
 	)
 	(label "B{slash}cpurd"
-		(at 64.77 271.78 180)
+		(at 66.04 328.93 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14440,7 +14440,7 @@
 		(uuid "df3db5ce-b760-42e8-81a4-f5e149477e26")
 	)
 	(label "{slash}CS_82C55"
-		(at 90.17 243.84 0)
+		(at 91.44 300.99 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14530,7 +14530,7 @@
 		(uuid "ea1479e0-81c9-489b-bd84-d39f94c4cd6f")
 	)
 	(label "{slash}CS_TIMER"
-		(at 90.17 251.46 0)
+		(at 91.44 308.61 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14741,7 +14741,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Package_DIP:DIP-40_W15.24mm"
 			(at 199.39 104.14 0)
 			(effects
 				(font
@@ -14970,7 +14970,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 77.47 279.4 0)
+		(at 78.74 336.55 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -14979,7 +14979,7 @@
 		(fields_autoplaced yes)
 		(uuid "1022d881-355e-4f41-bb13-80b4fc32fb5f")
 		(property "Reference" "#PWR085"
-			(at 77.47 285.75 0)
+			(at 78.74 342.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14988,7 +14988,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 77.47 284.48 0)
+			(at 78.74 341.63 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14997,7 +14997,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 77.47 279.4 0)
+			(at 78.74 336.55 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15006,7 +15006,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 77.47 279.4 0)
+			(at 78.74 336.55 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15015,7 +15015,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 77.47 279.4 0)
+			(at 78.74 336.55 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15617,7 +15617,7 @@
 	)
 	(symbol
 		(lib_id "power:+5V")
-		(at 77.47 238.76 0)
+		(at 78.74 295.91 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -15626,7 +15626,7 @@
 		(fields_autoplaced yes)
 		(uuid "427df724-00d8-444c-9beb-2364d98a4439")
 		(property "Reference" "#PWR090"
-			(at 77.47 242.57 0)
+			(at 78.74 299.72 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15635,7 +15635,7 @@
 			)
 		)
 		(property "Value" "+5V"
-			(at 77.47 233.68 0)
+			(at 78.74 290.83 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15643,7 +15643,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 77.47 238.76 0)
+			(at 78.74 295.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15652,7 +15652,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 77.47 238.76 0)
+			(at 78.74 295.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15661,7 +15661,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 77.47 238.76 0)
+			(at 78.74 295.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18223,7 +18223,7 @@
 	)
 	(symbol
 		(lib_id "Logic_Programmable:PAL20RS10")
-		(at 77.47 259.08 0)
+		(at 78.74 316.23 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -18231,8 +18231,8 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "cd4535cc-ad30-4c91-87c4-c346f8ba8399")
-		(property "Reference" "U200"
-			(at 79.6133 237.49 0)
+		(property "Reference" "U9999"
+			(at 80.8833 294.64 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18241,7 +18241,7 @@
 			)
 		)
 		(property "Value" "PAL20RS10"
-			(at 79.6133 240.03 0)
+			(at 80.8833 297.18 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18250,7 +18250,7 @@
 			)
 		)
 		(property "Footprint" "Package_DIP:DIP-24_W7.62mm"
-			(at 77.47 259.08 0)
+			(at 78.74 316.23 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18259,7 +18259,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 77.47 259.08 0)
+			(at 78.74 316.23 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18268,7 +18268,7 @@
 			)
 		)
 		(property "Description" "Programmable Logic Array, DIP-24 (Narrow)"
-			(at 77.47 259.08 0)
+			(at 78.74 316.23 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -18351,7 +18351,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/a3cb64b8-9a58-4dca-a498-ee5e38308bd0"
-					(reference "U200")
+					(reference "U9999")
 					(unit 1)
 				)
 			)

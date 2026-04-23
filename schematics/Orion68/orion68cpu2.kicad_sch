@@ -10518,6 +10518,17 @@
 		)
 		(uuid "10990957-d905-4ab8-a18b-711bfb130bfb")
 	)
+	(polyline
+		(pts
+			(xy 360.045 14.605) (xy 360.045 72.39)
+		)
+		(stroke
+			(width 1)
+			(type dash)
+			(color 255 0 32 1)
+		)
+		(uuid "10c8a4c2-316f-4b0a-925e-bc5f6090a671")
+	)
 	(wire
 		(pts
 			(xy 392.43 88.9) (xy 389.89 88.9)
@@ -11052,16 +11063,6 @@
 			(type default)
 		)
 		(uuid "324eb821-88bc-45d3-b7a3-7e545d8b34a9")
-	)
-	(wire
-		(pts
-			(xy 238.76 198.12) (xy 238.76 207.01)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "334df77c-9377-4009-be17-83dedaf3ca85")
 	)
 	(wire
 		(pts
@@ -13526,7 +13527,7 @@
 	)
 	(polyline
 		(pts
-			(xy 67.945 177.8) (xy 67.945 235.585)
+			(xy 71.12 177.8) (xy 71.12 235.585)
 		)
 		(stroke
 			(width 1)
@@ -14697,7 +14698,7 @@
 		)
 		(uuid "04656ac8-c4f4-47cc-ba44-7ac3afef5ee1")
 	)
-	(label "{slash}LDS"
+	(label "B{slash}LDS"
 		(at 393.7 30.48 0)
 		(effects
 			(font
@@ -14967,7 +14968,7 @@
 		)
 		(uuid "1a4a72cf-533e-40c7-a3e4-48f13b166f7e")
 	)
-	(label "{slash}cpu_bus_enable"
+	(label "{slash}bus_enable"
 		(at 278.13 54.61 180)
 		(effects
 			(font
@@ -15691,6 +15692,19 @@
 		)
 		(uuid "4e0ff6b4-2b0c-4ced-981c-b1e54caba441")
 	)
+	(label "{slash}bus_enable"
+		(at 50.8 209.55 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.254)
+				(bold yes)
+				(color 255 0 0 1)
+			)
+			(justify left bottom)
+		)
+		(uuid "4e321a47-1078-471e-9f91-84f9df4ac6f4")
+	)
 	(label "IRQ6"
 		(at 396.24 81.28 0)
 		(effects
@@ -16070,6 +16084,16 @@
 			(justify left bottom)
 		)
 		(uuid "6c7d749c-79bd-4e13-92f9-317c7fa2e6fe")
+	)
+	(label "{slash}AS"
+		(at 238.76 198.12 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "6cb8f0c0-6b33-4e6d-b7d9-493a05bbff2e")
 	)
 	(label "AS"
 		(at 90.17 207.01 180)
@@ -16551,7 +16575,7 @@
 		)
 		(uuid "8cceac6a-6b92-460b-903d-025f9d31a29a")
 	)
-	(label "{slash}cpu_bus_enable"
+	(label "{slash}bus_enable"
 		(at 236.22 200.66 180)
 		(effects
 			(font
@@ -16804,7 +16828,7 @@
 		)
 		(uuid "9f323a26-e5b7-4ef9-8f51-53f0aa4bdfb6")
 	)
-	(label "{slash}cpu_bus_enable"
+	(label "{slash}bus_enable"
 		(at 304.8 54.61 0)
 		(effects
 			(font
@@ -17107,7 +17131,7 @@
 		)
 		(uuid "aeb26b58-12fc-400d-9d7d-160947b50f69")
 	)
-	(label "{slash}cpu_bus_enable"
+	(label "{slash}bus_enable"
 		(at 236.22 54.61 180)
 		(effects
 			(font
@@ -17280,7 +17304,7 @@
 		)
 		(uuid "bdb75f40-6ef3-4b92-9b41-f2c5a2150a13")
 	)
-	(label "{slash}UDS"
+	(label "B{slash}UDS"
 		(at 393.7 33.02 0)
 		(effects
 			(font
@@ -17480,7 +17504,7 @@
 		)
 		(uuid "c8149bb2-4032-4256-8b75-bbabccb56c0c")
 	)
-	(label "B{slash}cpurw"
+	(label "B{slash}cpuwr"
 		(at 383.54 50.8 0)
 		(effects
 			(font
@@ -17870,7 +17894,7 @@
 		)
 		(uuid "f5392856-3bb8-4f12-b21c-65afe8f9b51d")
 	)
-	(label "{slash}AS"
+	(label "B{slash}AS"
 		(at 383.54 43.18 0)
 		(effects
 			(font
@@ -21273,73 +21297,6 @@
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/d92fcd44-da66-430f-987f-be7edff43e49"
 					(reference "#PWR017")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 238.76 207.01 0)
-		(mirror y)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "651a2973-1225-405b-be51-cab90ba236f9")
-		(property "Reference" "#PWR045"
-			(at 238.76 213.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 238.76 212.09 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 238.76 207.01 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 238.76 207.01 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 238.76 207.01 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "ba9e1d73-7a5c-4ebd-89fc-5798a62475b8")
-		)
-		(instances
-			(project "Orion68"
-				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/d92fcd44-da66-430f-987f-be7edff43e49"
-					(reference "#PWR045")
 					(unit 1)
 				)
 			)

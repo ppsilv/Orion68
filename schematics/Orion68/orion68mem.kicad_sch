@@ -8066,7 +8066,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "07682474-b34c-41fb-9ba4-bb19e5adbb99")
-		(property "Reference" "J5"
+		(property "Reference" "J100"
 			(at 246.634 24.892 0)
 			(effects
 				(font
@@ -8401,7 +8401,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/70b7defe-43f8-4fe6-9382-ae901438ae75"
-					(reference "J5")
+					(reference "J100")
 					(unit 1)
 				)
 			)
@@ -10267,7 +10267,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Package_DIP:DIP-20_W7.62mm"
 			(at 39.37 181.61 0)
 			(effects
 				(font
