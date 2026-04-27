@@ -9817,12 +9817,14 @@
 		)
 		(uuid "4691736c-e74a-4124-acb8-302910e10f73")
 	)
-	(text "CPU board"
+	(text "CPU board  -  0"
 		(exclude_from_sim no)
-		(at 310.642 255.778 0)
+		(at 314.452 256.54 0)
 		(effects
 			(font
 				(size 2 2)
+				(thickness 0.4)
+				(bold yes)
 			)
 		)
 		(uuid "4da8c1d0-bb70-4f22-a7b1-919be2b0c803")
@@ -18232,7 +18234,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_2x04_P2.54mm_Vertical"
 			(at 101.6 69.85 0)
 			(effects
 				(font
@@ -22098,7 +22100,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_2x05_P2.54mm_Vertical"
 			(at 92.71 45.72 0)
 			(effects
 				(font

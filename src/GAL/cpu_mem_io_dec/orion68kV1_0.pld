@@ -19,14 +19,10 @@ KILLBT = A23 & A22 & A21 & A20 & !AS
 ; Nota: Usei BOOTIN (vinda do 74HC74) no lugar de BOOT interno
 
 ; ROM_CS (Ativa em E00000 ou no endereço 0 se BOOTIN=1)
-;!ROMCS = !AS & A23 & A22 & A21 & !A20 # !AS & !A23 & !A22 & !A21 & !A20 & BOOTIN
-
-; Força a ROM a responder no endereço 0 independente do BOOTIN
-!ROMCS = !AS & A23 & A22 & A21 & !A20 # !AS & !A23 & !A22 & !A21 & !A20
-
+!ROMCS = !AS & A23 & A22 & A21 & !A20 # !AS & !A23 & !A22 & !A21 & !A20 & BOOTIN
 
 ; RAM_CS (Ativa se for área 000000-1FFFFF E NÃO for a janela de BOOT da ROM)
-!RAMCS = !AS & !A23 & !A22 & !A21 & !BOOTIN # !AS & !A23 & !A22 & !A21 & A20
+!RAMCS =  !AS & !A23 & !A22  # !AS & !A23 & !A22 &  !BOOTIN
 
 ; Exemplo de IOCS para periféricos em F00000
 !IOCS = A23 & A22 & A21 & A20 & !AS

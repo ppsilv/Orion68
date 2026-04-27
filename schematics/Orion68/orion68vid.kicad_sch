@@ -4512,12 +4512,14 @@
 		)
 		(uuid "acd59000-6a1a-4716-86e3-4a20d4a2d770")
 	)
-	(text "Video card board"
+	(text "Video card board  -  300"
 		(exclude_from_sim no)
-		(at 190.754 168.402 0)
+		(at 198.628 168.91 0)
 		(effects
 			(font
 				(size 2 2)
+				(thickness 0.4)
+				(bold yes)
 			)
 		)
 		(uuid "ffeb3e41-05ef-4f1b-8bcc-6d97d89e34b8")
@@ -4910,6 +4912,16 @@
 	)
 	(wire
 		(pts
+			(xy 138.43 104.14) (xy 143.51 104.14)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1c0485a5-7a34-4461-9a03-2209e0aad2cf")
+	)
+	(wire
+		(pts
 			(xy 259.08 95.25) (xy 257.81 95.25)
 		)
 		(stroke
@@ -4927,6 +4939,16 @@
 			(type default)
 		)
 		(uuid "1ecc3200-5a06-4211-8f49-94390d3eb577")
+	)
+	(wire
+		(pts
+			(xy 138.43 106.68) (xy 143.51 106.68)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1fa0d7f0-9d46-43d1-a552-f3a7172e7861")
 	)
 	(wire
 		(pts
@@ -4997,16 +5019,6 @@
 			(type default)
 		)
 		(uuid "263c599b-ff21-45a6-b40a-f9dbfa5b639a")
-	)
-	(wire
-		(pts
-			(xy 142.24 106.68) (xy 138.43 106.68)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "27a9f063-9934-4ec5-9aa5-9d914ff82c9f")
 	)
 	(wire
 		(pts
@@ -5730,6 +5742,16 @@
 	)
 	(wire
 		(pts
+			(xy 138.43 101.6) (xy 143.51 101.6)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "70e64894-6920-4f5e-9c93-30fe731f4c39")
+	)
+	(wire
+		(pts
 			(xy 269.24 44.45) (xy 267.97 44.45)
 		)
 		(stroke
@@ -6450,16 +6472,6 @@
 	)
 	(wire
 		(pts
-			(xy 142.24 101.6) (xy 138.43 101.6)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a8b30a39-065a-40d9-a608-d43cd31f0acd")
-	)
-	(wire
-		(pts
 			(xy 85.09 181.61) (xy 85.09 185.42)
 		)
 		(stroke
@@ -6857,16 +6869,6 @@
 			(type default)
 		)
 		(uuid "d0593650-161c-493f-8ad4-bd728401a290")
-	)
-	(wire
-		(pts
-			(xy 142.24 104.14) (xy 138.43 104.14)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d1501a68-5fdf-4710-8a71-098c6ca53e72")
 	)
 	(wire
 		(pts
@@ -8212,7 +8214,7 @@
 	)
 	(global_label "GREEN"
 		(shape input)
-		(at 142.24 104.14 0)
+		(at 143.51 104.14 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -8222,7 +8224,7 @@
 		)
 		(uuid "0fe6f1d5-78b9-4c9b-bd88-4a12ad661bd9")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 151.3937 104.14 0)
+			(at 152.6637 104.14 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8410,7 +8412,7 @@
 	)
 	(global_label "Red"
 		(shape input)
-		(at 142.24 101.6 0)
+		(at 143.51 101.6 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -8420,7 +8422,7 @@
 		)
 		(uuid "8c984640-420d-40e2-8fc4-cd7b3a3044aa")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 148.7328 101.6 0)
+			(at 150.0028 101.6 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8476,7 +8478,7 @@
 	)
 	(global_label "BLUE"
 		(shape input)
-		(at 142.24 106.68 0)
+		(at 143.51 106.68 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -8486,7 +8488,7 @@
 		)
 		(uuid "ee993972-6f74-460f-b513-61972d8afb5f")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 150.0028 106.68 0)
+			(at 151.2728 106.68 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8549,7 +8551,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "022d5180-e02b-4864-bcfb-cb5e42ea64ab")
-		(property "Reference" "R42"
+		(property "Reference" "R308"
 			(at 29.718 123.19 90)
 			(effects
 				(font
@@ -8565,7 +8567,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 34.29 126.238 90)
 			(effects
 				(font
@@ -8601,7 +8603,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R42")
+					(reference "R308")
 					(unit 1)
 				)
 			)
@@ -8616,7 +8618,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "04998181-3833-420e-9c7d-a21069a3ea5c")
-		(property "Reference" "R53"
+		(property "Reference" "R317"
 			(at 177.8 80.01 90)
 			(effects
 				(font
@@ -8670,7 +8672,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R53")
+					(reference "R317")
 					(unit 1)
 				)
 			)
@@ -8685,7 +8687,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "18151317-84a5-4947-a7b3-7edeb5cae18e")
-		(property "Reference" "R39"
+		(property "Reference" "R305"
 			(at 29.718 85.09 90)
 			(effects
 				(font
@@ -8701,7 +8703,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 34.29 88.138 90)
 			(effects
 				(font
@@ -8737,7 +8739,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R39")
+					(reference "R305")
 					(unit 1)
 				)
 			)
@@ -8752,7 +8754,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "2454432a-e5c2-4f8d-bc10-5325b9fd5153")
-		(property "Reference" "R50"
+		(property "Reference" "R316"
 			(at 161.036 65.024 0)
 			(effects
 				(font
@@ -8806,7 +8808,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R50")
+					(reference "R316")
 					(unit 1)
 				)
 			)
@@ -8823,7 +8825,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "2cdbf78f-e499-40c2-9220-afc36443721e")
-		(property "Reference" "U24"
+		(property "Reference" "U304"
 			(at 205.0481 74.93 0)
 			(effects
 				(font
@@ -8931,7 +8933,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "U24")
+					(reference "U304")
 					(unit 1)
 				)
 			)
@@ -9078,7 +9080,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "43913b7e-141b-4d64-9c64-04afa357dc5b")
-		(property "Reference" "R45"
+		(property "Reference" "R311"
 			(at 29.718 130.81 90)
 			(effects
 				(font
@@ -9094,7 +9096,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 34.29 133.858 90)
 			(effects
 				(font
@@ -9130,7 +9132,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R45")
+					(reference "R311")
 					(unit 1)
 				)
 			)
@@ -9146,7 +9148,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "64c8ed25-4259-4722-8349-67aae7b0e1c2")
-		(property "Reference" "J5"
+		(property "Reference" "J300"
 			(at 256.794 14.732 0)
 			(effects
 				(font
@@ -9481,7 +9483,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "J5")
+					(reference "J300")
 					(unit 1)
 				)
 			)
@@ -9496,7 +9498,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "6a0f6ba0-2d49-411d-aa52-92cb8b7ba8a5")
-		(property "Reference" "R44"
+		(property "Reference" "R310"
 			(at 29.718 128.27 90)
 			(effects
 				(font
@@ -9512,7 +9514,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 34.29 131.318 90)
 			(effects
 				(font
@@ -9548,7 +9550,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R44")
+					(reference "R310")
 					(unit 1)
 				)
 			)
@@ -9563,8 +9565,8 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "6ae96f72-e062-4a95-b960-8bb671ffdf50")
-		(property "Reference" "R47"
-			(at 139.446 100.076 90)
+		(property "Reference" "R313"
+			(at 139.7 100.584 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9579,7 +9581,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 134.62 103.378 90)
 			(effects
 				(font
@@ -9615,7 +9617,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R47")
+					(reference "R313")
 					(unit 1)
 				)
 			)
@@ -9696,7 +9698,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "77a7cff2-2c5c-4355-a4ec-d6ffc0436bb5")
-		(property "Reference" "R34"
+		(property "Reference" "R300"
 			(at 30.48 72.39 90)
 			(effects
 				(font
@@ -9712,7 +9714,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 34.29 75.438 90)
 			(effects
 				(font
@@ -9748,7 +9750,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R34")
+					(reference "R300")
 					(unit 1)
 				)
 			)
@@ -9763,7 +9765,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "77b06e1c-1974-4d74-bb1a-a045e3294cce")
-		(property "Reference" "R43"
+		(property "Reference" "R309"
 			(at 29.718 125.73 90)
 			(effects
 				(font
@@ -9779,7 +9781,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 34.29 128.778 90)
 			(effects
 				(font
@@ -9815,7 +9817,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R43")
+					(reference "R309")
 					(unit 1)
 				)
 			)
@@ -9831,7 +9833,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "77f18d4e-db7a-411b-816c-85c2b30b748c")
-		(property "Reference" "Q5"
+		(property "Reference" "Q300"
 			(at 162.56 82.5501 0)
 			(effects
 				(font
@@ -9909,7 +9911,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "Q5")
+					(reference "Q300")
 					(unit 1)
 				)
 			)
@@ -9924,7 +9926,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "807fb8c5-afb7-446e-8a09-c26f0885ae61")
-		(property "Reference" "R46"
+		(property "Reference" "R312"
 			(at 29.718 133.35 90)
 			(effects
 				(font
@@ -9940,7 +9942,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 34.29 136.398 90)
 			(effects
 				(font
@@ -9976,7 +9978,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R46")
+					(reference "R312")
 					(unit 1)
 				)
 			)
@@ -9990,8 +9992,9 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "82cba7e9-58db-4bc4-952c-50e86ca89b13")
-		(property "Reference" "R36"
+		(property "Reference" "R302"
 			(at 30.48 77.47 90)
 			(effects
 				(font
@@ -10007,7 +10010,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 34.29 80.518 90)
 			(effects
 				(font
@@ -10043,7 +10046,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R36")
+					(reference "R302")
 					(unit 1)
 				)
 			)
@@ -10059,7 +10062,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "89519847-40e6-4272-ae88-bf55a9a2bf11")
-		(property "Reference" "U19"
+		(property "Reference" "U302"
 			(at 57.5467 116.84 0)
 			(effects
 				(font
@@ -10167,7 +10170,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "U19")
+					(reference "U302")
 					(unit 1)
 				)
 			)
@@ -10182,8 +10185,8 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "a27d6c10-453f-4b3b-bb7f-0e30c1921cbd")
-		(property "Reference" "R49"
-			(at 139.446 105.156 90)
+		(property "Reference" "R315"
+			(at 139.7 105.664 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10198,7 +10201,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 134.62 108.458 90)
 			(effects
 				(font
@@ -10234,7 +10237,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R49")
+					(reference "R315")
 					(unit 1)
 				)
 			)
@@ -10249,8 +10252,8 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "a867c736-e072-4574-b1f9-80aa5c6884ca")
-		(property "Reference" "R48"
-			(at 139.446 102.616 90)
+		(property "Reference" "R314"
+			(at 139.7 103.124 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10265,7 +10268,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 134.62 105.918 90)
 			(effects
 				(font
@@ -10301,7 +10304,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R48")
+					(reference "R314")
 					(unit 1)
 				)
 			)
@@ -10316,7 +10319,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "af885a8c-2062-444c-88ba-f9f457a75e9b")
-		(property "Reference" "R41"
+		(property "Reference" "R307"
 			(at 29.718 90.17 90)
 			(effects
 				(font
@@ -10332,7 +10335,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 34.29 93.218 90)
 			(effects
 				(font
@@ -10368,7 +10371,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R41")
+					(reference "R307")
 					(unit 1)
 				)
 			)
@@ -10449,7 +10452,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "b55ce933-8a8a-4950-9582-97ab24a59427")
-		(property "Reference" "C4"
+		(property "Reference" "C300"
 			(at 180.34 68.58 90)
 			(effects
 				(font
@@ -10501,7 +10504,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "C4")
+					(reference "C300")
 					(unit 1)
 				)
 			)
@@ -10581,8 +10584,9 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
+		(fields_autoplaced yes)
 		(uuid "ba23481f-6b4e-4bd2-a771-10bf66329aa2")
-		(property "Reference" "R37"
+		(property "Reference" "R303"
 			(at 29.718 80.01 90)
 			(effects
 				(font
@@ -10598,7 +10602,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 34.29 83.058 90)
 			(effects
 				(font
@@ -10634,7 +10638,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R37")
+					(reference "R303")
 					(unit 1)
 				)
 			)
@@ -10715,7 +10719,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "c6092660-aba4-472d-bc95-6c55b42949e2")
-		(property "Reference" "R38"
+		(property "Reference" "R304"
 			(at 29.718 82.55 90)
 			(effects
 				(font
@@ -10731,7 +10735,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 34.29 85.598 90)
 			(effects
 				(font
@@ -10767,7 +10771,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R38")
+					(reference "R304")
 					(unit 1)
 				)
 			)
@@ -10783,7 +10787,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "d9650597-41fc-4175-8f86-c88ae633b0ff")
-		(property "Reference" "U21"
+		(property "Reference" "U300"
 			(at 121.5233 66.04 0)
 			(effects
 				(font
@@ -10954,7 +10958,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "U21")
+					(reference "U300")
 					(unit 1)
 				)
 			)
@@ -10970,7 +10974,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "e814f9bd-0bcb-4a18-ba22-9ee79e4a07e1")
-		(property "Reference" "U18"
+		(property "Reference" "U301"
 			(at 57.5467 66.04 0)
 			(effects
 				(font
@@ -11078,7 +11082,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "U18")
+					(reference "U301")
 					(unit 1)
 				)
 			)
@@ -11094,7 +11098,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "efa24eb4-71a3-4e4e-af84-6560d871f6f9")
-		(property "Reference" "U20"
+		(property "Reference" "U303"
 			(at 87.2333 163.83 0)
 			(effects
 				(font
@@ -11166,7 +11170,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "U20")
+					(reference "U303")
 					(unit 1)
 				)
 			)
@@ -11246,7 +11250,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "f771123c-3dda-498e-bd4b-d089c916b79a")
-		(property "Reference" "R40"
+		(property "Reference" "R306"
 			(at 29.718 87.63 90)
 			(effects
 				(font
@@ -11262,7 +11266,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 34.29 90.678 90)
 			(effects
 				(font
@@ -11298,7 +11302,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R40")
+					(reference "R306")
 					(unit 1)
 				)
 			)
@@ -11313,7 +11317,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "fb970e72-0ee2-4657-9156-ae38431db2ad")
-		(property "Reference" "R35"
+		(property "Reference" "R301"
 			(at 30.48 74.93 90)
 			(effects
 				(font
@@ -11329,7 +11333,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal"
 			(at 34.29 77.978 90)
 			(effects
 				(font
@@ -11365,7 +11369,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/6c2d668a-a194-44c2-860c-16ce1cfea6c2"
-					(reference "R35")
+					(reference "R301")
 					(unit 1)
 				)
 			)

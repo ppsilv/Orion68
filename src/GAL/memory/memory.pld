@@ -1,0 +1,28 @@
+GAL16V8
+io_mem
+
+;Pinagem
+; 1  2   3   4   5   6   7    8    9      10
+A20 A21 A22 A23  AS LDS UDS  NC   NC      GND
+;11  12   13  14  15  16  17  18  19      20
+ NC  Y4H  Y4L Y3H Y3L Y2H Y2L Y1H Y1L     VCC
+
+
+Y1L = /A23 * /A22 * /A21 * /A20 * /LDS * /AS
+Y1H = /A23 * /A22 * /A21 * /A20 * /UDS * /AS
+Y2L = /A23 * /A22 * /A21 *  A20 * /LDS * /AS
+Y2H = /A23 * /A22 * /A21 *  A20 * /UDS * /AS
+Y3L = /A23 * /A22 *  A21 * /A20 * /LDS * /AS
+Y3H = /A23 * /A22 *  A21 * /A20 * /UDS * /AS
+Y4L = /A23 * /A22 *  A21 *  A20 * /LDS * /AS
+Y4H = /A23 * /A22 *  A21 *  A20 * /UDS * /AS
+
+
+DESCRIPTION
+Modo SIMPLE.
+
+Sintese
+galasm memory.pld
+
+Gravar
+minipro -p GAL16V8 -w memory.jed

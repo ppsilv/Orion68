@@ -3156,12 +3156,14 @@
 		)
 		(uuid "1f04136a-525c-4139-a1f1-080e8b3e396c")
 	)
-	(text "Memory board"
+	(text "Memory board  -  100"
 		(exclude_from_sim no)
-		(at 310.896 256.286 0)
+		(at 318.008 255.778 0)
 		(effects
 			(font
 				(size 2 2)
+				(thickness 0.4)
+				(bold yes)
 			)
 		)
 		(uuid "3551bb89-6574-4b9c-8abf-354f99216044")
@@ -8333,7 +8335,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "2b56210c-3eb0-482d-927a-c1d1abcaba47")
-		(property "Reference" "J4"
+		(property "Reference" "J100"
 			(at 157.734 97.282 0)
 			(effects
 				(font
@@ -8668,7 +8670,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/70b7defe-43f8-4fe6-9382-ae901438ae75"
-					(reference "J4")
+					(reference "J100")
 					(unit 1)
 				)
 			)

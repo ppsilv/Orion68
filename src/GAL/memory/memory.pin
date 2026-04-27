@@ -1,0 +1,25 @@
+
+
+ Pin # | Name     | Pin Type
+-----------------------------
+   1   | A20      | Input
+   2   | A21      | Input
+   3   | A22      | Input
+   4   | A23      | Input
+   5   | AS       | Input
+   6   | LDS      | Input
+   7   | UDS      | Input
+   8   | NC       | Input
+   9   | NC       | Input
+  10   | GND      | GND
+  11   | NC       | Input
+  12   | Y4H      | Output
+  13   | Y4L      | Output
+  14   | Y3H      | Output
+  15   | Y3L      | Output
+  16   | Y2H      | Output
+  17   | Y2L      | Output
+  18   | Y1H      | Output
+  19   | Y1L      | Output
+  20   | VCC      | VCC
+
