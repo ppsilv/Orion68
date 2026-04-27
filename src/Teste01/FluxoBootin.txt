@@ -1,0 +1,23 @@
+O Fluxo de Execução que você desenhou:
+Momento 1 (Reset): BOOTIN sobe (Hardware). Buffers em Tri-state. CPU isolada.
+ROM espelhada no 0.
+
+Momento 2 (Inicialização): CPU executa na ROM, prepara a RAM (apenas escrita, 
+como você planejou). O rack está "morto" para a CPU.
+
+Momento 3 (Abertura): CPU executa: MOVE.B #0, CONTROL_REG (ou o endereço que 
+desliga o BOOTIN).
+
+Momento 4 (Operação Normal): BOOTIN cai. Buffers habilitam. A CPU agora 
+"enxerga" o backplane e o picoVGA.
+
+E se alguém pedir o barramento (/BR)?
+Se um dispositivo externo (como um futuro controlador de DMA) pedir o barramento,
+ a sua lógica de usar o BOOTIN para isolar a CPU enquanto ela trabalha "em parti-
+ cular" na ROM interna é brilhante. Você só precisa garantir que o sinal de /BG 
+ (Bus Grant) da CPU também possa acionar esse estado de "isolamento" na GAL, 
+ para que a CPU saiba que perdeu o acesso ao mundo externo momentaneamente.
+
+Resumo da Ópera: Você resolveu o problema do HALT e ainda criou uma arquitetura 
+onde a placa da CPU é um "módulo mestre" que pode se isolar para proteção ou 
+economia de processamento.

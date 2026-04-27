@@ -1,0 +1,28 @@
+GAL20V8
+CHIP_U09
+
+;1   2     3     4    5  6   7   8   9 10 11  12
+NC A0148 A1148 A2148 NC FC0 FC1 FC2 AS A1 A2 GND
+;13 14      15  16  17   18  19  20   21   22  23  24
+A3  RESETIN NC IACK NC RESET NC IPL2 IPL1 IPL0 NC VCC
+
+;EQUATIONS
+
+; 1. Ciclo de IACK (Pino 16)
+IACK = FC2 & FC1 & FC0 & !AS
+
+; 2. Lógica dos IPLs (Pinos 20, 21, 22)
+; Se IACK = 0 (Normal): Espelha o 74LS148
+; Se IACK = 1 (Acknowledge): Mantém o último valor (Auto-realimentação)
+
+!IPL2 = !A2148 & !IACK # !IPL2 & IACK
+
+!IPL1 = !A1148 & !IACK # !IPL1 & IACK
+
+!IPL0 = !A0148 & !IACK # !IPL0 & IACK
+
+; 3. Reset Pass-through
+RESET = RESETIN
+
+DESCRIPTION
+Buffer de interrupcao com trava de IACK para Orion68K.

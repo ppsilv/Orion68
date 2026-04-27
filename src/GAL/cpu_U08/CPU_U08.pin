@@ -9,14 +9,14 @@
    5   | A23      | Input
    6   | AS       | Input
    7   | NC       | Input
-   8   | RESETIN  | Input
+   8   | NC       | Input
    9   | BOOTIN   | Input
   10   | GND      | GND
   11   | GND1     | /OE
   12   | D1       | Output
   13   | DTACK    | Output
-  14   | RESET    | Output
-  15   | TESTOUT  | Output
+  14   | DATAEN   | Output
+  15   | BUSEN    | Output
   16   | KILLBT   | Output
   17   | IOCS     | Output
   18   | RAMCS    | Output

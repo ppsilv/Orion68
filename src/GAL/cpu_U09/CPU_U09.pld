@@ -1,0 +1,32 @@
+GAL20V8
+
+; Entradas (Pinos 1 a 11 e 13 a 14)
+; 1   2     3   4   5   6   7   8   9   10  11  12
+CLK TICKIN FC0 FC1 FC2  AS  A1  A2  A3  NC  NC  GND
+
+; Saidas (Pinos 15 a 23)
+; 13  14  15  16  17  18  19    20    21    22    23   24
+  NC  NC  NC  NC  NC  NC  IRQS  IPL0  IPL1  IPL2  NC   VCC
+
+;EQUATIONS
+
+; Logica de limpeza (IACK ciclo do 68000 para IRQ1)
+; No ciclo IACK, FC2-FC0 sao 111, e o nivel da interrupcao fica no barramento de enderecos
+; Se voce quer limpar no IACK de nivel 1, A3=0, A2=0, A1=1
+CLR_IRQ = FC2 & FC1 & FC0 & !A3 & !A2 & A1 & !AS
+
+; Latch para IRQ_S
+; Usamos a barra para indicar logica negativa se preferir, mas aqui mantemos simples:
+; Set com TICK_IN, Reset com CLR_IRQ
+IRQS = TICK_IN & !CLR_IRQ
+     # IRQS & !CLR_IRQ
+
+; Saidas para o 68000 (IPL2,1,0)
+; Para interrupcao Nivel 1, o 68000 espera IPL=110 (binario)
+; Como sao saídas ativas em nível baixo nas GALs:
+!IPL2 = GND    ; Fica sempre em 1 (VCC)
+!IPL1 = GND    ; Fica sempre em 1 (VCC)
+!IPL0 = IRQS   ; Fica em 0 (ativo) quando IRQS for 1
+
+DESCRIPTION
+Gerador de interrupcao periodica para Orion68K.

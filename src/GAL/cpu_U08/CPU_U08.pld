@@ -1,13 +1,13 @@
 GAL16V8
-ORION68K
+CHIP_U08
 
 ; Entradas
 ; 1      2      3      4      5      6      7      8        9      10
-4MHZ     A20    A21    A22    A23    AS     NC     RESETIN  BOOTIN GND
+4MHZ     A20    A21    A22    A23    AS     NC     NC      BOOTIN GND
 
 ; Saídas (Pinos 12 a 19)
-; 11     12     13     14     15          16     17     18     19       20
-  GND1   D1  DTACK  RESET     TESTOUT     KILLBT IOCS   RAMCS  ROMCS    VCC
+; 11     12     13     14           15          16     17     18     19       20
+  GND1   D1  DTACK  DATAEN        BUSEN      KILLBT   IOCS   RAMCS  ROMCS    VCC
 
 ;EQUATIONS
 
@@ -36,11 +36,11 @@ D1.R = AS
 ; DTACK só desce um ciclo de clock depois de D1
 DTACK.R = D1
 
-RESET = !RESETIN
+;habilita bus de dados
+!DATAEN = !AS & !BOOTIN
 
-; Pino 12 agora é um sinal de teste (TEST_OUT)
-; Ativa quando acessa F10000
-TESTOUT = A23 & A22 & A21 & !A20 & !AS
+;habilita bus de endereços
+!BUSEN = BOOTIN
 
 ;!RD = RW
 

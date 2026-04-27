@@ -3,23 +3,23 @@
                                 GAL16V8
 
                           -------\___/-------
-                      A15 |  1           20 | VCC
+                     4MHZ |  1           20 | VCC
                           |                 |
-                      A16 |  2           19 | Y1
+                      A20 |  2           19 | ROMCS
                           |                 |
-                      A17 |  3           18 | NC
+                      A21 |  3           18 | RAMCS
                           |                 |
-                      A18 |  4           17 | NC
+                      A22 |  4           17 | IOCS
                           |                 |
-                      A19 |  5           16 | NC
+                      A23 |  5           16 | KILLBT
                           |                 |
-                      LDS |  6           15 | NC
+                       AS |  6           15 | BUSEN
                           |                 |
-                    CPUWR |  7           14 | NC
+                       NC |  7           14 | DATAEN
                           |                 |
-                       AS |  8           13 | NC
+                       NC |  8           13 | DTACK
                           |                 |
-                     IOCS |  9           12 | NC
+                   BOOTIN |  9           12 | D1
                           |                 |
-                      GND | 10           11 | EN
+                      GND | 10           11 | GND1
                           -------------------
