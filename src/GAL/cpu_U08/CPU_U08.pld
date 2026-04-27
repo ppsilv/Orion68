@@ -37,7 +37,7 @@ D1.R = AS
 DTACK.R = D1
 
 ;habilita bus de dados
-!DATAEN = !AS & !BOOTIN
+!DATAEN = !AS & !BOOTIN & !RAMCS
 
 ;habilita bus de endereços
 !BUSEN = BOOTIN
@@ -64,4 +64,4 @@ Síntese
 galasm orion68kV1_0.pld
 
 Gravação
-minipro -p GAL16V8B -w orion68kV1_0.jed
+minipro -p GAL16V8B -w CPU_U08.jed

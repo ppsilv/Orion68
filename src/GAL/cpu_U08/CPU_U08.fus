@@ -52,7 +52,7 @@ Pin 15 = BUSEN        XOR = 0   AC1 = 1
 
 Pin 14 = DATAEN       XOR = 0   AC1 = 1
  40  ---- ---- ---- ---- ---- ---- ---- ----
- 41  ---- ---- ---- ---- -x-- ---- ---- -x--
+ 41  ---- ---x ---- ---- -x-- ---- ---- -x--
  42  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  43  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  44  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx

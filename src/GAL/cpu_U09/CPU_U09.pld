@@ -22,3 +22,7 @@ RESET = RESETIN
 
 DESCRIPTION
 Buffer de interrupcao com trava de IACK para Orion68K.
+
+galasm CPU_U09.jed
+
+minipro -p GAL20V8 -w CPU_09.jed
