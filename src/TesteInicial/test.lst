@@ -1,70 +1,71 @@
 Sections:
 00: ".vectors" (0-8)
-01: ".jumptable" (0-0)
-02: ".text" (0-24)
+01: ".text" (0-34)
 
 
 Source: "test.asm"
                             	     1:             SECTION .vectors
                             	     2:             ORG     $00000000
                             	     3: 
-                            	     4:             ; Vetores de Reset
-00:00000000 00020000        	     5:             DC.L $00020000    ; Initial Stack Pointer (Topo da sua RAM)
-00:00000004 00001000        	     6:             DC.L START        ; Initial Program Counter (Onde o código começa)
+                            	     4:             ; Vetores de Reset (Iniciais enquanto BOOT=1)
+00:00000000 00020000        	     5:             DC.L $00020000    ; Stack Pointer inicial
+00:00000004 00001000        	     6:             DC.L START        ; Program Counter inicial
                             	     7: 
-                            	     8:             SECTION .jumptable
-                            	     9:             ORG     $0400
+                            	     8:             SECTION .text
+                            	     9:             ORG     $00001000
                             	    10: 
-                            	    11:             SECTION .text
-                            	    12:             ORG $00001000
-                            	    13: 
-                            	    14: START:
-                            	    15:     ; 1. Mata o BOOT (Move a ROM para E00000)
-                            	    16:     ; Após este comando, a ROM some do endereço 0x00 e aparece em 0xE0
-02:00001000 4A3900F00000    	    17:     TST.B $F00000
+                            	    11: START:
+                            	    12:     ; 1. Mata o BOOT (Ativa KILLBT na GAL)
+01:00001000 4A3900F00000    	    13:     TST.B $F00000
+                            	    14: 
+                            	    15:     ; 2. Salto para o endereço real da ROM em 0xE00000
+                            	    16:     ; Usamos JMP para garantir que o PC saia da faixa de $0000
+01:00001006 4EF900E01000    	    17:     JMP   MAIN_ROM
                             	    18: 
-                            	    19:     ; 2. Salto para o endereço "real" da ROM
-                            	    20:     ; Precisamos de um jump absoluto para cair no novo endereço da ROM
-02:00001006 4EF900E00020    	    21:     JMP $E00020       ; Endereço aproximado após o salto (ajuste conforme seu código)
-                            	    22: 
-                            	    23:     ORG $E00020
-                            	    24: AT_HIGH_ROM:
-                            	    25:     ; 3. Se chegamos aqui, a ROM está mapeada em E00000 corretamente!
-                            	    26:     ; Pulsamos o pino 12 para comemorar no osciloscópio
-02:00E00020 4A3900F10000    	    27:     TST.B $F10000
-                            	    28: 
-02:00E00026 60F8            	    29:     BRA AT_HIGH_ROM   ; Fica pulsando o pino 12 em loop
-                            	    30: 
-                            	    31: 
-                            	    32: 
+                            	    19:     ORG   $E01000            ; Endereço dentro da ROM mapeada em High
+                            	    20: MAIN_ROM:
+                            	    21:     ; --- TESTE DE MEMÓRIA RAM ---
+                            	    22:     ; Endereço de teste: 0x100000
+                            	    23:     ; Valor de teste: 0x55AA (Padrão de bits alternados)
+                            	    24: 
+01:00E01000 207C00100000    	    25:     MOVE.L #$100000,A0      ; Carrega endereço da RAM em A0
+01:00E01006 303C55AA        	    26:     MOVE.W #$55AA,D0        ; Carrega padrão de teste em D0
+                            	    27: 
+01:00E0100A 3080            	    28:     MOVE.W D0,(A0)          ; ESCREVE na RAM
+                            	    29: 
+                            	    30:     ; Limpamos D1 para garantir que a comparação seja real
+01:00E0100C 4241            	    31:     CLR.W  D1
+01:00E0100E 3210            	    32:     MOVE.W (A0),D1          ; LÊ da RAM
                             	    33: 
-                            	    34: START2:
-                            	    35:     ; O 68k começa aqui logo após o reset
-                            	    36: LOOP:
-                            	    37:     ; Acessa o endereço que ativa o KILLBT na GAL (F00000)
-                            	    38:     ; Usamos TST.B para apenas ler o endereço sem alterar registradores
-02:00E00028 4A3900F00000    	    39:     TST.B $F00000
-                            	    40: 
-                            	    41:     ; Delay para o LED não piscar rápido demais
-02:00E0002E 72044841        	    42:     MOVE.L #$40000,D1
-                            	    43: DELAY:
-02:00E00032 5381            	    44:     SUBQ.L #1,D1
-02:00E00034 66FC            	    45:     BNE DELAY
-                            	    46: 
-02:00E00036 60F0            	    47:     BRA LOOP
+01:00E01010 B240            	    34:     CMP.W  D0,D1            ; Compara Escrito vs Lido
+01:00E01012 6608            	    35:     BNE    RAM_ERROR         ; Se for diferente, vai para erro
+                            	    36: 
+                            	    37: RAM_OK:
+                            	    38:     ; Se deu OK, pulsa o pino 12 (F10000) e fica em loop eterno
+01:00E01014 4A3900F10000    	    39:     TST.B $F10000
+01:00E0101A 60F8            	    40:     BRA   RAM_OK
+                            	    41: 
+                            	    42: RAM_ERROR:
+                            	    43:     ; Se deu erro, executa uma instrução ILLEGAL ou gera um DOUBLE BUS FAULT
+                            	    44:     ; para forçar a CPU ao estado de HALT (ou travar)
+                            	    45:     ; Uma forma simples é resetar a pilha para um endereço ímpar e tentar acessar
+01:00E0101C 3E7C0001        	    46:     MOVE.L #$00000001,A7
+01:00E01020 3E17            	    47:     MOVE.W (A7),D7          ; Isso gera um Address Error -> Halt se não houver handler
                             	    48: 
+                            	    49:     ; Caso a CPU não pare, instrução ilegal:
+01:00E01022 4AFC            	    50:     DC.W   $4AFC             ; ILLEGAL instruction
+01:00E01024 4E722700        	    51:     STOP   #$2700            ; Para a CPU
+                            	    52: 
 
 
 Symbols by name:
-AT_HIGH_ROM                      A:00E00020
-DELAY                            A:00E00032
-LOOP                             A:00E00028
+MAIN_ROM                         A:00E01000
+RAM_ERROR                        A:00E0101C
+RAM_OK                           A:00E01014
 START                            A:00001000
-START2                           A:00E00028
 
 Symbols by value:
 00001000 START
-00E00020 AT_HIGH_ROM
-00E00028 LOOP
-00E00028 START2
-00E00032 DELAY
+00E01000 MAIN_ROM
+00E01014 RAM_OK
+00E0101C RAM_ERROR

@@ -162,7 +162,7 @@
 		)
 	)
 	(sheet
-		(at 56.515 24.13)
+		(at 22.225 22.86)
 		(size 29.21 15.875)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -178,7 +178,7 @@
 		)
 		(uuid "d92fcd44-da66-430f-987f-be7edff43e49")
 		(property "Sheetname" "Orion68-CPU-2"
-			(at 56.515 23.4184 0)
+			(at 22.225 22.1484 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -187,7 +187,7 @@
 			)
 		)
 		(property "Sheetfile" "orion68cpu2.kicad_sch"
-			(at 56.515 40.5896 0)
+			(at 22.225 39.3196 0)
 			(effects
 				(font
 					(size 1.27 1.27)

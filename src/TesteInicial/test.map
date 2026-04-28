@@ -19,28 +19,28 @@ Linker script and memory map
 .jumptable
  *(.jumptable)
 
-.text           0x00001000       0x24
+.text           0x00001000       0x34
                 0x00001000                        _start = .
  *(.text .text.*)
- .text          0x00001000       0x24 test.o
-                0x00001024                        . = ALIGN (0x2)
-                0x00001024                        _start_end = .
+ .text          0x00001000       0x34 test.o
+                0x00001034                        . = ALIGN (0x2)
+                0x00001034                        _start_end = .
 
-.rodata         0x00001024        0x0
+.rodata         0x00001034        0x0
  *(.rodata .rodata.*)
-                0x00001024                        . = ALIGN (0x2)
+                0x00001034                        . = ALIGN (0x2)
 
-.data           0x00001024        0x0
-                0x00001024                        __data_load = LOADADDR (.data)
-                0x00001024                        __data_start = .
+.data           0x00001034        0x0
+                0x00001034                        __data_load = LOADADDR (.data)
+                0x00001034                        __data_start = .
  *(.data .data.*)
-                0x00001024                        . = ALIGN (0x2)
-                0x00001024                        __data_end = .
+                0x00001034                        . = ALIGN (0x2)
+                0x00001034                        __data_end = .
 
-.checksum       0x00001024        0x4
-                0x00001024                        . = ALIGN (0x2)
-                0x00001024                        __checksum_addr = .
-                0x00001024        0x4 LONG 0x0
+.checksum       0x00001034        0x4
+                0x00001034                        . = ALIGN (0x2)
+                0x00001034                        __checksum_addr = .
+                0x00001034        0x4 LONG 0x0
 
 .bss            0x00080000        0x0
                 0x00080000                        __bss_start = .
