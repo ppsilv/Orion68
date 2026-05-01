@@ -1,0 +1,144 @@
+Sections:
+00: ".vectors" (0-32)
+01: ".text" (0-BB)
+
+
+Source: "test.asm"
+                            	     1:             SECTION .vectors
+                            	     2:             ORG     $00000000
+00:00000000 00200000        	     3:             DC.L    $00200000    ; Stack Pointer
+00:00000004 00000400        	     4:             DC.L    START    ; PC aponta para o início do código
+                            	     5: 
+                            	     6:             ORG     $00000400
+                            	     7: ; Exemplo rápido de teste de RAM (Base em $00004000)
+                            	     8: RAM_START   EQU  $88000
+                            	     9: 
+                            	    10: START:
+00:00000400 46FC2700        	    11:             MOVE.W  #$2700,SR
+00:00000404 4FF9001FFFF0    	    12:             LEA     $1FFFF0,SP ; Garante o Stack Pointer (se o hardware não carregou)
+                            	    13:     
+                            	    14:             ; Limpa todos os registradores de dados e endereços
+00:0000040A 7000            	    15:             MOVE.L  #0,D0
+00:0000040C 2200            	    16:             MOVE.L  D0,D1
+00:0000040E 2400            	    17:             MOVE.L  D0,D2
+00:00000410 2600            	    18:             MOVE.L  D0,D3
+00:00000412 2800            	    19:             MOVE.L  D0,D4
+00:00000414 2A00            	    20:             MOVE.L  D0,D5
+00:00000416 2C00            	    21:             MOVE.L  D0,D6
+00:00000418 2E00            	    22:             MOVE.L  D0,D7            
+                            	    23: 
+00:0000041A 43F900FB8001    	    24:             LEA     $00FB8001,A1
+00:00000420 103C0041        	    25:             MOVE.B  #$41,D0     ; Carrega 'A' em D0
+00:00000424 1280            	    26:             MOVE.B  D0,(A1); Escreve no endereço do PicoVGA (LDS ativo)
+                            	    27: 
+                            	    28:             ;TST.B   $F00000
+                            	    29: 
+00:00000426 4EF81000        	    30:             JMP     $01000
+                            	    31: 
+                            	    32:             SECTION .text  
+                            	    33:             
+                            	    34: UART_WriteString:
+01:00000000 41FA0086        	    35:         LEA     MSGINIT,A0
+                            	    36: 
+                            	    37: .WriteLoop:
+01:00000004 1018            	    38:         MOVE.B  (A0)+,D0      ; Pega caractere
+01:00000006 6714            	    39:         BEQ     MAIN_ROM
+01:00000008 43F900FB8001    	    40:         LEA     $00FB8001,A1
+01:0000000E 1280            	    41:         MOVE.B  D0,(A1); Escreve no endereço do PicoVGA (LDS ativo)
+                            	    42: 
+01:00000010 223C000000FF    	    43:         MOVE.L  #$00000FF,D1 ; Contador para o delay (ajuste se precisar de mais)
+                            	    44: .DELAY00:
+01:00000016 5381            	    45:         SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
+01:00000018 66FC            	    46:         BNE.S   .DELAY00     ; Pula se não for zero (10 ciclos se pular, 8 se não)
+                            	    47: 
+01:0000001A 60E8            	    48:         BRA     .WriteLoop
+                            	    49: 
+                            	    50: MAIN_ROM:
+01:0000001C 43F900FB8001    	    51:             LEA     $00FB8001,A1
+01:00000022 103C0041        	    52:             MOVE.B  #$41,D0     ; Carrega 'A' em D0
+01:00000026 1280            	    53:             MOVE.B  D0,(A1); Escreve no endereço do PicoVGA (LDS ativo)
+                            	    54: 
+01:00000028 223C00000FFF    	    55:             MOVE.L  #$0000FFF,D1 ; Contador para o delay (ajuste se precisar de mais)
+                            	    56: .DELAY00:
+01:0000002E 5381            	    57:             SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
+01:00000030 66FC            	    58:             BNE.S   .DELAY00     ; Pula se não for zero (10 ciclos se pular, 8 se não)
+                            	    59:             ;BRA.S   MAIN_ROM    
+                            	    60: 
+                            	    61: mem_test:
+01:00000032 91C8            	    62:         move.l #$0,a0           ; Inicio da RAM
+01:00000034 74104842        	    63:         move.l #$100000,d2      ; Limite de 1MB
+01:00000038 303CAA55        	    64:         move.w #$aa55,d0        ; Padrao de teste 1
+                            	    65: test_loop:
+01:0000003C 3080            	    66:         move.w d0,(a0)          ; Grava padrao 1
+01:0000003E 3210            	    67:         move.w (a0),d1          ; Le de volta
+01:00000040 B240            	    68:         cmp.w d0,d1             ; Verifica
+01:00000042 662C            	    69:         bne.s show_error        ; Se erro, desvia para tratar
+                            	    70: 
+01:00000044 43F900FB8001    	    71:         lea     $00FB8001,A1
+01:0000004A 103C0041        	    72:         move.b  #$41,D0     ; Carrega 'A' em D0
+01:0000004E 1280            	    73:         move.b  D0,(A1); Escreve no endereço do PicoVGA (LDS ativo)        
+                            	    74: 
+                            	    75: next_addr:
+01:00000050 5488            	    76:         addq.l #2,a0            ; Proxima word (16 bits)
+01:00000052 B1C2            	    77:         cmp.l d2,a0             ; Fim da memoria?
+01:00000054 66E6            	    78:         bne.s test_loop         ; Se nao, continua
+01:00000056 4DD6            	    79:         bra.s end_test          ; Fim do teste total
+                            	    80: 
+                            	    81: end_test:
+01:00000058 43F900FB8001    	    82:             LEA     $00FB8001,A1
+01:0000005E 103C0050        	    83:             MOVE.B  #$50,D0     ; Carrega 'A' em D0
+01:00000062 1280            	    84:             MOVE.B  D0,(A1); Escreve no endereço do PicoVGA (LDS ativo)
+                            	    85: 
+01:00000064 223C00000FFF    	    86:             MOVE.L  #$0000FFF,D1 ; Contador para o delay (ajuste se precisar de mais)
+                            	    87: .DELAY00:
+01:0000006A 5381            	    88:             SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
+01:0000006C 66FC            	    89:             BNE.S   .DELAY00     ; Pula se não for zero (10 ciclos se pular, 8 se não)
+01:0000006E 60E8            	    90:             bra.s   end_test    
+                            	    91: 
+                            	    92: 
+                            	    93: show_error:
+01:00000070 43F900FB8001    	    94:             LEA     $00FB8001,A1
+01:00000076 103C0045        	    95:             MOVE.B  #$45,D0     ; Carrega 'A' em D0
+01:0000007A 1280            	    96:             MOVE.B  D0,(A1); Escreve no endereço do PicoVGA (LDS ativo)
+                            	    97: 
+01:0000007C 223C00000FFF    	    98:             MOVE.L  #$0000FFF,D1 ; Contador para o delay (ajuste se precisar de mais)
+                            	    99: .DELAY00:
+01:00000082 5381            	   100:             SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
+01:00000084 66FC            	   101:             BNE.S   .DELAY00     ; Pula se não for zero (10 ciclos se pular, 8 se não)
+01:00000086 60C8            	   102:             jmp     next_addr
+                            	   103: 
+                            	   104: MSGINIT:
+01:00000088 0D              	   105:     DC.B    13,10,"Orion68k - copyright (C) pdsilva(pgordao).V1.0",13,10,0            
+01:00000089 0A
+01:0000008A 4F72696F6E36386B
+01:00000092 202D20636F707972
+01:0000009A 6967687420284329
+01:000000A2 20706473696C7661
+01:000000AA 2870676F7264616F
+01:000000B2 292E56312E30
+01:000000B8 0D
+01:000000B9 0A
+01:000000BA 00
+
+
+Symbols by name:
+MAIN_ROM                        01:0000001C
+MSGINIT                         01:00000088
+START                            A:00000400
+UART_WriteString                01:00000000
+end_test                        01:00000058
+mem_test                        01:00000032
+next_addr                       01:00000050
+show_error                      01:00000070
+test_loop                       01:0000003C
+
+Symbols by value:
+00000000 UART_WriteString
+0000001C MAIN_ROM
+00000032 mem_test
+0000003C test_loop
+00000050 next_addr
+00000058 end_test
+00000070 show_error
+00000088 MSGINIT
+00000400 START

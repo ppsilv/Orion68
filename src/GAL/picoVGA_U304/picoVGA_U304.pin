@@ -1,0 +1,25 @@
+
+
+ Pin # | Name     | Pin Type
+-----------------------------
+   1   | A15      | Input
+   2   | A16      | Input
+   3   | A17      | Input
+   4   | A18      | Input
+   5   | A19      | Input
+   6   | LDS      | Input
+   7   | CPUWR    | Input
+   8   | AS       | Input
+   9   | A23      | Input
+  10   | GND      | GND
+  11   | EN       | Input
+  12   | A20      | Input
+  13   | A21      | Input
+  14   | A22      | Input
+  15   | NC       | NC
+  16   | NC       | NC
+  17   | NC       | NC
+  18   | NC       | NC
+  19   | Y1       | Output
+  20   | VCC      | VCC
+

@@ -1,7 +1,7 @@
 
 
-Pin 19 = ROMCS        XOR = 0   AC1 = 0
-  0  -x-- -x-- -x-- -x-- -x-- x--- ---- ----
+Pin 19 = Y1           XOR = 0   AC1 = 0
+  0  x-x- x--- -x-- x--- -xx- -xx- -xx- x---
   1  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   2  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   3  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -10,8 +10,8 @@ Pin 19 = ROMCS        XOR = 0   AC1 = 0
   6  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   7  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 18 = RAMCS        XOR = 0   AC1 = 0
-  8  ---- ---- -x-- -x-- -x-- ---- ---- -x--
+Pin 18 = NC           XOR = 0   AC1 = 0
+  8  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   9  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  10  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  11  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -30,8 +30,8 @@ Pin 17 = NC           XOR = 0   AC1 = 0
  22  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  23  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 16 = KILLBT       XOR = 0   AC1 = 0
- 24  x--- x--- x--- x--- -x-- ---- ---- ----
+Pin 16 = NC           XOR = 0   AC1 = 0
+ 24  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  25  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  26  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  27  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -50,7 +50,7 @@ Pin 15 = NC           XOR = 0   AC1 = 0
  38  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  39  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 14 = NC           XOR = 0   AC1 = 0
+Pin 14 = A22          XOR = 0   AC1 = 1
  40  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  41  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  42  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -60,8 +60,8 @@ Pin 14 = NC           XOR = 0   AC1 = 0
  46  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  47  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 13 = CPURD        XOR = 1   AC1 = 0
- 48  ---- ---- ---- ---- -x-- -x-- ---- ----
+Pin 13 = A21          XOR = 0   AC1 = 1
+ 48  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  49  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  50  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  51  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -70,8 +70,8 @@ Pin 13 = CPURD        XOR = 1   AC1 = 0
  54  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  55  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 12 = TST          XOR = 0   AC1 = 0
- 56  x--- x--- x--- x--- -x-- ---- ---- ----
+Pin 12 = A20          XOR = 0   AC1 = 1
+ 56  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  57  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  58  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  59  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx

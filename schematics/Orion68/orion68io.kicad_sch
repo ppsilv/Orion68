@@ -12872,16 +12872,6 @@
 		)
 		(uuid "ba4b24be-9c45-409d-afa5-70471bf5c817")
 	)
-	(label "{slash}IO_CS"
-		(at 389.89 133.35 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "bb8d440f-d3e6-4905-96f0-cd6c616158d0")
-	)
 	(label "BA4"
 		(at 129.54 166.37 180)
 		(effects
@@ -13255,16 +13245,6 @@
 			(justify left bottom)
 		)
 		(uuid "e5ca868c-ec5e-439e-85c6-6d8e3454c480")
-	)
-	(label "{slash}RAM_CS"
-		(at 389.89 130.81 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "e6c5fc8f-4d41-4ebc-a13a-da92a36a26e6")
 	)
 	(label "BUSY"
 		(at 92.71 209.55 180)

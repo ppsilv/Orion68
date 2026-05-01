@@ -36,6 +36,48 @@
 		(uuid "79b083b4-3b1b-4b7b-931d-92a17869ebf5")
 	)
 	(sheet
+		(at 20.32 182.245)
+		(size 32.385 12.7)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "1bdbcacb-159b-4ff3-87ae-5293e1e37caa")
+		(property "Sheetname" "cpu2"
+			(at 20.32 181.5334 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "cpu2.kicad_sch"
+			(at 20.32 195.5296 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Orion68"
+				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
 		(at 20.32 141.605)
 		(size 32.385 15.875)
 		(exclude_from_sim no)

@@ -3,23 +3,23 @@
                                 GAL16V8
 
                           -------\___/-------
-                       NC |  1           20 | VCC
+                      A15 |  1           20 | VCC
                           |                 |
-                      A20 |  2           19 | ROMCS
+                      A16 |  2           19 | Y1
                           |                 |
-                      A21 |  3           18 | RAMCS
+                      A17 |  3           18 | NC
                           |                 |
-                      A22 |  4           17 | NC
+                      A18 |  4           17 | NC
                           |                 |
-                      A23 |  5           16 | KILLBT
+                      A19 |  5           16 | NC
                           |                 |
-                       AS |  6           15 | NC
+                      LDS |  6           15 | NC
                           |                 |
-                       RW |  7           14 | NC
+                    CPUWR |  7           14 | A22
                           |                 |
-                       NC |  8           13 | CPURD
+                       AS |  8           13 | A21
                           |                 |
-                   BOOTIN |  9           12 | TST
+                      A23 |  9           12 | A20
                           |                 |
-                      GND | 10           11 | NC
+                      GND | 10           11 | EN
                           -------------------

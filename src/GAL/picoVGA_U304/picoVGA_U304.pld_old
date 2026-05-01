@@ -1,0 +1,26 @@
+GAL16V8
+CHIP_U304
+
+;Pinagem
+; 1  2   3   4   5   6   7    8   9    10
+A15 A16 A17 A18 A19 LDS CPUWR AS IOCS GND
+;11  12  13  14  15  16  17   18  19   20
+EN  NC  NC  NC  NC  NC  NC    NC  Y1  VCC
+
+
+
+!Y1.T = A15 * A16 * A17 * !A18 * A19 * !LDS * !CPUWR * !AS * !IOCS
+
+Y1.E = VCC
+
+
+
+
+DESCRIPTION
+Modo complex.
+
+Sintese
+galasm picoVGA_U304.pld
+
+Gravar
+minipro -p GAL16V8 -w picoVGA_U304.jed

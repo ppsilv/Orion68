@@ -1,21 +1,19 @@
-GAL16V8
+GAL20V8
 CHIP_U100
 
 ;Pinagem
-; 1  2   3   4   5   6   7    8    9      10
-A20 A21 A22 A23  AS LDS UDS  NC   NC      GND
-;11  12   13  14  15  16  17  18  19      20
- NC  Y4H  Y4L Y3H Y3L Y2H Y2L Y1H Y1L     VCC
+; 1  2   3   4   5   6   7    8   9  10  11  12
+A20 A21 A22 A23  AS LDS UDS  A17 A18 A19 NC  GND
+;13  14  15  16  17  18  19  20  21  22  23  24
+ NC  NC  NC  NC  NC  NC  Y1L Y2H Y2L Y1H NC  VCC
 
 
-Y1L = /A23 * /A22 * /A21 * /A20 * /LDS * /AS
-Y1H = /A23 * /A22 * /A21 * /A20 * /UDS * /AS
-Y2L = /A23 * /A22 * /A21 *  A20 * /LDS * /AS
-Y2H = /A23 * /A22 * /A21 *  A20 * /UDS * /AS
-Y3L = /A23 * /A22 *  A21 * /A20 * /LDS * /AS
-Y3H = /A23 * /A22 *  A21 * /A20 * /UDS * /AS
-Y4L = /A23 * /A22 *  A21 *  A20 * /LDS * /AS
-Y4H = /A23 * /A22 *  A21 *  A20 * /UDS * /AS
+!Y1L = !A23 * !A22 * !A21 * !A20 * !LDS * !AS * A17 + !A23 * !A22 * !A21 * !A20 * !LDS * !AS * A18 + !A23 * !A22 * !A21 * !A20 * !LDS * !AS * A19
+!Y1H = !A23 * !A22 * !A21 * !A20 * !UDS * !AS * A17 + !A23 * !A22 * !A21 * !A20 * !UDS * !AS * A18 + !A23 * !A22 * !A21 * !A20 * !UDS * !AS * A19
+!Y2L = !A23 * !A22 * !A21 *  A20 * !LDS * !AS * A17 + !A23 * !A22 * !A21 *  A20 * !LDS * !AS * A18 + !A23 * !A22 * !A21 *  A20 * !LDS * !AS * A19
+!Y2H = !A23 * !A22 * !A21 *  A20 * !UDS * !AS * A17 + !A23 * !A22 * !A21 *  A20 * !UDS * !AS * A18 + !A23 * !A22 * !A21 *  A20 * !UDS * !AS * A19
+
+
 
 
 DESCRIPTION
@@ -25,4 +23,10 @@ Sintese
 galasm memory.pld
 
 Gravar
-minipro -p GAL16V8 -w memory.jed
+minipro -p GAL20V8 -w memory.jed
+
+Future
+!Y3L = !A23 * !A22 *  A21 * !A20 * !LDS * !AS
+!Y3H = !A23 * !A22 *  A21 * !A20 * !UDS * !AS
+!Y4L = !A23 * !A22 *  A21 *  A20 * !LDS * !AS
+!Y4H = !A23 * !A22 *  A21 *  A20 * !UDS * !AS
