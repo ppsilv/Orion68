@@ -8036,7 +8036,7 @@
 		)
 		(uuid "07f940fc-dab8-427b-9ea9-c56bacc05b97")
 	)
-	(text "Setor S4\n00"
+	(text "Setor S400"
 		(exclude_from_sim no)
 		(at 125.73 204.216 0)
 		(effects
@@ -8145,7 +8145,7 @@
 		)
 		(uuid "a55a0fc5-8402-43b2-84ec-f9511dfa0f88")
 	)
-	(text "Setor S300"
+	(text "Setor S500"
 		(exclude_from_sim no)
 		(at 217.932 205.232 0)
 		(effects
@@ -14129,7 +14129,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "2862a6f3-2e68-4377-bcb4-3a2d0be1309e")
-		(property "Reference" "D_S300"
+		(property "Reference" "D_S500"
 			(at 290.83 258.1274 90)
 			(effects
 				(font
@@ -14192,7 +14192,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/a3cb64b8-9a58-4dca-a498-ee5e38308bd0"
-					(reference "D_S300")
+					(reference "D_S500")
 					(unit 1)
 				)
 			)
@@ -16732,7 +16732,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "cba2f0bf-09f8-4c6f-951f-3cddddbc24bf")
-		(property "Reference" "J_S300"
+		(property "Reference" "J_S500"
 			(at 255.27 201.93 0)
 			(effects
 				(font
@@ -16898,7 +16898,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/a3cb64b8-9a58-4dca-a498-ee5e38308bd0"
-					(reference "J_S300")
+					(reference "J_S500")
 					(unit 1)
 				)
 			)
@@ -17317,7 +17317,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "eed9255e-2d00-40ca-bcf3-e640daac6992")
-		(property "Reference" "R_S300"
+		(property "Reference" "R_S500"
 			(at 289.56 264.1599 0)
 			(effects
 				(font
@@ -17371,7 +17371,7 @@
 		(instances
 			(project "Orion68"
 				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8/a3cb64b8-9a58-4dca-a498-ee5e38308bd0"
-					(reference "R_S300")
+					(reference "R_S500")
 					(unit 1)
 				)
 			)

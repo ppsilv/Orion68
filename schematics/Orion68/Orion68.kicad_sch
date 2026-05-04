@@ -51,7 +51,7 @@
 			(color 0 0 0 0.0000)
 		)
 		(uuid "1bdbcacb-159b-4ff3-87ae-5293e1e37caa")
-		(property "Sheetname" "cpu2"
+		(property "Sheetname" "Orion68-CPU_nmos"
 			(at 20.32 181.5334 0)
 			(effects
 				(font
@@ -219,7 +219,7 @@
 			(color 0 0 0 0.0000)
 		)
 		(uuid "d92fcd44-da66-430f-987f-be7edff43e49")
-		(property "Sheetname" "Orion68-CPU-2"
+		(property "Sheetname" "Orion68-CPU_cmos"
 			(at 22.225 22.1484 0)
 			(effects
 				(font
