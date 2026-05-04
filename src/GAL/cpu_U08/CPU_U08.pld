@@ -2,12 +2,12 @@ GAL16V8
 CHIP_U08
 
 ; Entradas
-; 1      2      3      4      5      6      7      8       9      10
- NC     A20    A21    A22    A23    AS     RW     NC      BOOTIN GND
+; 1      2      3      4      5    6      7      8      9      10
+ A17     A20    A21    A22    A23  AS     RW    A18   BOOTIN   GND
 
 ; Saídas (Pinos 12 a 19) PINO 11 LIVRE APESAR DE ESTAR ATERRADO
-; 11     12     13     14     15   16     17     18     19      20
-  NC     TST  CPURD    NC     NC KILLBT   NC   RAMCS  ROMCS  VCC
+; 11     12     13     14     15   16     17     18     19     20
+ A19    TST   CPURD    NC     NC KILLBT   NC   RAMCS  ROMCS    VCC
 
 ;EQUATIONS
 

@@ -14,8 +14,7 @@ SPLITTER := python3 split68k.py
 FILLER := python3 fill.py
 PROGRAMMER := minipro
 CHECKSUMER := python3 checksum_put.py
-#CHIP_TYPE := SST39SF010 #28C64A  # Altere para o seu chip Flash
-CHIP_TYPE := AT29C512
+CHIP_TYPE := SST39SF010 #28C64A  # Altere para o seu chip Flash
 
 # Nomes de arquivos
 SOURCE := test.asm
@@ -33,10 +32,8 @@ LAYOUT_FILE := layout.ld
 #ROM_SIZE := 8192     # 8KB usados
 #FLASH_SIZE := 16384  # 8KB (tamanho da 28C64A)
 #ROM_SIZE := 16384     # 8KB usados
-#FLASH_SIZE := 131072  # 128KB (tamanho da 39SF010)
-#ROM_SIZE := 131072     # 128KB usados
-FLASH_SIZE := 65535  # 128KB (tamanho da 39SF010)
-ROM_SIZE := 65535     # 128KB usados
+FLASH_SIZE := 131072  # 128KB (tamanho da 39SF010)
+ROM_SIZE := 131072     # 128KB usados
 
 
 

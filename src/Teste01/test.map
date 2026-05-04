@@ -4,44 +4,44 @@ There are no discarded input sections
 Memory Configuration
 
 Name             Origin             Length             Attributes
-ROM              0x00000000         0x00020000         xr
+ROM              0x00000000         0x00010000         xr
 RAM              0x00080000         0x00100000         xrw
 *default*        0x00000000         0xffffffff
 
 Linker script and memory map
 
 
-.vectors        0x00000000       0x32
+.vectors        0x00000000       0x28
                 0x00000000                        . = ALIGN (0x2)
  *(.vectors)
- .vectors       0x00000000       0x32 test.o
+ .vectors       0x00000000       0x28 test.o
 
 .jumptable
  *(.jumptable)
 
-.text           0x00001000       0xbc
+.text           0x00001000      0x134
                 0x00001000                        _start = .
  *(.text .text.*)
- .text          0x00001000       0xbb test.o
-                0x000010bc                        . = ALIGN (0x2)
- *fill*         0x000010bb        0x1 
-                0x000010bc                        _start_end = .
+ .text          0x00001000      0x133 test.o
+                0x00001134                        . = ALIGN (0x2)
+ *fill*         0x00001133        0x1 
+                0x00001134                        _start_end = .
 
-.rodata         0x000010bc        0x0
+.rodata         0x00001134        0x0
  *(.rodata .rodata.*)
-                0x000010bc                        . = ALIGN (0x2)
+                0x00001134                        . = ALIGN (0x2)
 
-.data           0x000010bc        0x0
-                0x000010bc                        __data_load = LOADADDR (.data)
-                0x000010bc                        __data_start = .
+.data           0x00001134        0x0
+                0x00001134                        __data_load = LOADADDR (.data)
+                0x00001134                        __data_start = .
  *(.data .data.*)
-                0x000010bc                        . = ALIGN (0x2)
-                0x000010bc                        __data_end = .
+                0x00001134                        . = ALIGN (0x2)
+                0x00001134                        __data_end = .
 
-.checksum       0x000010bc        0x4
-                0x000010bc                        . = ALIGN (0x2)
-                0x000010bc                        __checksum_addr = .
-                0x000010bc        0x4 LONG 0x0
+.checksum       0x00001134        0x4
+                0x00001134                        . = ALIGN (0x2)
+                0x00001134                        __checksum_addr = .
+                0x00001134        0x4 LONG 0x0
 
 .bss            0x00080000        0x0
                 0x00080000                        __bss_start = .
