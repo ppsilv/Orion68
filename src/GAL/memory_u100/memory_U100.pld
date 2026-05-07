@@ -26,10 +26,10 @@ DESCRIPTION
 Modo SIMPLE.
 
 Sintese
-galasm memory.pld
+galasm memory_U100.pld
 
 Gravar
-minipro -p GAL20V8 -w memory.jed
+minipro -p GAL20V8 -w memory_U100.jed
 
 Future
 !Y3L = !A23 * !A22 *  A21 * !A20 * !LDS * !AS

@@ -17412,6 +17412,16 @@
 		)
 		(uuid "78320966-4d6b-4d04-836c-2e0cdc69c679")
 	)
+	(label "{slash}IO_CS"
+		(at 393.7 73.66 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "79821aa2-be58-4187-b56d-9e99bbbe4ec9")
+	)
 	(label "A13"
 		(at 281.94 39.37 180)
 		(effects

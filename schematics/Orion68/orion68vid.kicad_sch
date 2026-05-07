@@ -7477,6 +7477,16 @@
 		)
 		(uuid "62ff163c-1e82-410c-ace1-5541ff004982")
 	)
+	(label "{slash}IO_CS"
+		(at 266.7 100.33 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "641bad7c-c09d-44c3-be6c-1dcc2ac723f9")
+	)
 	(label "M{slash}IO"
 		(at 264.16 77.47 0)
 		(effects

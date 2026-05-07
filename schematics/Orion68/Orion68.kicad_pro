@@ -651,12 +651,16 @@
       "Orion68-VID"
     ],
     [
+      "d92fcd44-da66-430f-987f-be7edff43e49",
+      "Orion68-CPU_cmos"
+    ],
+    [
       "1bdbcacb-159b-4ff3-87ae-5293e1e37caa",
       "Orion68-CPU_nmos"
     ],
     [
-      "d92fcd44-da66-430f-987f-be7edff43e49",
-      "Orion68-CPU_cmos"
+      "9ea1fc6c-f3d0-4278-b5d2-ecc48a15664e",
+      "Orion68-serial"
     ]
   ],
   "text_variables": {}

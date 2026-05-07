@@ -11667,6 +11667,16 @@
 		)
 		(uuid "2f819db2-3869-451d-b4ac-5f4eee30c5cc")
 	)
+	(label "{slash}IO_CS"
+		(at 389.89 133.35 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "2fc6d360-a7fa-4230-9b62-14f394e6fff9")
+	)
 	(label "B{slash}cpurw"
 		(at 248.92 236.22 180)
 		(effects

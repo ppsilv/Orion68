@@ -1,7 +1,7 @@
             SECTION .vectors
             ORG     $00000000
             DC.L    $FFFF0    ; Stack Pointer
-            DC.L    START    ; PC aponta para o início do código
+            DC.L    START     ; PC aponta para o início do código
 
             ORG     $00000400
 ; Exemplo rápido de teste de RAM (Base em $00004000)
@@ -40,7 +40,6 @@ SET_VERTICAL   equ $FB803b        ;;Endereço real 59 0x3b  o pico enxerga 0x1D
 RUN_CMD        equ $FB803d        ;;Endereço real 61 0x3d  o pico enxerga 0x1E
 CORINGA        equ $FB803f        ;;Endereço real 63 0x3f  o pico enxerga 0x1F    
 
-
 ;Commands
 CMD_SYSTEM_ENABLE equ  $A5
 CMD_CLEAR_SCREEN  equ  $A4
@@ -48,6 +47,43 @@ CMD_SET_CUR_POS   equ  $A3
 CMD_SET_TXT_COLOR equ  $A2
 CMD_GO_HOME       equ  $A1
 
+;Uart register offsets
+RHR         equ     $1   ; receive holding register (read)
+THR         equ     $1   ; transmit holding register (write)
+IER         equ     $3   ; interrupt enable register
+ISR         equ     $5   ; interrupt status register (read)
+FCR         equ     $5   ; FIFO control register (write)
+LCR         equ     $7   ; line control register
+MCR         equ     $9   ; modem control register
+LSR         equ     $B   ; line status register
+MSR         equ     $D   ; modem status register
+SPR         equ     $F   ; scratchpad register (reserved for system use)
+DLL         equ     $1   ; divisor latch LSB
+DLM         equ     $3   ; divisor latch MSB
+; aliases for register names (used by different manufacturers)cd ..
+RBR         equ     RHR ; receive buffer register
+IIR         equ     ISR ; interrupt identification register
+SCR         equ     SPR ; scratch register
+
+B009600L    equ         $60
+B019200L    equ         $30
+B038400L    equ         $18
+B057600L    equ         $10
+B115200L    equ         $08
+B230400L    equ         $04
+B460800L    equ         $02
+B921600L    equ         $01
+B009600H    equ         $00
+B019200H    equ         $00     
+B038400H    equ         $00     
+B057600H    equ         $00     
+B115200H    equ         $00     
+B230400H    equ         $00
+B460800H    equ         $00
+B921600H    equ         $00
+
+
+        ALIGN 2
 START:
             MOVE.W  #$2700,SR
             LEA     $FFFF0,SP ; Garante o Stack Pointer (se o hardware não carregou)
@@ -62,17 +98,32 @@ START:
             MOVE.L  D0,D6
             MOVE.L  D0,D7            
 
-
-            JMP     start
+            MOVE.L  #$00,D4
+            JSR     UART_Init
+            JMP     start1
             SECTION .text  
             
-start:
+start1:
         JSR     ClearScreen
         LEA     MSGINIT,A0
         JSR     PrintString
         JSR     SetCursor
-        MOVE.L  #$00FB8001,D0
+        MOVE.L  D4,D0
         JSR     PrintHexAddress
+        ADDQ    #1,D4
+
+        move.b  #$41,D0
+        JSR     UART_WriteChar
+
+        MOVE.L  #$001FFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
+.DELAY00:
+        SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
+        BNE.S   .DELAY00     ; Pula se não for zero (10 ciclos se pular, 8 se não)
+
+        JMP     start1
+
+
+
 fim:
             BRA.S   fim 
 
@@ -95,7 +146,6 @@ test_loop:
             SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
             BNE.S   .DELAY00     ; Pula se não for zero (10 ciclos se pular, 8 se não)
             ;BRA.S   MAIN_ROM    
-
 
 next_addr:
         addq.l #2,a0            ; Proxima word (16 bits)
@@ -221,7 +271,44 @@ PrintNibble:
         ADD.B   #'0',D0
         JMP     WriteChar    ; Usa JMP para tail call optimization
 
-
+UART_Init:
+        lea     $F00100,A1
+        ;move.b  #%00001101,FCR(A1)    ; enable FIFO
+        move.b  #%10000000,LCR(A1)    ;DLAB=1
+        move.b  #B115200L,DLL(A1)     ; set divisor latch low byte
+        move.b  #B115200H,DLM(A1)     ; set divisor latch high byte
+        move.b  #%00000011,LCR(A1)    ; 8 data bits, no parity, 1 stop bit, DLAB=0 
+        clr.b   SCR(A1)               ; clear the scratch register
+        RTS
+; Escreve caractere (D0.B)
+UART_WriteChar:
+        move.l  A1,-(SP)        ; Preserva A1
+        move.l  D0,-(SP)        ; Preserva D0
+        move.l  D1,-(SP)        ; Preserva D0
+        lea     $F00100,A1
+.WaitTx:
+        move.b  LSR(A1),D1
+        btst    #5,D1           ; wait until transmit holding register is empty
+        beq     .WaitTx
+        move.B  D0,THR(A1)      ; transmit byte
+        move.L  (SP)+,D1        ;Restaura D0
+        move.L  (SP)+,D0        ;Restaura D0
+        move.L  (SP)+,A1        ;Restaura A1
+        RTS
+; Lê caractere (retorna em D0)
+UART_ReadChar:
+        move.L  A1,-(SP)        ; Preserva A1
+        lea     $F00100,A1
+.WaitRx:
+        BTST    #0,LSR(A1)        ; RX ready?
+        beq     .WaitRx
+        move.B  RHR(A1),D0
+        move.L  (SP)+,A1        ;Restaura A1
+        CMP.B   #$1b,D0
+        beq     .fim
+        JSR     UART_WriteChar
+.fim
+        RTS
 
 
 

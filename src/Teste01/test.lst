@@ -1,13 +1,13 @@
 Sections:
-00: ".vectors" (0-28)
-01: ".text" (0-133)
+00: ".vectors" (0-34)
+01: ".text" (0-1AD)
 
 
 Source: "test.asm"
                             	     1:             SECTION .vectors
                             	     2:             ORG     $00000000
 00:00000000 000FFFF0        	     3:             DC.L    $FFFF0    ; Stack Pointer
-00:00000004 00000400        	     4:             DC.L    START    ; PC aponta para o início do código
+00:00000004 00000400        	     4:             DC.L    START     ; PC aponta para o início do código
                             	     5: 
                             	     6:             ORG     $00000400
                             	     7: ; Exemplo rápido de teste de RAM (Base em $00004000)
@@ -46,276 +46,391 @@ Source: "test.asm"
                             	    40: RUN_CMD        equ $FB803d        ;;Endereço real 61 0x3d  o pico enxerga 0x1E
                             	    41: CORINGA        equ $FB803f        ;;Endereço real 63 0x3f  o pico enxerga 0x1F    
                             	    42: 
-                            	    43: 
-                            	    44: ;Commands
-                            	    45: CMD_SYSTEM_ENABLE equ  $A5
-                            	    46: CMD_CLEAR_SCREEN  equ  $A4
-                            	    47: CMD_SET_CUR_POS   equ  $A3
-                            	    48: CMD_SET_TXT_COLOR equ  $A2
-                            	    49: CMD_GO_HOME       equ  $A1
-                            	    50: 
-                            	    51: START:
-00:00000400 46FC2700        	    52:             MOVE.W  #$2700,SR
-00:00000404 4FF9000FFFF0    	    53:             LEA     $FFFF0,SP ; Garante o Stack Pointer (se o hardware não carregou)
-                            	    54:     
-                            	    55:             ; Limpa todos os registradores de dados e endereços
-00:0000040A 7000            	    56:             MOVE.L  #0,D0
-00:0000040C 2200            	    57:             MOVE.L  D0,D1
-00:0000040E 2400            	    58:             MOVE.L  D0,D2
-00:00000410 2600            	    59:             MOVE.L  D0,D3
-00:00000412 2800            	    60:             MOVE.L  D0,D4
-00:00000414 2A00            	    61:             MOVE.L  D0,D5
-00:00000416 2C00            	    62:             MOVE.L  D0,D6
-00:00000418 2E00            	    63:             MOVE.L  D0,D7            
-                            	    64: 
-                            	    65: 
-00:0000041A 4EF900000000    	    66:             JMP     start
-                            	    67:             SECTION .text  
-                            	    68:             
-                            	    69: start:
-01:00000000 610000AC        	    70:         JSR     ClearScreen
-01:00000004 41FA00FA        	    71:         LEA     MSGINIT,A0
-01:00000008 610000B2        	    72:         JSR     PrintString
-01:0000000C 616E            	    73:         JSR     SetCursor
-01:0000000E 203C00FB8001    	    74:         MOVE.L  #$00FB8001,D0
-01:00000014 610000C4        	    75:         JSR     PrintHexAddress
-                            	    76: fim:
-01:00000018 60FE            	    77:             BRA.S   fim 
-                            	    78: 
-                            	    79: mem_test:
-01:0000001A 207C00088000    	    80:         move.l #$88000,a0           ; Inicio da RAM
-01:00000020 74104842        	    81:         move.l #$100000,d2      ; Limite de 1MB
-01:00000024 303CAA55        	    82:         move.w #$aa55,d0        ; Padrao de teste 1
-                            	    83: test_loop:
-01:00000028 3080            	    84:         move.w d0,(a0)          ; Grava padrao 1
-01:0000002A 3210            	    85:         move.w (a0),d1          ; Le de volta
-01:0000002C B240            	    86:         cmp.w d0,d1             ; Verifica
-01:0000002E 6634            	    87:         bne.s show_error        ; Se erro, desvia para tratar
-                            	    88: 
-01:00000030 43F900FB8001    	    89:         lea     $00FB8001,A1
-01:00000036 103C0041        	    90:         move.b  #$41,D0     ; Carrega 'A' em D0
-01:0000003A 1280            	    91:         move.b  D0,(A1); Escreve no endereço do PicoVGA (LDS ativo)        
-                            	    92: 
-01:0000003C 223C00000FFF    	    93:             MOVE.L  #$0000FFF,D1 ; Contador para o delay (ajuste se precisar de mais)
-                            	    94: .DELAY00:
-01:00000042 5381            	    95:             SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
-01:00000044 66FC            	    96:             BNE.S   .DELAY00     ; Pula se não for zero (10 ciclos se pular, 8 se não)
-                            	    97:             ;BRA.S   MAIN_ROM    
-                            	    98: 
-                            	    99: 
-                            	   100: next_addr:
-01:00000046 5488            	   101:         addq.l #2,a0            ; Proxima word (16 bits)
-01:00000048 B1C2            	   102:         cmp.l d2,a0             ; Fim da memoria?
-01:0000004A 66DC            	   103:         bne.s test_loop         ; Se nao, continua
-                            	   104:         bra end_test          ; Fim do teste total
-                            	   105: 
-                            	   106: end_test:
-01:0000004C 43F900FB8001    	   107:             LEA     $00FB8001,A1
-01:00000052 103C0050        	   108:             MOVE.B  #$50,D0     ; Carrega 'A' em D0
-01:00000056 1280            	   109:             MOVE.B  D0,(A1); Escreve no endereço do PicoVGA (LDS ativo)
-                            	   110: 
-01:00000058 223C00000FFF    	   111:             MOVE.L  #$0000FFF,D1 ; Contador para o delay (ajuste se precisar de mais)
-                            	   112: .DELAY00:
-01:0000005E 5381            	   113:             SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
-01:00000060 66FC            	   114:             BNE.S   .DELAY00     ; Pula se não for zero (10 ciclos se pular, 8 se não)
-01:00000062 60E8            	   115:             bra.s   end_test    
-                            	   116: 
+                            	    43: ;Commands
+                            	    44: CMD_SYSTEM_ENABLE equ  $A5
+                            	    45: CMD_CLEAR_SCREEN  equ  $A4
+                            	    46: CMD_SET_CUR_POS   equ  $A3
+                            	    47: CMD_SET_TXT_COLOR equ  $A2
+                            	    48: CMD_GO_HOME       equ  $A1
+                            	    49: 
+                            	    50: ;Uart register offsets
+                            	    51: RHR         equ     $1   ; receive holding register (read)
+                            	    52: THR         equ     $1   ; transmit holding register (write)
+                            	    53: IER         equ     $3   ; interrupt enable register
+                            	    54: ISR         equ     $5   ; interrupt status register (read)
+                            	    55: FCR         equ     $5   ; FIFO control register (write)
+                            	    56: LCR         equ     $7   ; line control register
+                            	    57: MCR         equ     $9   ; modem control register
+                            	    58: LSR         equ     $B   ; line status register
+                            	    59: MSR         equ     $D   ; modem status register
+                            	    60: SPR         equ     $F   ; scratchpad register (reserved for system use)
+                            	    61: DLL         equ     $1   ; divisor latch LSB
+                            	    62: DLM         equ     $3   ; divisor latch MSB
+                            	    63: ; aliases for register names (used by different manufacturers)cd ..
+                            	    64: RBR         equ     RHR ; receive buffer register
+                            	    65: IIR         equ     ISR ; interrupt identification register
+                            	    66: SCR         equ     SPR ; scratch register
+                            	    67: 
+                            	    68: B009600L    equ         $60
+                            	    69: B019200L    equ         $30
+                            	    70: B038400L    equ         $18
+                            	    71: B057600L    equ         $10
+                            	    72: B115200L    equ         $08
+                            	    73: B230400L    equ         $04
+                            	    74: B460800L    equ         $02
+                            	    75: B921600L    equ         $01
+                            	    76: B009600H    equ         $00
+                            	    77: B019200H    equ         $00     
+                            	    78: B038400H    equ         $00     
+                            	    79: B057600H    equ         $00     
+                            	    80: B115200H    equ         $00     
+                            	    81: B230400H    equ         $00
+                            	    82: B460800H    equ         $00
+                            	    83: B921600H    equ         $00
+                            	    84: 
+                            	    85: 
+                            	    86:         ALIGN 2
+                            	    87: START:
+00:00000400 46FC2700        	    88:             MOVE.W  #$2700,SR
+00:00000404 4FF9000FFFF0    	    89:             LEA     $FFFF0,SP ; Garante o Stack Pointer (se o hardware não carregou)
+                            	    90:     
+                            	    91:             ; Limpa todos os registradores de dados e endereços
+00:0000040A 7000            	    92:             MOVE.L  #0,D0
+00:0000040C 2200            	    93:             MOVE.L  D0,D1
+00:0000040E 2400            	    94:             MOVE.L  D0,D2
+00:00000410 2600            	    95:             MOVE.L  D0,D3
+00:00000412 2800            	    96:             MOVE.L  D0,D4
+00:00000414 2A00            	    97:             MOVE.L  D0,D5
+00:00000416 2C00            	    98:             MOVE.L  D0,D6
+00:00000418 2E00            	    99:             MOVE.L  D0,D7            
+                            	   100: 
+00:0000041A 283C00FB8001    	   101:             MOVE.L  #$00FB8001,D4
+00:00000420 4EB900000114    	   102:             JSR     UART_Init
+00:00000426 4EF900000000    	   103:             JMP     start1
+                            	   104:             SECTION .text  
+                            	   105:             
+                            	   106: start1:
+01:00000000 610000C0        	   107:         JSR     ClearScreen
+01:00000004 41FA0174        	   108:         LEA     MSGINIT,A0
+01:00000008 610000C6        	   109:         JSR     PrintString
+01:0000000C 61000082        	   110:         JSR     SetCursor
+01:00000010 2004            	   111:         MOVE.L  D4,D0
+01:00000012 610000DA        	   112:         JSR     PrintHexAddress
+01:00000016 5244            	   113:         ADDQ    #1,D4
+                            	   114: 
+01:00000018 103C0041        	   115:         move.b  #$41,D0
+01:0000001C 6100011A        	   116:         JSR     UART_WriteChar
                             	   117: 
-                            	   118: show_error:
-01:00000064 43F900FB8001    	   119:             LEA     $00FB8001,A1
-01:0000006A 103C0045        	   120:             MOVE.B  #$45,D0     ; Carrega 'A' em D0
-01:0000006E 1280            	   121:             MOVE.B  D0,(A1); Escreve no endereço do PicoVGA (LDS ativo)
+01:00000020 223C0001FFFF    	   118:         MOVE.L  #$001FFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
+                            	   119: .DELAY00:
+01:00000026 5381            	   120:         SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
+01:00000028 66FC            	   121:         BNE.S   .DELAY00     ; Pula se não for zero (10 ciclos se pular, 8 se não)
                             	   122: 
-01:00000070 223C00000FFF    	   123:             MOVE.L  #$0000FFF,D1 ; Contador para o delay (ajuste se precisar de mais)
-                            	   124: .DELAY00:
-01:00000076 5381            	   125:             SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
-01:00000078 66FC            	   126:             BNE.S   .DELAY00     ; Pula se não for zero (10 ciclos se pular, 8 se não)
-01:0000007A 60CA            	   127:             jmp     next_addr
-                            	   128: 
-                            	   129: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            	   130: ; Posiociona o cursor
-                            	   131: ; Detroy: A1
-                            	   132: ; Recebe X em D0
-                            	   133: ; Recebe Y em D1
-                            	   134: SetCursor:
-01:0000007C 303C0190        	   135:         MOVE.W  #$0190,D0
-01:00000080 303C00A0        	   136:         MOVE.W  #$00A0,D0
-01:00000084 13C000FB802F    	   137:         MOVE.B  D0,REG_X_LOW
-01:0000008A E048            	   138:         LSR.W   #8,D0             ; Desloca o byte alto para a posição baixa em D0
-01:0000008C 13C000FB802D    	   139:         MOVE.B  D0,REG_X_HIGH
-01:00000092 13C100FB8033    	   140:         MOVE.B  D1,REG_Y_LOW
-01:00000098 E049            	   141:         LSR.W   #8,D1             ; Desloca o byte alto para a posição baixa em D0
-01:0000009A 13C100FB8031    	   142:         MOVE.B  D1,REG_Y_HIGH
-01:000000A0 43F900FB803D    	   143:         LEA     RUN_CMD,A1    
-01:000000A6 103C00A3        	   144:         MOVE.B  #CMD_SET_CUR_POS,D0
-01:000000AA 1280            	   145:         MOVE.B  D0,(A1);
-01:000000AC 4E75            	   146:         RTS
-                            	   147: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            	   148: ; Limpa a tela 
-                            	   149: ; Destroy: A1 = Endereço da string
-                            	   150: ; Comando em D0
-                            	   151: ClearScreen:
-01:000000AE 43F900FB803D    	   152:         LEA     RUN_CMD,A1    
-01:000000B4 103C00A4        	   153:         MOVE.B  #CMD_CLEAR_SCREEN,D0
-01:000000B8 1280            	   154:         MOVE.B  D0,(A1);
-01:000000BA 4E75            	   155:         RTS
-                            	   156: 
-                            	   157: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            	   158: ; Imprime string terminada em ZERO
-                            	   159: ; Destroy: A0 = Endereço da string
-                            	   160: PrintString:
-01:000000BC 1018            	   161:         MOVE.B  (A0)+,D0      ; Pega caractere e avança ponteiro
-01:000000BE 6704            	   162:         BEQ.S   .Done         ; Se for zero, termina
-01:000000C0 6104            	   163:         BSR.S   WriteChar     ; Chama sua função gloriosa!
-01:000000C2 60F8            	   164:         BRA.S   PrintString   ; Loop para o próximo
-                            	   165: .Done:
-01:000000C4 4E75            	   166:         RTS
+01:0000002A 60D4            	   123:         JMP     start1
+                            	   124: 
+                            	   125: 
+                            	   126: 
+                            	   127: fim:
+01:0000002C 60FE            	   128:             BRA.S   fim 
+                            	   129: 
+                            	   130: mem_test:
+01:0000002E 207C00088000    	   131:         move.l #$88000,a0           ; Inicio da RAM
+01:00000034 74104842        	   132:         move.l #$100000,d2      ; Limite de 1MB
+01:00000038 303CAA55        	   133:         move.w #$aa55,d0        ; Padrao de teste 1
+                            	   134: test_loop:
+01:0000003C 3080            	   135:         move.w d0,(a0)          ; Grava padrao 1
+01:0000003E 3210            	   136:         move.w (a0),d1          ; Le de volta
+01:00000040 B240            	   137:         cmp.w d0,d1             ; Verifica
+01:00000042 6634            	   138:         bne.s show_error        ; Se erro, desvia para tratar
+                            	   139: 
+01:00000044 43F900FB8001    	   140:         lea     $00FB8001,A1
+01:0000004A 103C0041        	   141:         move.b  #$41,D0     ; Carrega 'A' em D0
+01:0000004E 1280            	   142:         move.b  D0,(A1); Escreve no endereço do PicoVGA (LDS ativo)        
+                            	   143: 
+01:00000050 223C00000FFF    	   144:             MOVE.L  #$0000FFF,D1 ; Contador para o delay (ajuste se precisar de mais)
+                            	   145: .DELAY00:
+01:00000056 5381            	   146:             SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
+01:00000058 66FC            	   147:             BNE.S   .DELAY00     ; Pula se não for zero (10 ciclos se pular, 8 se não)
+                            	   148:             ;BRA.S   MAIN_ROM    
+                            	   149: 
+                            	   150: next_addr:
+01:0000005A 5488            	   151:         addq.l #2,a0            ; Proxima word (16 bits)
+01:0000005C B1C2            	   152:         cmp.l d2,a0             ; Fim da memoria?
+01:0000005E 66DC            	   153:         bne.s test_loop         ; Se nao, continua
+                            	   154:         bra end_test          ; Fim do teste total
+                            	   155: 
+                            	   156: end_test:
+01:00000060 43F900FB8001    	   157:             LEA     $00FB8001,A1
+01:00000066 103C0050        	   158:             MOVE.B  #$50,D0     ; Carrega 'A' em D0
+01:0000006A 1280            	   159:             MOVE.B  D0,(A1); Escreve no endereço do PicoVGA (LDS ativo)
+                            	   160: 
+01:0000006C 223C00000FFF    	   161:             MOVE.L  #$0000FFF,D1 ; Contador para o delay (ajuste se precisar de mais)
+                            	   162: .DELAY00:
+01:00000072 5381            	   163:             SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
+01:00000074 66FC            	   164:             BNE.S   .DELAY00     ; Pula se não for zero (10 ciclos se pular, 8 se não)
+01:00000076 60E8            	   165:             bra.s   end_test    
+                            	   166: 
                             	   167: 
-                            	   168: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            	   169: ; Escreve um caractere no picoVGA
-                            	   170: ; Destroy: A1,D1
-                            	   171: WriteChar:
-01:000000C6 43F900FB8001    	   172:             LEA     WRITE_SCREEN,A1
-01:000000CC 1280            	   173:             MOVE.B  D0,(A1); Escreve no endereço do PicoVGA (LDS ativo)
-                            	   174: 
-01:000000CE 223C000000FF    	   175:             MOVE.L  #$FF,D1 ; Contador para o delay (ajuste se precisar de mais)
-                            	   176: .DELAY00:
-01:000000D4 5381            	   177:             SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
-01:000000D6 66FC            	   178:             BNE.S   .DELAY00     ; Pula se não for zero (10 ciclos se pular, 8 se não)
-01:000000D8 4E75            	   179:             RTS
-                            	   180: 
-                            	   181: ; ----------------------------------------------------------------------
-                            	   182: ; PrintHexAddress - Imprime endereço de 32 bits
-                            	   183: ; Entrada: D0 = endereço
-                            	   184: ; ----------------------------------------------------------------------
-                            	   185: PrintHexAddress:
-01:000000DA 4840            	   186:         SWAP    D0                ; Imprime parte alta primeiro
-01:000000DC 6102            	   187:         JSR     PrintWordHex
-01:000000DE 4840            	   188:         SWAP    D0                ; Parte baixa
-                            	   189:         ; Continua para PrintWordHex
-                            	   190: 
-                            	   191: ; ----------------------------------------------------------------------
-                            	   192: ; PrintWordHex - Imprime word em hex (16 bits)
-                            	   193: ; Entrada: D0.w = valor
-                            	   194: ; ----------------------------------------------------------------------
-                            	   195: PrintWordHex:
-01:000000E0 E158            	   196:         ROL.W   #8,D0             ; Byte mais significativo primeiro
-01:000000E2 6102            	   197:         JSR     PrintByteHex
-01:000000E4 E058            	   198:         ROR.W   #8,D0             ; Byte menos significativo
-                            	   199:         ; Continua para PrintByteHex
-                            	   200: 
-                            	   201: ; ----------------------------------------------------------------------
-                            	   202: ; PrintByteHex - Imprime byte em hex (8 bits)
-                            	   203: ; Entrada: D0.b = valor
-                            	   204: ; ----------------------------------------------------------------------
-                            	   205: PrintByteHex:
-01:000000E6 1F00            	   206:         MOVE.B  D0,-(SP)          ; Salva byte original
-01:000000E8 E808            	   207:         LSR.B   #4,D0             ; Nibble alto
-01:000000EA 6106            	   208:         BSR     PrintNibble
-01:000000EC 101F            	   209:         MOVE.B  (SP)+,D0          ; Recupera byte
-01:000000EE 0200000F        	   210:         ANDI.B  #$0F,D0           ; Nibble baixo
-                            	   211:         ; Continua para PrintNibble
-                            	   212: ; ----------------------------------------------------------------------
-                            	   213: ; PrintNibble - Imprime um nibble em hex
-                            	   214: ; Entrada: D0.b bits 3-0 = nibble (0-15)
-                            	   215: ; ----------------------------------------------------------------------
-                            	   216: PrintNibble:
-01:000000F2 B03C0009        	   217:         CMP.B   #9,D0
-01:000000F6 6302            	   218:         BLS     .Decimal
-01:000000F8 5E00            	   219:         ADD.B   #7,D0             ; Ajuste para A-F
-                            	   220: .Decimal:
-01:000000FA D03C0030        	   221:         ADD.B   #'0',D0
-01:000000FE 60C6            	   222:         JMP     WriteChar    ; Usa JMP para tail call optimization
-                            	   223: 
+                            	   168: show_error:
+01:00000078 43F900FB8001    	   169:             LEA     $00FB8001,A1
+01:0000007E 103C0045        	   170:             MOVE.B  #$45,D0     ; Carrega 'A' em D0
+01:00000082 1280            	   171:             MOVE.B  D0,(A1); Escreve no endereço do PicoVGA (LDS ativo)
+                            	   172: 
+01:00000084 223C00000FFF    	   173:             MOVE.L  #$0000FFF,D1 ; Contador para o delay (ajuste se precisar de mais)
+                            	   174: .DELAY00:
+01:0000008A 5381            	   175:             SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
+01:0000008C 66FC            	   176:             BNE.S   .DELAY00     ; Pula se não for zero (10 ciclos se pular, 8 se não)
+01:0000008E 60CA            	   177:             jmp     next_addr
+                            	   178: 
+                            	   179: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	   180: ; Posiociona o cursor
+                            	   181: ; Detroy: A1
+                            	   182: ; Recebe X em D0
+                            	   183: ; Recebe Y em D1
+                            	   184: SetCursor:
+01:00000090 303C0190        	   185:         MOVE.W  #$0190,D0
+01:00000094 303C00A0        	   186:         MOVE.W  #$00A0,D0
+01:00000098 13C000FB802F    	   187:         MOVE.B  D0,REG_X_LOW
+01:0000009E E048            	   188:         LSR.W   #8,D0             ; Desloca o byte alto para a posição baixa em D0
+01:000000A0 13C000FB802D    	   189:         MOVE.B  D0,REG_X_HIGH
+01:000000A6 13C100FB8033    	   190:         MOVE.B  D1,REG_Y_LOW
+01:000000AC E049            	   191:         LSR.W   #8,D1             ; Desloca o byte alto para a posição baixa em D0
+01:000000AE 13C100FB8031    	   192:         MOVE.B  D1,REG_Y_HIGH
+01:000000B4 43F900FB803D    	   193:         LEA     RUN_CMD,A1    
+01:000000BA 103C00A3        	   194:         MOVE.B  #CMD_SET_CUR_POS,D0
+01:000000BE 1280            	   195:         MOVE.B  D0,(A1);
+01:000000C0 4E75            	   196:         RTS
+                            	   197: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	   198: ; Limpa a tela 
+                            	   199: ; Destroy: A1 = Endereço da string
+                            	   200: ; Comando em D0
+                            	   201: ClearScreen:
+01:000000C2 43F900FB803D    	   202:         LEA     RUN_CMD,A1    
+01:000000C8 103C00A4        	   203:         MOVE.B  #CMD_CLEAR_SCREEN,D0
+01:000000CC 1280            	   204:         MOVE.B  D0,(A1);
+01:000000CE 4E75            	   205:         RTS
+                            	   206: 
+                            	   207: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	   208: ; Imprime string terminada em ZERO
+                            	   209: ; Destroy: A0 = Endereço da string
+                            	   210: PrintString:
+01:000000D0 1018            	   211:         MOVE.B  (A0)+,D0      ; Pega caractere e avança ponteiro
+01:000000D2 6704            	   212:         BEQ.S   .Done         ; Se for zero, termina
+01:000000D4 6104            	   213:         BSR.S   WriteChar     ; Chama sua função gloriosa!
+01:000000D6 60F8            	   214:         BRA.S   PrintString   ; Loop para o próximo
+                            	   215: .Done:
+01:000000D8 4E75            	   216:         RTS
+                            	   217: 
+                            	   218: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	   219: ; Escreve um caractere no picoVGA
+                            	   220: ; Destroy: A1,D1
+                            	   221: WriteChar:
+01:000000DA 43F900FB8001    	   222:             LEA     WRITE_SCREEN,A1
+01:000000E0 1280            	   223:             MOVE.B  D0,(A1); Escreve no endereço do PicoVGA (LDS ativo)
                             	   224: 
-                            	   225: 
-                            	   226: 
-                            	   227: 
-                            	   228: ;;newtest_loop:
-                            	   229: ;;        move.w d0,(a0)          ; Grava padrao 1
-                            	   230: ;;        move.w (a0),d1          ; Le de volta
-                            	   231: ;;        cmp.w d0,d1             ; Verifica
-                            	   232: ;;        bne.s show_error        
-                            	   233: ;;
-                            	   234: ;;        ; --- NOVO: Feedback Visual Econômico ---
-                            	   235: ;;        move.l a0,d3           ; Copia endereço atual
-                            	   236: ;;        and.l  #$3FFF,d3       ; Mascara para 16KB (0x3FFF)
-                            	   237: ;;        bne.s  newnext_addr        ; Se não for múltiplo de 16KB, pula a impressão
-                            	   238: ;;        
-                            	   239: ;;        lea    $00FB8001,A1
-                            	   240: ;;        move.b #$2E,D0          ; Imprime um ponto '.' em vez de 'A'
-                            	   241: ;;        move.b D0,(A1)
-                            	   242: ;;        ; ---------------------------------------
-                            	   243: ;;
-                            	   244: ;;newnext_addr:
-                            	   245: ;;        addq.l #2,a0
-                            	   246: 
-                            	   247: 
-                            	   248: 
-                            	   249: 
-                            	   250: MSGINIT:
-01:00000100 0D              	   251:     DC.B    13,10,"Orion68k - copyright (C) pdsilva(pgordao).V1.0",13,10,0            
-01:00000101 0A
-01:00000102 4F72696F6E36386B
-01:0000010A 202D20636F707972
-01:00000112 6967687420284329
-01:0000011A 20706473696C7661
-01:00000122 2870676F7264616F
-01:0000012A 292E56312E30
-01:00000130 0D
-01:00000131 0A
-01:00000132 00
-                            	   252: 
-                            	   253: 
-                            	   254: 
+01:000000E2 223C000000FF    	   225:             MOVE.L  #$FF,D1 ; Contador para o delay (ajuste se precisar de mais)
+                            	   226: .DELAY00:
+01:000000E8 5381            	   227:             SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
+01:000000EA 66FC            	   228:             BNE.S   .DELAY00     ; Pula se não for zero (10 ciclos se pular, 8 se não)
+01:000000EC 4E75            	   229:             RTS
+                            	   230: 
+                            	   231: ; ----------------------------------------------------------------------
+                            	   232: ; PrintHexAddress - Imprime endereço de 32 bits
+                            	   233: ; Entrada: D0 = endereço
+                            	   234: ; ----------------------------------------------------------------------
+                            	   235: PrintHexAddress:
+01:000000EE 4840            	   236:         SWAP    D0                ; Imprime parte alta primeiro
+01:000000F0 6102            	   237:         JSR     PrintWordHex
+01:000000F2 4840            	   238:         SWAP    D0                ; Parte baixa
+                            	   239:         ; Continua para PrintWordHex
+                            	   240: 
+                            	   241: ; ----------------------------------------------------------------------
+                            	   242: ; PrintWordHex - Imprime word em hex (16 bits)
+                            	   243: ; Entrada: D0.w = valor
+                            	   244: ; ----------------------------------------------------------------------
+                            	   245: PrintWordHex:
+01:000000F4 E158            	   246:         ROL.W   #8,D0             ; Byte mais significativo primeiro
+01:000000F6 6102            	   247:         JSR     PrintByteHex
+01:000000F8 E058            	   248:         ROR.W   #8,D0             ; Byte menos significativo
+                            	   249:         ; Continua para PrintByteHex
+                            	   250: 
+                            	   251: ; ----------------------------------------------------------------------
+                            	   252: ; PrintByteHex - Imprime byte em hex (8 bits)
+                            	   253: ; Entrada: D0.b = valor
+                            	   254: ; ----------------------------------------------------------------------
+                            	   255: PrintByteHex:
+01:000000FA 1F00            	   256:         MOVE.B  D0,-(SP)          ; Salva byte original
+01:000000FC E808            	   257:         LSR.B   #4,D0             ; Nibble alto
+01:000000FE 6106            	   258:         BSR     PrintNibble
+01:00000100 101F            	   259:         MOVE.B  (SP)+,D0          ; Recupera byte
+01:00000102 0200000F        	   260:         ANDI.B  #$0F,D0           ; Nibble baixo
+                            	   261:         ; Continua para PrintNibble
+                            	   262: ; ----------------------------------------------------------------------
+                            	   263: ; PrintNibble - Imprime um nibble em hex
+                            	   264: ; Entrada: D0.b bits 3-0 = nibble (0-15)
+                            	   265: ; ----------------------------------------------------------------------
+                            	   266: PrintNibble:
+01:00000106 B03C0009        	   267:         CMP.B   #9,D0
+01:0000010A 6302            	   268:         BLS     .Decimal
+01:0000010C 5E00            	   269:         ADD.B   #7,D0             ; Ajuste para A-F
+                            	   270: .Decimal:
+01:0000010E D03C0030        	   271:         ADD.B   #'0',D0
+01:00000112 60C6            	   272:         JMP     WriteChar    ; Usa JMP para tail call optimization
+                            	   273: 
+                            	   274: UART_Init:
+01:00000114 43F900F00100    	   275:         lea     $F00100,A1
+                            	   276:         ;move.b  #%00001101,FCR(A1)    ; enable FIFO
+01:0000011A 137C00800007    	   277:         move.b  #%10000000,LCR(A1)    ;DLAB=1
+01:00000120 137C00080001    	   278:         move.b  #B115200L,DLL(A1)     ; set divisor latch low byte
+01:00000126 137C00000003    	   279:         move.b  #B115200H,DLM(A1)     ; set divisor latch high byte
+01:0000012C 137C00030007    	   280:         move.b  #%00000011,LCR(A1)    ; 8 data bits, no parity, 1 stop bit, DLAB=0 
+01:00000132 4229000F        	   281:         clr.b   SCR(A1)               ; clear the scratch register
+01:00000136 4E75            	   282:         RTS
+                            	   283: ; Escreve caractere (D0.B)
+                            	   284: UART_WriteChar:
+01:00000138 2F09            	   285:         move.l  A1,-(SP)        ; Preserva A1
+01:0000013A 2F00            	   286:         move.l  D0,-(SP)        ; Preserva D0
+01:0000013C 2F01            	   287:         move.l  D1,-(SP)        ; Preserva D0
+01:0000013E 43F900F00100    	   288:         lea     $F00100,A1
+                            	   289: .WaitTx:
+01:00000144 1229000B        	   290:         move.b  LSR(A1),D1
+01:00000148 08010005        	   291:         btst    #5,D1           ; wait until transmit holding register is empty
+01:0000014C 67F6            	   292:         beq     .WaitTx
+01:0000014E 13400001        	   293:         move.B  D0,THR(A1)      ; transmit byte
+01:00000152 221F            	   294:         move.L  (SP)+,D1        ;Restaura D0
+01:00000154 201F            	   295:         move.L  (SP)+,D0        ;Restaura D0
+01:00000156 225F            	   296:         move.L  (SP)+,A1        ;Restaura A1
+01:00000158 4E75            	   297:         RTS
+                            	   298: ; Lê caractere (retorna em D0)
+                            	   299: UART_ReadChar:
+01:0000015A 2F09            	   300:         move.L  A1,-(SP)        ; Preserva A1
+01:0000015C 43F900F00100    	   301:         lea     $F00100,A1
+                            	   302: .WaitRx:
+01:00000162 08290000000B    	   303:         BTST    #0,LSR(A1)        ; RX ready?
+01:00000168 67F8            	   304:         beq     .WaitRx
+01:0000016A 10290001        	   305:         move.B  RHR(A1),D0
+01:0000016E 225F            	   306:         move.L  (SP)+,A1        ;Restaura A1
+01:00000170 B03C001B        	   307:         CMP.B   #$1b,D0
+01:00000174 6702            	   308:         beq     .fim
+01:00000176 61C0            	   309:         JSR     UART_WriteChar
+                            	   310: .fim
+01:00000178 4E75            	   311:         RTS
+                            	   312: 
+                            	   313: 
+                            	   314: 
+                            	   315: ;;newtest_loop:
+                            	   316: ;;        move.w d0,(a0)          ; Grava padrao 1
+                            	   317: ;;        move.w (a0),d1          ; Le de volta
+                            	   318: ;;        cmp.w d0,d1             ; Verifica
+                            	   319: ;;        bne.s show_error        
+                            	   320: ;;
+                            	   321: ;;        ; --- NOVO: Feedback Visual Econômico ---
+                            	   322: ;;        move.l a0,d3           ; Copia endereço atual
+                            	   323: ;;        and.l  #$3FFF,d3       ; Mascara para 16KB (0x3FFF)
+                            	   324: ;;        bne.s  newnext_addr        ; Se não for múltiplo de 16KB, pula a impressão
+                            	   325: ;;        
+                            	   326: ;;        lea    $00FB8001,A1
+                            	   327: ;;        move.b #$2E,D0          ; Imprime um ponto '.' em vez de 'A'
+                            	   328: ;;        move.b D0,(A1)
+                            	   329: ;;        ; ---------------------------------------
+                            	   330: ;;
+                            	   331: ;;newnext_addr:
+                            	   332: ;;        addq.l #2,a0
+                            	   333: 
+                            	   334: 
+                            	   335: 
+                            	   336: 
+                            	   337: MSGINIT:
+01:0000017A 0D              	   338:     DC.B    13,10,"Orion68k - copyright (C) pdsilva(pgordao).V1.0",13,10,0            
+01:0000017B 0A
+01:0000017C 4F72696F6E36386B
+01:00000184 202D20636F707972
+01:0000018C 6967687420284329
+01:00000194 20706473696C7661
+01:0000019C 2870676F7264616F
+01:000001A4 292E56312E30
+01:000001AA 0D
+01:000001AB 0A
+01:000001AC 00
+                            	   339: 
+                            	   340: 
+                            	   341: 
 
 
 Symbols by name:
+B115200H                         E:00000000
+B115200L                         E:00000008
 CMD_CLEAR_SCREEN                 E:000000A4
 CMD_SET_CUR_POS                  E:000000A3
-ClearScreen                     01:000000AE
-MSGINIT                         01:00000100
-PrintByteHex                    01:000000E6
-PrintHexAddress                 01:000000DA
-PrintNibble                     01:000000F2
-PrintString                     01:000000BC
-PrintWordHex                    01:000000E0
+ClearScreen                     01:000000C2
+DLL                              E:00000001
+DLM                              E:00000003
+ISR                              E:00000005
+LCR                              E:00000007
+LSR                              E:0000000B
+MSGINIT                         01:0000017A
+PrintByteHex                    01:000000FA
+PrintHexAddress                 01:000000EE
+PrintNibble                     01:00000106
+PrintString                     01:000000D0
+PrintWordHex                    01:000000F4
 REG_X_HIGH                       E:00FB802D
 REG_X_LOW                        E:00FB802F
 REG_Y_HIGH                       E:00FB8031
 REG_Y_LOW                        E:00FB8033
+RHR                              E:00000001
 RUN_CMD                          E:00FB803D
+SCR                              E:0000000F
+SPR                              E:0000000F
 START                            A:00000400
-SetCursor                       01:0000007C
+SetCursor                       01:00000090
+THR                              E:00000001
+UART_Init                       01:00000114
+UART_ReadChar                   01:0000015A
+UART_WriteChar                  01:00000138
 WRITE_SCREEN                     E:00FB8001
-WriteChar                       01:000000C6
-end_test                        01:0000004C
-fim                             01:00000018
-mem_test                        01:0000001A
-next_addr                       01:00000046
-show_error                      01:00000064
-start                           01:00000000
-test_loop                       01:00000028
+WriteChar                       01:000000DA
+end_test                        01:00000060
+fim                             01:0000002C
+mem_test                        01:0000002E
+next_addr                       01:0000005A
+show_error                      01:00000078
+start1                          01:00000000
+test_loop                       01:0000003C
 
 Symbols by value:
-00000000 start
-00000018 fim
-0000001A mem_test
-00000028 test_loop
-00000046 next_addr
-0000004C end_test
-00000064 show_error
-0000007C SetCursor
+00000000 B115200H
+00000000 start1
+00000001 DLL
+00000001 RHR
+00000001 THR
+00000003 DLM
+00000005 ISR
+00000007 LCR
+00000008 B115200L
+0000000B LSR
+0000000F SCR
+0000000F SPR
+0000002C fim
+0000002E mem_test
+0000003C test_loop
+0000005A next_addr
+00000060 end_test
+00000078 show_error
+00000090 SetCursor
 000000A3 CMD_SET_CUR_POS
 000000A4 CMD_CLEAR_SCREEN
-000000AE ClearScreen
-000000BC PrintString
-000000C6 WriteChar
-000000DA PrintHexAddress
-000000E0 PrintWordHex
-000000E6 PrintByteHex
-000000F2 PrintNibble
-00000100 MSGINIT
+000000C2 ClearScreen
+000000D0 PrintString
+000000DA WriteChar
+000000EE PrintHexAddress
+000000F4 PrintWordHex
+000000FA PrintByteHex
+00000106 PrintNibble
+00000114 UART_Init
+00000138 UART_WriteChar
+0000015A UART_ReadChar
+0000017A MSGINIT
 00000400 START
 00FB8001 WRITE_SCREEN
 00FB802D REG_X_HIGH

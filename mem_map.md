@@ -8,7 +8,7 @@ Orion68 Memory Map (Initial)
 100000 – 1FFFFF   SRAM 1 MB
 200000 – DFFFFF   Expansion space (memory boards)
 
-A23 A22 A21 A20   = 0xE = ROM_CS
+A23 A22 A21 A20   = 0xF = ROM_CS
 
 E00000 - EFFFFF   Espelhamento da ROM 128K 1MB de espaço
 
@@ -18,8 +18,6 @@ F00000 – FFFFFF   I/O space
                   Serial ports
                   Video interface
                   Future peripherals
-
-
 
 # I/O mapeado                  
 
