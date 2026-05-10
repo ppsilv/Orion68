@@ -3,15 +3,20 @@ CHIP_U304
 
 ;Pinagem
 ; 1  2   3   4   5   6   7    8   9    10
-A15 A16 A17 A18 A19 LDS CPUWR AS A23 GND
+A15 A16 A17 A18 A19 LDS CPUWR AS IOCS GND
 ;11  12  13  14  15  16  17   18  19   20
- EN A20 A21 A22  NC  NC  NC   NC  Y1  VCC
+ EN A14 A13 A12  NC  Y4  Y3   Y2  Y1  VCC
 
 
+;FF8
+!Y1 =  !AS * !LDS * !CPUWR * !IOCS * A19 * A18 * A17 * A16 * A15 * !A14 * !A13 * !A12
+;FF9
+!Y2 =  !AS * !LDS * !CPUWR * !IOCS * A19 * A18 * A17 * A16 * A15 * !A14 * !A13 *  A12
+;FFA
+!Y3 =  !AS * !LDS * !CPUWR * !IOCS * A19 * A18 * A17 * A16 * A15 * !A14 *  A13 * !A12
+;FFB
+!Y4 =  !AS * !LDS * !CPUWR * !IOCS * A19 * A18 * A17 * A16 * A15 * !A14 *  A13 *  A12
 
-!Y1 =  !AS * !LDS * !CPUWR * A23 * A22 * A21 * A20 * A19 * !A18 * A17 * A16 * A15
-;                              1     1     1     1     1      0     1     1     1
-;                                                F                        B     8
 DESCRIPTION
 Modo simple.
 
@@ -19,8 +24,16 @@ Sintese
 galasm picoVGA_U304.pld
 
 Gravar
-minipro -p GAL16V8 -w picoVGA_U304.jed
+minipro -p GAL16V8D -w picoVGA_U304.jed
 
 23 22 21 20  19 18 17 16  15 14 13 12  11 10 09 08  07 06 05 04  03 02 01 00
- 1  1  1  1   1  0  1  1   1  0  0  0   0  0  0  0   0  0  0  0   0  0  0  0
- F            B            8            0            0            0
+ 1  1  1  1   1  1  1  1   1  0  0  0   0  0  0  0   0  0  0  0   0  0  0  0
+ F            F            8            0            0            0
+ 1  1  1  1   1  1  1  1   1  0  0  1   0  0  0  0   0  0  0  0   0  0  0  0
+ F            F            9            0            0            0
+ 1  1  1  1   1  1  1  1   1  0  1  0   0  0  0  0   0  0  0  0   0  0  0  0
+ F            F            A            0            0            0
+ 1  1  1  1   1  1  1  1   1  0  1  1   0  0  0  0   0  0  0  0   0  0  0  0
+ F            F            B            0            0            0
+
+
