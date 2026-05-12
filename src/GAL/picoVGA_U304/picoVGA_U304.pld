@@ -2,20 +2,20 @@ GAL16V8
 CHIP_U304
 
 ;Pinagem
-; 1  2   3   4   5   6   7    8   9    10
-A15 A16 A17 A18 A19 LDS CPUWR AS IOCS GND
+; 1  2   3   4   5     6   7    8   9    10
+A15 A10 A09 A08 IOCS1 A11 IOWR  AS IOCS GND
 ;11  12  13  14  15  16  17   18  19   20
- EN A14 A13 A12  NC  Y4  Y3   Y2  Y1  VCC
+A14  NC A13 A12  NC  Y4  Y3   Y2  Y1  VCC
 
 
-;FF8
-!Y1 =  !AS * !LDS * !CPUWR * !IOCS * A19 * A18 * A17 * A16 * A15 * !A14 * !A13 * !A12
-;FF9
-!Y2 =  !AS * !LDS * !CPUWR * !IOCS * A19 * A18 * A17 * A16 * A15 * !A14 * !A13 *  A12
-;FFA
-!Y3 =  !AS * !LDS * !CPUWR * !IOCS * A19 * A18 * A17 * A16 * A15 * !A14 *  A13 * !A12
-;FFB
-!Y4 =  !AS * !LDS * !CPUWR * !IOCS * A19 * A18 * A17 * A16 * A15 * !A14 *  A13 *  A12
+;FF80
+!Y1 =  !IOWR * !IOCS * !IOCS1 * A15 * !A14 * !A13 * !A12 * !A11 * !A10 * !A09 * !A08
+;FF91
+!Y2 =  !IOWR * !IOCS * !IOCS1 * A15 * !A14 * !A13 *  A12 * !A11 * !A10 * !A09 *  A08
+;FFA0
+!Y3 =  !IOWR * !IOCS * !IOCS1 * A15 * !A14 *  A13 * !A12 * !A11 * !A10 * !A09 * !A08
+;FFB0
+!Y4 =  !IOWR * !IOCS * !IOCS1 * A15 * !A14 *  A13 *  A12 * !A11 * !A10 * !A09 * !A08
 
 DESCRIPTION
 Modo simple.
@@ -36,4 +36,11 @@ minipro -p GAL16V8D -w picoVGA_U304.jed
  1  1  1  1   1  1  1  1   1  0  1  1   0  0  0  0   0  0  0  0   0  0  0  0
  F            F            B            0            0            0
 
-
+;FF8
+!Y1 =  !AS * !LDS * !CPUWR * !IOCS * A19 * A18 * A17 * A16 * A15 * !A14 * !A13 * !A12
+;FF9
+!Y2 =  !AS * !LDS * !CPUWR * !IOCS * A19 * A18 * A17 * A16 * A15 * !A14 * !A13 *  A12
+;FFA
+!Y3 =  !AS * !LDS * !CPUWR * !IOCS * A19 * A18 * A17 * A16 * A15 * !A14 *  A13 * !A12
+;FFB
+!Y4 =  !AS * !LDS * !CPUWR * !IOCS * A19 * A18 * A17 * A16 * A15 * !A14 *  A13 *  A12

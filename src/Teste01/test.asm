@@ -49,18 +49,18 @@ CMD_GO_HOME       equ  $A1
 
 ;Uart register offsets
 UART_BASE   equ         $FF9100
-RHR         equ     $FF9101   ; receive holding register (read)
-THR         equ     $FF9101   ; transmit holding register (write)
-IER         equ     $FF9103   ; interrupt enable register
-ISR         equ     $FF9105   ; interrupt status register (read)
-FCR         equ     $FF9105   ; FIFO control register (write)
-LCR         equ     $FF9107   ; line control register
-MCR         equ     $FF9109   ; modem control register
-LSR         equ     $FF910B   ; line status register
-MSR         equ     $FF910D   ; modem status register
-SPR         equ     $FF910F   ; scratchpad register (reserved for system use)
-DLL         equ     $FF9101   ; divisor latch LSB
-DLM         equ     $FF9103   ; divisor latch MSB
+RHR         equ     $FF4001   ; receive holding register (read)
+THR         equ     $FF4001   ; transmit holding register (write)
+IER         equ     $FF4003   ; interrupt enable register
+ISR         equ     $FF4005   ; interrupt status register (read)
+FCR         equ     $FF4005   ; FIFO control register (write)
+LCR         equ     $FF4007   ; line control register
+MCR         equ     $FF4009   ; modem control register
+LSR         equ     $FF400B   ; line status register
+MSR         equ     $FF400D   ; modem status register
+SPR         equ     $FF400F   ; scratchpad register (reserved for system use)
+DLL         equ     $FF4001   ; divisor latch LSB
+DLM         equ     $FF4003   ; divisor latch MSB
 ; aliases for register names (used by different manufacturers)cd ..
 RBR         equ     RHR ; receive buffer register
 IIR         equ     ISR ; interrupt identification register
@@ -84,36 +84,115 @@ B230400H    equ         $00
 B460800H    equ         $00
 B921600H    equ         $00
 
+            SECTION .text  
 
 START:
             MOVE.W  #$2700,SR
             LEA     $FFFF0,SP ; Garante o Stack Pointer (se o hardware não carregou)
 
             MOVE.L  #$00000000,D4
-            JSR     UART_Init
-            JMP     start1
-            SECTION .text  
-            
-start1:
+
+mainLoop:
+
         JSR     ClearScreen
         LEA     MSGINIT,A0
         JSR     PrintString
+subLoop:        
         JSR     SetCursor
         MOVE.L  D4,D0
         JSR     PrintHexAddress
         ADDQ    #1,D4
-
-        move.b  #$49,D0
-        JSR     UART_WriteChar
 
         MOVE.L  #$001FFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
 .DELAY01:
         SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
         BNE.S   .DELAY01     ; Pula se não for zero (10 ciclos se pular, 8 se não)
 
-        JMP     start1
+        JMP     subLoop
+
+            JSR     UART_Init
+            JSR     UART_Init
+            move.l  #$00000002,D3    
 
 
+
+
+        move.b  #$0D,D0
+        move.b  LCR,D0        ; Lê de volta o que acabou de escrever        
+        JSR     WriteChar
+        move.b  #$0A,D0
+        move.b  LCR,D0        ; Lê de volta o que acabou de escrever        
+        JSR     WriteChar
+
+
+        move.b  #$83,LCR  ;DLAB=1
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        move.l  #0,D0
+        move.b  LCR,D0        ; Lê de volta o que acabou de escrever        
+        JSR     PrintHexAddress
+        move.b  #$08,DLL        ;set divisor latch low byte
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        move.b  #$00,DLM        ;set divisor latch high byte
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        nop
+        move.b  #$03,LCR  ;8 data bits, no parity, 1 stop bit, DLAB=0
+        ;move.b  #%00001101,FCR  ;enable FIFO
+        move.b  #$20,D0
+        move.l  LCR,D0        ; Lê de volta o que acabou de escrever        
+        JSR     WriteChar
+
+        move.l  #0,D0
+        move.b  LCR,D0        ; Lê de volta o que acabou de escrever        
+        JSR     PrintHexAddress
+
+mainLoop1:
+
+        ;JSR     ClearScreen
+        ;LEA     MSGINIT,A0
+        ;JSR     PrintString
+        ;JSR     SetCursor
+        ;MOVE.L  D4,D0
+        ;JSR     PrintHexAddress
+        ;ADDQ    #1,D4
+        move.b  #$39,D0
+.WaitTx:
+        move.b  LSR,D1
+        btst    #5,D1           ; wait until transmit holding register is empty
+        beq     .WaitTx
+        move.b  D0,THR          ; transmit byte
+
+        MOVE.L  #$001FFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
+.DELAY01:
+        SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
+        BNE.S   .DELAY01     ; Pula se não for zero (10 ciclos se pular, 8 se não)
+
+        JMP     mainLoop1
 
 mem_test:
         move.l #$88000,a0           ; Inicio da RAM
@@ -210,7 +289,7 @@ WriteChar:
             LEA     WRITE_SCREEN,A1
             MOVE.B  D0,(A1); Escreve no endereço do PicoVGA (LDS ativo)
 
-            MOVE.L  #$FF,D1 ; Contador para o delay (ajuste se precisar de mais)
+            MOVE.L  #$FFF,D1 ; Contador para o delay (ajuste se precisar de mais)
 .DELAY00:
             SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
             BNE.S   .DELAY00     ; Pula se não for zero (10 ciclos se pular, 8 se não)
@@ -263,12 +342,7 @@ UART_Init:
         lea     UART_BASE,A1
         move.b  #%10000011,LCR  ;(A1)    ;DLAB=1
         NOP
-        NOP
-        NOP
-        NOP
-        NOP
-        NOP
-        NOP        
+        NOP      
         move.b  #$08,DLL  ;(A1)       ; set divisor latch low byte
         move.b  #$00,DLM  ;(A1)       ; set divisor latch high byte
         move.b  #%00000011,LCR  ;(A1) ; 8 data bits, no parity, 1 stop bit, DLAB=0
@@ -277,18 +351,12 @@ UART_Init:
         RTS
 ; Escreve caractere (D0.B)
 UART_WriteChar:
-        move.l  A1,-(SP)        ; Preserva A1
-        move.l  D0,-(SP)        ; Preserva D0
-        move.l  D1,-(SP)        ; Preserva D0
         lea     UART_BASE,A1
 .WaitTx:
         move.b  LSR,D1
         btst    #5,D1           ; wait until transmit holding register is empty
         beq     .WaitTx
         move.B  D0,THR  ;(A1)      ; transmit byte
-        move.L  (SP)+,D1        ;Restaura D0
-        move.L  (SP)+,D0        ;Restaura D0
-        move.L  (SP)+,A1        ;Restaura A1
         RTS
 ; Lê caractere (retorna em D0)
 UART_ReadChar:
