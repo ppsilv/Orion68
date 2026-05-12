@@ -19,29 +19,29 @@ Linker script and memory map
 .jumptable
  *(.jumptable)
 
-.text           0x00001000      0x288
+.text           0x00001000      0x214
                 0x00001000                        _start = .
  *(.text .text.*)
- .text          0x00001000      0x287 test.o
-                0x00001288                        . = ALIGN (0x2)
- *fill*         0x00001287        0x1 
-                0x00001288                        _start_end = .
+ .text          0x00001000      0x213 test.o
+                0x00001214                        . = ALIGN (0x2)
+ *fill*         0x00001213        0x1 
+                0x00001214                        _start_end = .
 
-.rodata         0x00001288        0x0
+.rodata         0x00001214        0x0
  *(.rodata .rodata.*)
-                0x00001288                        . = ALIGN (0x2)
+                0x00001214                        . = ALIGN (0x2)
 
-.data           0x00001288        0x0
-                0x00001288                        __data_load = LOADADDR (.data)
-                0x00001288                        __data_start = .
+.data           0x00001214        0x0
+                0x00001214                        __data_load = LOADADDR (.data)
+                0x00001214                        __data_start = .
  *(.data .data.*)
-                0x00001288                        . = ALIGN (0x2)
-                0x00001288                        __data_end = .
+                0x00001214                        . = ALIGN (0x2)
+                0x00001214                        __data_end = .
 
-.checksum       0x00001288        0x4
-                0x00001288                        . = ALIGN (0x2)
-                0x00001288                        __checksum_addr = .
-                0x00001288        0x4 LONG 0x0
+.checksum       0x00001214        0x4
+                0x00001214                        . = ALIGN (0x2)
+                0x00001214                        __checksum_addr = .
+                0x00001214        0x4 LONG 0x0
 
 .bss            0x00080000        0x0
                 0x00080000                        __bss_start = .

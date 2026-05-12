@@ -5,17 +5,17 @@ CHIP_U304
 ; 1  2   3   4   5     6   7    8   9    10
 A15 A10 A09 A08 IOCS1 A11 IOWR  AS IOCS GND
 ;11  12  13  14  15  16  17   18  19   20
-A14  NC A13 A12  NC  Y4  Y3   Y2  Y1  VCC
+A14  UDS A13 A12  NC  Y4  Y3   Y2  Y1  VCC
 
 
 ;FF80
-!Y1 =  !IOWR * !IOCS * !IOCS1 * A15 * !A14 * !A13 * !A12 * !A11 * !A10 * !A09 * !A08
-;FF91
-!Y2 =  !IOWR * !IOCS * !IOCS1 * A15 * !A14 * !A13 *  A12 * !A11 * !A10 * !A09 *  A08
-;FFA0
-!Y3 =  !IOWR * !IOCS * !IOCS1 * A15 * !A14 *  A13 * !A12 * !A11 * !A10 * !A09 * !A08
-;FFB0
-!Y4 =  !IOWR * !IOCS * !IOCS1 * A15 * !A14 *  A13 *  A12 * !A11 * !A10 * !A09 * !A08
+!Y1 = !AS * !IOWR * !IOCS * !IOCS1 * A15 * !A14 * !A13 * !A12 * !A11 * !A10 * !A09 * !A08
+;;FF91
+;;!Y2 =  !IOWR * !IOCS * !IOCS1 * A15 * !A14 * !A13 *  A12 * !A11 * !A10 * !A09 *  A08
+;;FFA0
+;;!Y3 =  !IOWR * !IOCS * !IOCS1 * A15 * !A14 *  A13 * !A12 * !A11 * !A10 * !A09 * !A08
+;;FFB0
+;;!Y4 =  !IOWR * !IOCS * !IOCS1 * A15 * !A14 *  A13 *  A12 * !A11 * !A10 * !A09 * !A08
 
 DESCRIPTION
 Modo simple.
