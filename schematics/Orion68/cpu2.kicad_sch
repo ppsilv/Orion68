@@ -13845,7 +13845,7 @@
 		(uuid "475dbd7d-f363-4a29-b96c-9ec534831e8f")
 	)
 	(label "{slash}memrd"
-		(at 265.43 63.5 0)
+		(at 264.16 63.5 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14048,7 +14048,7 @@
 		(uuid "618c9a77-104a-4bf7-9847-517cfbf7c4e5")
 	)
 	(label "{slash}memwr"
-		(at 265.43 66.04 0)
+		(at 264.16 66.04 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14704,7 +14704,7 @@
 		(uuid "afb2f826-3386-4fed-a745-f04ee200294a")
 	)
 	(label "{slash}iowr"
-		(at 265.43 68.58 0)
+		(at 264.16 68.58 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14929,7 +14929,7 @@
 		(uuid "cc9347c3-6a59-4ef4-b52d-b075f9140f07")
 	)
 	(label "{slash}iord"
-		(at 265.43 60.96 0)
+		(at 264.16 60.96 0)
 		(effects
 			(font
 				(size 1.27 1.27)

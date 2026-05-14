@@ -91,7 +91,6 @@ START:
             LEA     $FFFF0,SP ; Garante o Stack Pointer (se o hardware não carregou)
 
             MOVE.L  #$00000000,D4
-            JSR     UART_Init
 
 mainLoop:
 
@@ -103,13 +102,7 @@ mainLoop:
         JSR     PrintHexAddress
         ADDQ    #1,D4
         JSR     UART_Init
-        JSR     UART_Init
-        JSR     UART_Init
-        JSR     UART_Init
-        JSR     UART_Init
-        JSR     UART_Init
-        JSR     UART_Init
-        JSR     UART_Init
+
 subLoop:        
         move.b  #$41,D0
         JSR     UART_WriteChar
