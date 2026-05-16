@@ -1,0 +1,10 @@
+# Hashes of file build rules.
+f9b9e559299833dc6e1662c4f1d13dc5 pico-sdk/src/rp2350/boot_stage2/bs2_default.bin
+e5a2ef2353a3cf3be915f75ed94291b4 pico-sdk/src/rp2350/boot_stage2/bs2_default_padded_checksummed.S
+ecb949a982e81549a1034460e9d3e33b vga320p_hsync.pio.h
+d8c50a1daf9bd6e57028963b383408d5 vga320p_rgb.pio.h
+e0d547d920c3e01f17f24114a3e70040 vga320p_vsync.pio.h
+a97ca45062add01fc4ca9459f6235cfc vga640p_hsync.pio.h
+4557e37e30f7e6f333d83be9000b83ad vga640p_rgb.pio.h
+dce14230a6fb2db107ae17ae47bfa41d vga640p_vsync.pio.h
+028329c35d47a8755c27a704d7e07966 vga_bus_read.pio.h

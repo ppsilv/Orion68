@@ -1,0 +1,29 @@
+GAL22V10
+CH376DTK
+
+CLK  AS   CSRAM CSROM CSUSB NC   NC   NC   NC   NC   NC   GND
+NC   Q0   Q1    Q2    NC    NC   NC   NC   NC   NC   DTACK VCC
+
+; No GALasm, o sinal '/' significa NOT (Ativo em Baixo)
+; O '*' é AND e o '+' é OR
+; Pinos de saída registrados (Q0, Q1, Q2) não usam ':=' na definição,
+; mas o GALasm entende que são flip-flops pela pinagem/configuração.
+
+Q0.R  = /CSUSB
+Q1.R  = Q0
+Q2.R  = Q1
+
+; O DTACK é combinacional (não registrado).
+; Ele deve ir para ZERO (Ativo) se:
+; (RAM ativa E AS ativo) OU (ROM ativa E AS ativo) OU (USB ativa E Delay Q2 E AS ativo)
+; Como a saída DTACK no pino 23 é invertida por hardware na GAL (Active Low),
+; a equação define quando o pino deve estar em nível BAIXO.
+
+/DTACK = /CSRAM * /AS 
+       + /CSROM * /AS 
+       + /CSUSB * /AS * Q2
+
+DESCRIPTION
+Gerador de Wait States para o 68000 (16MHz).
+Q0-Q2 criam o shift register de atraso para o modulo USB.
+RAM e ROM operam com 0 wait states.

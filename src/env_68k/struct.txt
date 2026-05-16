@@ -1,0 +1,44 @@
+mc68000-lib/
+├── Makefile              # ✅ Makefile PRINCIPAL da biblioteca
+├── linker.ld             # ✅ Linker script PRINCIPAL
+├── include/
+│   ├── mc68000.h
+│   ├── stdio.h
+│   ├── stdlib.h
+│   ├── string.h
+│   └── math.h
+├── src/
+│   ├── crt0.s           # ✅ Arquivo de inicialização
+│   ├── stdio/
+│   │   ├── printf.c
+│   │   ├── putchar.c
+│   │   └── gets.c
+│   ├── stdlib/
+│   │   ├── malloc.c
+│   │   ├── itoa.c
+│   │   └── atoi.c
+│   ├── string/
+│   │   ├── strlen.c
+│   │   ├── strcpy.c
+│   │   └── memcpy.c
+│   ├── math/
+│   │   ├── add.c
+│   │   ├── sub.c
+│   │   └── mul.c
+│   └── drivers/
+│       ├── serial.c
+│       ├── timer.c
+│       └── interrupt.c
+├── lib/                  # ✅ libmc68000.a
+│   └──libmc68000.a
+├── apps/                 # ✅ Diretório para aplicações
+│   │
+│   ├──hello              # ✅ Aplicação hello world
+│   │  ├──── Makefile
+│   │  └──── hello.c
+│   │
+│   └──drv8253
+│      ├──── Makefile
+│      └──── drv8253.c
+│
+└── build.sh             # ✅ Script de build opcional
