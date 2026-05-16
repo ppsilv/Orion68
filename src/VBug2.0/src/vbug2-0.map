@@ -1,0 +1,59 @@
+
+There are no discarded input sections
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+ROM              0x00000000         0x00020000         xr
+RAM              0x00080000         0x00100000         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+
+.vectors        0x00000000      0x2c0
+                0x00000000                        . = ALIGN (0x2)
+ *(.vectors)
+ .vectors       0x00000000      0x2c0 vbug2-0.o
+
+.jumptable      0x00000400        0x0
+ *(.jumptable)
+ .jumptable     0x00000400        0x0 vbug2-0.o
+
+.text           0x00001000      0x44a
+                0x00001000                        _start = .
+ *(.text .text.*)
+ .text          0x00001000      0x44a vbug2-0.o
+                0x0000144a                        . = ALIGN (0x2)
+                0x0000144a                        _start_end = .
+
+.rodata         0x0000144a        0x0
+ *(.rodata .rodata.*)
+                0x0000144a                        . = ALIGN (0x2)
+
+.data           0x0000144c      0x5e0 load address 0x0000144a
+                0x0000144a                        __data_load = LOADADDR (.data)
+                0x0000144c                        __data_start = .
+ *(.data .data.*)
+ .data          0x0000144c      0x5e0 vbug2-0.o
+                0x00001a2c                        . = ALIGN (0x2)
+                0x00001a2c                        __data_end = .
+
+.checksum       0x00001a2c        0x4 load address 0x00001a2a
+                0x00001a2c                        . = ALIGN (0x2)
+                0x00001a2c                        __checksum_addr = .
+                0x00001a2c        0x4 LONG 0x0
+
+.bss            0x00080000     0x2550
+                0x00080000                        __bss_start = .
+ *(.bss .bss.*)
+ .bss           0x00080000     0x2550 vbug2-0.o
+ *(COMMON)
+                0x00082550                        . = ALIGN (0x2)
+                0x00082550                        __bss_end = .
+
+/DISCARD/
+ *(.comment)
+ *(.note.*)
+LOAD vbug2-0.o
+OUTPUT(vbug2-0.elf elf32-m68k)
