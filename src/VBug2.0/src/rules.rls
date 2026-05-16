@@ -1,0 +1,18 @@
+Nomes para rotinas ordinárias
+    Sem underscore entre palavras
+    Inicia com maiuscula cada palavra
+    Ex. InitRamLoop:
+
+Nomes para rotinas de traps interrupts
+    Com underscore entre palavras
+    Tudo em minusculas
+    Ex: trap_cconin:
+
+Nomes para rotinas de serviços 
+    Com underscore entre palavras
+    Tudo em maiusculas
+    Ex: SERVICE_LINE_A:
+
+Nomes de equates
+    Com underscore entre palavras
+    Tudo em maiusculas

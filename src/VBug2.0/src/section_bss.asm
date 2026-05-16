@@ -9,8 +9,8 @@ ramBase             DS.L 1
 ramSize             DS.L 1
 currentUart         DS.L 1
 currentBaudRate     DS.W 1
-currentOutput       DS.L 1
-currentInput        DS.L 1
+cconout             DS.L 1
+cconin              DS.L 1
 currentTimer        DS.L 1
 ; === Buffer circular for uart (256 bytes) ===
 addressInHex        DS.L 1            ; ENDEREÇO LIDO

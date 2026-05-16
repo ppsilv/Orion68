@@ -10,14 +10,14 @@
 ; ----------------------------------------------------------------------
 MEMDUMP:
         LEA     MsgDumpHeader,A0
-        JSR     UART_WriteString
+        JSR     WriteString
         MOVE.L  (addressInHex),A0
         MOVE.L  A0,D0
         JSR     PicoPrintHexAddress
         JSR     NewLine
 
         LEA     MsgDumpHeader1,A0
-        JSR     UART_WriteString
+        JSR     WriteString
 
         MOVE.L  (addressInHex),A0
         ; Calcula endereço final
@@ -31,7 +31,7 @@ DUMPLOOPMASTER:
         ;JSR     new_line
 
         ;aguarda um caractere ser digitado mas nao usa é somente para parar a execução aqui
-        ;JSR     UART_ReadChar
+        ;JSR     ReadChar
 
 
 DumpLoop:
@@ -45,9 +45,9 @@ DumpLoop:
         JSR     PicoPrintHexAddress    ; Imprime 8 dígitos hex
 
         MOVE.B  #':',D0
-        JSR     UART_WriteChar
+        JSR     WriteChar
         MOVE.B  #' ',D0
-        JSR     UART_WriteChar
+        JSR     WriteChar
 
 NoNewLine:
         ; Imprime byte em hex
@@ -55,7 +55,7 @@ NoNewLine:
         JSR     PicoPrintByteHex
 
         MOVE.B  #' ',D0
-        JSR     UART_WriteChar
+        JSR     WriteChar
 
         ; Verifica fim da linha (16 bytes)
         MOVE.L  A0,D0
@@ -64,9 +64,9 @@ NoNewLine:
 
         ; Imprime caracteres ASCII
         MOVE.B  #' ',D0
-        JSR     UART_WriteChar
+        JSR     WriteChar
         MOVE.B  #'|',D0
-        JSR     UART_WriteChar
+        JSR     WriteChar
 
         LEA     -16(A0),A1        ; Volta ao início da linha
         MOVEQ   #15,D2            ; 16 caracteres
@@ -78,22 +78,22 @@ AsciiLoop:
         CMP.B   #126,D0
         BGT     NonPrintable
 
-        JSR     UART_WriteChar
+        JSR     WriteChar
         BRA     NextAscii
 
 NonPrintable:
         MOVE.B  #'.',D0           ; Substitui não imprimíveis
-        JSR     UART_WriteChar
+        JSR     WriteChar
 
 NextAscii:
         DBRA    D2,AsciiLoop
 
         MOVE.B  #'|',D0
-        JSR     UART_WriteChar
+        JSR     WriteChar
         MOVE.B  #13,D0            ; CR
-        JSR     UART_WriteChar
+        JSR     WriteChar
         MOVE.B  #10,D0            ; LF
-        JSR     UART_WriteChar
+        JSR     WriteChar
 
 NoEndLine:
         ; Verifica fim do dump
@@ -102,8 +102,8 @@ NoEndLine:
 
         MOVE.L  A0,-(SP)          ; Salva endereço atual
         LEA     MsgHitAnyKey,A0
-        JSR     UART_WriteString
-        JSR     UART_ReadChar
+        JSR     WriteString
+        JSR     ReadChar
         CMP.B   #$1B,D0
         BEQ     .fim
 

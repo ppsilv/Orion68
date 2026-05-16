@@ -21,6 +21,16 @@ RBR         equ         RHR ; receive buffer register
 IIR         equ         ISR ; interrupt identification register
 SCR         equ         SPR ; scratch register
 
+B009600     equ         $0060
+B019200     equ         $0030
+B038400     equ         $0018
+B057600     equ         $0010
+B115200     equ         $0008
+B230400     equ         $0004
+B460800     equ         $0002
+B921600     equ         $0001
+
+
 B009600L    equ         $60
 B019200L    equ         $30
 B038400L    equ         $18
@@ -42,10 +52,11 @@ B921600H    equ         $00
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Initialize uart
 ; Change A1
-; Parametros: D0 = baudrate number to write in DLM e DLL.
+; Parametros: none
 ; ----------------------------------------------------------------------
-UartInit:
+InitUart:
         move.l  currentUart,A1
+        move.l  currentBaudRate,D0
         move.b  #%00001101,FCR(A1)      ; enable FIFO
         move.b  #%10000011,LCR(A1)      ; 8 data bits, no parity, 1 stop bit, DLAB=1
         move.b  D0,DLL(A1)              ; Byte 0 (LSB) -> DLL

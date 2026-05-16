@@ -2,7 +2,7 @@
         ORG     $00000000
         ; --- Vetores de Exceção do 68000 ---
         DC.L    $000FFFF0         ; SP inicial
-        DC.L    vbug2_start       ; PC inicial
+        DC.L    Vbug2Start       ; PC inicial
         DC.L    SERVICE_BUS_ERR   ; Bus Error
         DC.L    SERVICE_ADDR_ERR  ; Address Error
         DC.L    SERVICE_ILLEGAL   ; Illegal Instruction
@@ -273,7 +273,11 @@ Int7Handler:
 ; Tratador para todos os outros vetores que você não mapeou individualmente ainda
 Universal_Trampoline:
         RTE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; TODO USAR TRAP1 PARA ISSO AQUI        
 WriteChar:
+        RTS
+ReadChar:
         RTS
 WriteString:
         RTS
@@ -301,7 +305,7 @@ ClearRam:
 ; =============================================================================
 ; 3. CÓDIGO DE INICIALIZAÇÃO (START)
 ; =============================================================================
-vbug2_start:
+Vbug2Start:
         ORI     #$2700,SR           ; Desabilita interrupções (M68K)
         ;MOVE.W #$2700,SR           ; Habilita interrupções
         LEA     $FFFF0,SP           ; Garante o Stack Pointer (se o hardware não carregou)
@@ -309,28 +313,47 @@ vbug2_start:
         ;É PRECISO REAVALIAR O SISTEMA DE VALIDAÇÃO
         ;JSR     VALIDATE_ROM        ; Verifica a ROM
 
-        ; Configura USP (pilha de usuário)
+        ;Set USP( user stack pointer)
         LEA     USER_SP,A0
         MOVE.L  A0,USP        ; 🔥 Define User Stack Pointe
-        ;Inicializa o tamanho das memorias
+        ;Initialize memory size
         MOVE.L  #$00000000,romBase
         MOVE.L  #$00004000,romSize
         MOVE.L  #RAMBASE,ramBase    ;Total ram 1572864 de 0x8000 até 0x180000
         MOVE.L  #RAMSIZE,ramSize
-
+        ;Initialize variables
+        MOVE.L  PicoWriteChar,A1    ; Initialize cconout console char out
+        MOVE.L  A1,cconout
+        MOVE.L  UartReadChar,A1         ; Initialize cconin console char in
+        MOVE.L  A1,cconin
+        MOVE.L  UartWriteChar,A1    ; Initialize uart output,INPUT and baud
+        MOVE.L  A1,currentUart
+        MOVE.L  #B115200,currentBaudRate
         LEA     RAM_VECTOR_BASE,A0
         MOVE.W  #15,D0                   ; Limita inicialização às 16 Traps primárias
         LEA     DefaultHandler,A1
-Init_Ram_Loop:
+
+        ;Initializations
+
+        ;Initialize picoVga
+        JSR  InitPicoVga
+        ;Initialize UART
+        JSR  InitUart   
+        ;Initialize TRAP1
+        JSR  InitTrap1
+
+InitRamLoop:
         MOVE.L  A1,(A0)+
-        DBRA    D0,Init_Ram_Loop
+        DBRA    D0,InitRamLoop
 
         ;roda um programa aqui inicialização terminada
 
-        INCLUDE "uart.asm"
-        INCLUDE "pico_vga.asm"
-        INCLUDE "mem_dump.asm"
+        INCLUDE "drv_uart.asm"
+        INCLUDE "drv_pico_vga.asm"
+        INCLUDE "cmd_mem_dump.asm"
 
+        ;ORG $00008000
+        INCLUDE "trap1.asm"
 
         INCLUDE "section_data.asm"
         INCLUDE "section_bss.asm"

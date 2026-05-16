@@ -1,19 +1,19 @@
-ORG     $00002000
+    ORG     $00008000
 
-MAIN_START:
+InitTrap1:
     ; -------------------------------------------------------------------------
     ; COMO INSTALAR NA RAM:
     ; Copiamos o endereço do nosso handler real para a posição $404 da RAM
     ; -------------------------------------------------------------------------
-    LEA     MEU_OS_TRAP1,A0             ; Pega o endereço da nossa rotina na RAM
-    MOVE.L  A0,($00000404)              ; Grava na posição da TRAP 1 na RAM!
-
+    LEA     vbug2_trap1,A0             ; Pega o endereço da nossa rotina na RAM
+    MOVE.L  A0,($00080004)              ; Grava na posição da TRAP 1 na RAM!
+    RTS
     ; A partir deste momento, qualquer instrução "TRAP #1" vai cair aqui!
     
 ; -----------------------------------------------------------------------------
 ; O SEU CÓDIGO DO TCPBOX68K (Agora rodando na RAM)
 ; -----------------------------------------------------------------------------
-MEU_OS_TRAP1:
+vbug2_trap1:
     CMP.W   #1,D0          ; Compara com CCONIN (ler caractere)
     BEQ     trap_cconin    ; Se for 1, vai para leitura
     CMP.W   #2,D0          ; Compara com CCONOUT (escrever caractere)
@@ -30,7 +30,8 @@ MEU_OS_TRAP1:
 ; Saída: D0.L - Caractere lido
 ; --------------------------------
 trap_cconin:
-    JSR         UART_ReadCharNonEcho
+    MOVE.L  (cconin),A0
+    JSR     (A0)
     ANDI.L      #$FF,D0       ; Mantém apenas o byte inferior
     RTE                   ; Retorna da exceção
 
@@ -39,18 +40,38 @@ trap_cconin:
 ; Entrada: D1.L - Caractere a escrever
 ; --------------------------------
 trap_cconout:
-    ANDI.L      #$FF,D1         ; Mantém apenas o byte inferior
-    MOVE.B      D1,D0
-    JSR         UART_WriteChar
+    MOVE.L  (cconout),A0
+    JSR     (A0)
     RTE                   ; Retorna da exceção
 
 trap_strout:
-    MOVE.B      (A0)+,D0
-    CMP.B       #0,D0
-    BEQ         .fim
-    JSR         UART_WriteChar
-    BRA         trap_strout
+    MOVE.L  (cconout),A1
+.strout:
+    MOVE.B  (A0)+,D0
+    CMP.B   #0,D0
+    BEQ     .fim
+    JSR     (A1)
+    BRA     .strout
 .fim:
     RTE
 
-    
+; --------------------------------
+; TRAP_PTERM0 - Terminar programa
+; --------------------------------
+trap_pterm0:
+    move.w  #0,d0         ; Código de saída 0
+    bsr     hardware_exit ; Chama rotina de término
+    RTE     
+
+; --------------------------------
+; hardware_exit - Terminar execução
+; Entrada: D0.W - Código de saída
+; --------------------------------
+hardware_exit:
+    ; >>> ADAPTE PARA SUA PLACA <<<
+    ; Exemplo: parar o processador
+    ; stop    #$2700
+
+    ; Exemplo simples: loop infinito
+    BRA     hardware_exit
+    RTS

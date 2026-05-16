@@ -3,6 +3,7 @@
 
 
 ;;picoVGA Register address
+PICO_BASE_ADDR equ $FF8000
 WRITE_SCREEN   equ $FF8001        ;;Endereço real  3 0x03  o pico enxerga 0x00
 REG_02         equ $FF8003        ;;Endereço real  3 0x03  o pico enxerga 0x01
 REG_03         equ $FF8005        ;;Endereço real  5 0x05  o pico enxerga 0x02
@@ -11,6 +12,7 @@ CONFIG_REG     equ $FF8009        ;;Endereço real  9 0x09  o pico enxerga 0x04
 REG_06         equ $FF800B        ;;Endereço real 11 0x0b  o pico enxerga 0x05
 REG_07         equ $FF800D        ;;Endereço real 13 0x0d  o pico enxerga 0x06
 REG_08         equ $FF800F        ;;Endereço real 15 0x0f  o pico enxerga 0x07
+;Begin Register for reads
 REG_09         equ $FF8011        ;;Endereço real 17 0x11  o pico enxerga 0x08
 REG_0A         equ $FF8013        ;;Endereço real 19 0x13  o pico enxerga 0x09
 REG_0B         equ $FF8015        ;;Endereço real 21 0x15  o pico enxerga 0x0A
@@ -19,6 +21,7 @@ REG_0D         equ $FF8019        ;;Endereço real 25 0x19  o pico enxerga 0x0C
 REG_0E         equ $FF801B        ;;Endereço real 27 0x1b  o pico enxerga 0x0D
 REG_0F         equ $FF801D        ;;Endereço real 29 0x1d  o pico enxerga 0x0E
 REG_10         equ $FF801F        ;;Endereço real 31 0x1f  o pico enxerga 0x0F
+;End
 REG_11         equ $FF8021        ;;Endereço real 33 0x21  o pico enxerga 0x10
 REG_12         equ $FF8023        ;;Endereço real 35 0x23  o pico enxerga 0x11
 REG_13         equ $FF8025        ;;Endereço real 37 0x25  o pico enxerga 0x12
@@ -43,6 +46,8 @@ CMD_SET_CUR_POS   equ  $A3
 CMD_SET_TXT_COLOR equ  $A2
 CMD_GO_HOME       equ  $A1
 
+InitPicoVga:
+        RTS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Cursor go home
 ; Receive cmd in D0

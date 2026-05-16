@@ -20,29 +20,29 @@ Linker script and memory map
  *(.jumptable)
  .jumptable     0x00000400        0x0 vbug2-0.o
 
-.text           0x00001000      0x44a
+.text           0x00001000      0x4ca
                 0x00001000                        _start = .
  *(.text .text.*)
- .text          0x00001000      0x44a vbug2-0.o
-                0x0000144a                        . = ALIGN (0x2)
-                0x0000144a                        _start_end = .
+ .text          0x00001000      0x4ca vbug2-0.o
+                0x000014ca                        . = ALIGN (0x2)
+                0x000014ca                        _start_end = .
 
-.rodata         0x0000144a        0x0
+.rodata         0x000014ca        0x0
  *(.rodata .rodata.*)
-                0x0000144a                        . = ALIGN (0x2)
+                0x000014ca                        . = ALIGN (0x2)
 
-.data           0x0000144c      0x5e0 load address 0x0000144a
-                0x0000144a                        __data_load = LOADADDR (.data)
-                0x0000144c                        __data_start = .
+.data           0x000014cc      0x5e0 load address 0x000014ca
+                0x000014ca                        __data_load = LOADADDR (.data)
+                0x000014cc                        __data_start = .
  *(.data .data.*)
- .data          0x0000144c      0x5e0 vbug2-0.o
-                0x00001a2c                        . = ALIGN (0x2)
-                0x00001a2c                        __data_end = .
+ .data          0x000014cc      0x5e0 vbug2-0.o
+                0x00001aac                        . = ALIGN (0x2)
+                0x00001aac                        __data_end = .
 
-.checksum       0x00001a2c        0x4 load address 0x00001a2a
-                0x00001a2c                        . = ALIGN (0x2)
-                0x00001a2c                        __checksum_addr = .
-                0x00001a2c        0x4 LONG 0x0
+.checksum       0x00001aac        0x4 load address 0x00001aaa
+                0x00001aac                        . = ALIGN (0x2)
+                0x00001aac                        __checksum_addr = .
+                0x00001aac        0x4 LONG 0x0
 
 .bss            0x00080000     0x2550
                 0x00080000                        __bss_start = .
