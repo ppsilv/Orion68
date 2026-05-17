@@ -56,17 +56,25 @@ B921600H    equ         $00
 ; ----------------------------------------------------------------------
 InitUart:
         move.l  currentUart,A1
-        move.l  #currentBaudRate,D0
+        move.l  currentBaudRate,D0
         move.b  #%10000011,LCR(A1) ;DLAB=1
-        NOP
-        NOP      
         move.b  #$08,DLL(A1)       ; set divisor latch low byte
         move.b  #$00,DLM(A1)       ; set divisor latch high byte
         move.b  #%00000011,LCR(A1) ; 8 data bits, no parity, 1 stop bit, DLAB=0
         move.b  #%00001101,FCR(A1) ; enable FIFO
         clr.b   SCR(A1)            ; clear the scratch register
         RTS
-
+InitUart1:
+        move.l  currentUart,A1
+        move.l  currentBaudRate,D0
+        move.b  #%00001101,FCR(a1)      ; enable FIFO
+        move.b  #%10000011,LCR(a1)      ; 8 data bits, no parity, 1 stop bit, DLAB=1
+        move.b  D0,DLL(A1)              ; Byte 0 (LSB) -> DLL
+        lsr.l   #8,D0                   ; Shift right 8 bits
+        move.b  D0,DLM(A1)              ; Byte 1 (agora no LSB) -> DLM
+        bclr.b  #7,LCR(a1)              ; 8 data bits, no parity, 1 stop bit, DLAB=0
+        clr.b   SCR(a1)                 ; clear the scratch register
+        RTS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Write char
 ; Change A1
@@ -89,7 +97,8 @@ UartReadChar:
 .WaitRx:
         btst    #0,LSR(A1)        ; RX ready?
         beq     .WaitRx
-        move.b  RHR,D0
+
+        move.b  RHR(A1),D0
         RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -102,6 +111,11 @@ UartReadCharEcho:
 .WaitRx:
         btst    #0,LSR(A1)        ; RX ready?
         beq     .WaitRx
-        move.b  RHR,D0
-        JSR     UartWriteChar
+        move.b  RHR(A1),D0
+
+.WaitTx:
+        btst    #5,LSR(A1)      ; wait until transmit holding register is empty
+        beq     .WaitTx
+        move.b  D0,THR(A1)      ; transmit byte
+
         RTS

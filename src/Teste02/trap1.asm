@@ -1,6 +1,8 @@
 
 MERDA:
     DC.B    "MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA ",13,10,0
+
+    Align 2
 ; -----------------------------------------------------------------------------
 ; O SEU CÓDIGO DO TCPBOX68K (Agora rodando na RAM)
 ; -----------------------------------------------------------------------------
@@ -33,6 +35,7 @@ trap_cconin:
 trap_cconout:
     MOVE.B  D1,D0
     MOVE.L  (cconout),A0        ; Busca o endereço da rotina física da UART
+    JSR     (A0)
     RTE      
                 
 

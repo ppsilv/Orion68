@@ -338,7 +338,7 @@ Vbug2Start:
         ;Initialize variables
         MOVE.L  PicoWriteChar,A1    ; Initialize cconout console char out
         MOVE.L  A1,cconout
-        MOVE.L  UartReadChar,A1         ; Initialize cconin console char in
+        MOVE.L  UartReadCharEcho,A1         ; Initialize cconin console char in
         MOVE.L  A1,cconin
         MOVE.L  #UART_BASE,A1    ; Initialize uart output,INPUT and baud
         MOVE.L  A1,currentUart
@@ -350,23 +350,23 @@ Vbug2Start:
         ;Initialize picoVga
         JSR  InitPicoVga
         ;Initialize UART
-        JSR  InitUart   
+        JSR  InitUart1   
         ;Initialize TRAP1
-        ;JSR  InitTrap1
-    LEA     vbug2_trap1,A0             ; Pega o endereço da nossa rotina na RAM
-    MOVE.L  A0,($00080004)              ; Grava na posição da TRAP 1 na RAM!
+        JSR  InitTrap1
 
 mainLoop:
         JSR     PicoClearScreen
         LEA     MsgMSGINIT,A0
         JSR     PicoPrintString
-        MOVE.B  #$43,D0
-        JSR     WriteChar
+
 subLoop:        
-        move.b  #$41,D0
+        JSR     UartReadChar
         JSR     UartWriteChar
-        move.b  #$42,D0
         JSR     PicoWriteChar
+
+        JMP     subLoop
+
+
 
         MOVE.L  #$001FFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
 .DELAY01:
@@ -375,16 +375,15 @@ subLoop:
 
         JMP     subLoop
 
+
+;Includes
+
         INCLUDE "drv_uart.asm"
         INCLUDE "drv_pico_vga.asm"
         INCLUDE "cmd_mem_dump.asm"
-
-        
-
-        INCLUDE "section_data.asm"
-
         INCLUDE "trap1.asm"
 
+        INCLUDE "section_data.asm"
         INCLUDE "section_bss.asm"
 
         END

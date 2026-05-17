@@ -20,29 +20,30 @@ Linker script and memory map
  *(.jumptable)
  .jumptable     0x00000400        0x0 vbug2-0.o
 
-.text           0x00001000      0x4b0
+.text           0x00001000      0x598
                 0x00001000                        _start = .
  *(.text .text.*)
- .text          0x00001000      0x4b0 vbug2-0.o
-                0x000014b0                        . = ALIGN (0x2)
-                0x000014b0                        _start_end = .
+ .text          0x00001000      0x598 vbug2-0.o
+                0x00001598                        . = ALIGN (0x2)
+                0x00001598                        _start_end = .
 
-.rodata         0x000014b0        0x0
+.rodata         0x00001598        0x0
  *(.rodata .rodata.*)
-                0x000014b0                        . = ALIGN (0x2)
+                0x00001598                        . = ALIGN (0x2)
 
-.data           0x000014b0      0x534
-                0x000014b0                        __data_load = LOADADDR (.data)
-                0x000014b0                        __data_start = .
+.data           0x00001598      0x474
+                0x00001598                        __data_load = LOADADDR (.data)
+                0x00001598                        __data_start = .
  *(.data .data.*)
- .data          0x000014b0      0x534 vbug2-0.o
-                0x000019e4                        . = ALIGN (0x2)
-                0x000019e4                        __data_end = .
+ .data          0x00001598      0x473 vbug2-0.o
+                0x00001a0c                        . = ALIGN (0x2)
+ *fill*         0x00001a0b        0x1 
+                0x00001a0c                        __data_end = .
 
-.checksum       0x000019e4        0x4
-                0x000019e4                        . = ALIGN (0x2)
-                0x000019e4                        __checksum_addr = .
-                0x000019e4        0x4 LONG 0x0
+.checksum       0x00001a0c        0x4
+                0x00001a0c                        . = ALIGN (0x2)
+                0x00001a0c                        __checksum_addr = .
+                0x00001a0c        0x4 LONG 0x0
 
 .bss            0x00080000     0x2238
                 0x00080000                        __bss_start = .
