@@ -1,5 +1,6 @@
-    ORG     $00008000
 
+MERDA:
+    DC.B    "MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA ",13,10,0
 ; -----------------------------------------------------------------------------
 ; O SEU CÓDIGO DO TCPBOX68K (Agora rodando na RAM)
 ; -----------------------------------------------------------------------------
@@ -30,9 +31,10 @@ trap_cconin:
 ; Entrada: D1.L - Caractere a escrever
 ; --------------------------------
 trap_cconout:
-    MOVE.L  (cconout),A0
-    JSR     (A0)
-    RTE                   ; Retorna da exceção
+    MOVE.B  D1,D0
+    MOVE.L  (cconout),A0        ; Busca o endereço da rotina física da UART
+    RTE      
+                
 
 trap_strout:
     MOVE.L  (cconout),A1

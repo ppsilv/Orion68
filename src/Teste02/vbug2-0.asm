@@ -82,10 +82,10 @@ RAM_VARIABLES     equ RAMBASE+$400
 RAM_VECTOR_CODE   equ RAMBASE+RAM_VARIABLES+$400
 RAM_USER_APP_AREA equ $82000
 
-CMD_CCONIN        equ 1
-CMD_CCONOUT       equ 2
-CMD_CCONOUTSTR    equ 3
-CMD_PTERM0        equ 0
+CMD_CCONIN        equ $1
+CMD_CCONOUT       equ $2
+CMD_CCONOUTSTR    equ $3
+CMD_PTERM0        equ $0
 
 ;Memory map for vectors
 ;0x80000 -> 0x803FF - 1024bytes Ram vector table
@@ -181,73 +181,54 @@ DefaultHandler:
 SpuriousHandler:
         RTE
 Trap0Handler:
-        MOVE.L  A0,-(SP)
-        MOVE.L  (RAM_VECTOR_BASE),A0     ; Trap 0 mapeada em $400
-        BRA     Gateway
-Trap1Handler:
-        MOVE.L  A0,-(SP)
-        MOVE.L  (RAM_VECTOR_BASE+4),A0   ; Trap 1 mapeada em $404
-        BRA     Gateway
-Trap2Handler:
-        MOVE.L  A0,-(SP)
-        MOVE.L  (RAM_VECTOR_BASE+8),A0   ; Trap 2 mapeada em $408
-        BRA     Gateway
-Trap3Handler:
-        MOVE.L  A0,-(SP)
-        MOVE.L  (RAM_VECTOR_BASE+12),A0
-        BRA     Gateway
-Trap4Handler:
-        MOVE.L  A0,-(SP)
-        MOVE.L  (RAM_VECTOR_BASE+16),A0
-        BRA     Gateway
-Trap5Handler:
-        MOVE.L  A0,-(SP)
-        MOVE.L  (RAM_VECTOR_BASE+20),A0
-        BRA     Gateway
-Trap6Handler:
-        MOVE.L  A0,-(SP)
-        MOVE.L  (RAM_VECTOR_BASE+24),A0
-        BRA     Gateway
-Trap7Handler:
-        MOVE.L  A0,-(SP)
-        MOVE.L  (RAM_VECTOR_BASE+28),A0
-        BRA     Gateway
-Trap8Handler:
-        MOVE.L  A0,-(SP)
-        MOVE.L  (RAM_VECTOR_BASE+32),A0
-        BRA     Gateway
-Trap9Handler:
-        MOVE.L  A0,-(SP)
-        MOVE.L  (RAM_VECTOR_BASE+36),A0
-        BRA     Gateway
-TrapAHandler:
-        MOVE.L  A0,-(SP)
-        MOVE.L  (RAM_VECTOR_BASE+40),A0
-        BRA     Gateway
-TrapBHandler:
-        MOVE.L  A0,-(SP)
-        MOVE.L  (RAM_VECTOR_BASE+44),A0
-        BRA     Gateway
-TrapCHandler:
-        MOVE.L  A0,-(SP)
-        MOVE.L  (RAM_VECTOR_BASE+48),A0
-        BRA     Gateway
-TrapDHandler:
-        MOVE.L  A0,-(SP)
-        MOVE.L  (RAM_VECTOR_BASE+52),A0
-        BRA     Gateway
-TrapEHandler:
-        MOVE.L  A0,-(SP)
-        MOVE.L  (RAM_VECTOR_BASE+56),A0
-        BRA     Gateway
-TrapFHandler:
-        MOVE.L  A0,-(SP)
-        MOVE.L  (RAM_VECTOR_BASE+60),A0
-        BRA     Gateway
-
-Gateway:
-        MOVEM.L (SP)+,A0
+        MOVE.L  (RAM_VECTOR_BASE),A0     ; Trap 0 mapeada em $80000
         JMP     (A0)
+Trap1Handler:
+        MOVE.L  (RAM_VECTOR_BASE+4),A0   ; Trap 1 mapeada em $80004
+        JMP     (A0)
+Trap2Handler:
+        MOVE.L  (RAM_VECTOR_BASE+8),A0   ; Trap 2 mapeada em $80008
+        JMP     (A0)
+Trap3Handler:
+        MOVE.L  (RAM_VECTOR_BASE+12),A0
+        JMP     (A0)
+Trap4Handler:
+        MOVE.L  (RAM_VECTOR_BASE+16),A0
+        JMP     (A0)
+Trap5Handler:
+        MOVE.L  (RAM_VECTOR_BASE+20),A0
+        JMP     (A0)
+Trap6Handler:
+        MOVE.L  (RAM_VECTOR_BASE+24),A0
+        JMP     (A0)
+Trap7Handler:
+        MOVE.L  (RAM_VECTOR_BASE+28),A0
+        JMP     (A0)
+Trap8Handler:
+        MOVE.L  (RAM_VECTOR_BASE+32),A0
+        JMP     (A0)
+Trap9Handler:
+        MOVE.L  (RAM_VECTOR_BASE+36),A0
+        JMP     (A0)
+TrapAHandler:
+        MOVE.L  (RAM_VECTOR_BASE+40),A0
+        JMP     (A0)
+TrapBHandler:
+        MOVE.L  (RAM_VECTOR_BASE+44),A0
+        JMP     (A0)
+TrapCHandler:
+        MOVE.L  (RAM_VECTOR_BASE+48),A0
+        JMP     (A0)
+TrapDHandler:
+        MOVE.L  (RAM_VECTOR_BASE+52),A0
+        JMP     (A0)
+TrapEHandler:
+        MOVE.L  (RAM_VECTOR_BASE+56),A0
+        JMP     (A0)
+TrapFHandler:
+        MOVE.L  (RAM_VECTOR_BASE+60),A0
+        JMP     (A0)
+
 Int1Handler:        
         MOVEM.L D0-D7/A0-A6,-(A7)
         MOVE.L  (RAM_VECTOR_BASE+64),A0
@@ -291,7 +272,7 @@ Universal_Trampoline:
 ;; TODO USAR TRAP1 PARA ISSO AQUI        
 WriteChar:
         MOVE.B  D0,D1
-        MOVE.B  #CMD_CCONOUT,D0
+        MOVE.B  #2,D0
         TRAP    #1
         RTS
 WriteString:
@@ -346,7 +327,6 @@ Vbug2Start:
         BNE.S   .DELAY01     ; Pula se não for zero (10 ciclos se pular, 8 se não)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-        ;JSR     InitUart
         ;Set USP( user stack pointer)
 ;        LEA     USER_SP,A0
 ;        MOVE.L  A0,USP        ; 🔥 Define User Stack Pointe
@@ -373,12 +353,15 @@ Vbug2Start:
         JSR  InitUart   
         ;Initialize TRAP1
         ;JSR  InitTrap1
+    LEA     vbug2_trap1,A0             ; Pega o endereço da nossa rotina na RAM
+    MOVE.L  A0,($00080004)              ; Grava na posição da TRAP 1 na RAM!
 
 mainLoop:
         JSR     PicoClearScreen
         LEA     MsgMSGINIT,A0
         JSR     PicoPrintString
-
+        MOVE.B  #$43,D0
+        JSR     WriteChar
 subLoop:        
         move.b  #$41,D0
         JSR     UartWriteChar
@@ -396,10 +379,12 @@ subLoop:
         INCLUDE "drv_pico_vga.asm"
         INCLUDE "cmd_mem_dump.asm"
 
-        ;ORG $00008000
-        INCLUDE "trap1.asm"
+        
 
         INCLUDE "section_data.asm"
+
+        INCLUDE "trap1.asm"
+
         INCLUDE "section_bss.asm"
 
         END

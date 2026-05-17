@@ -68,11 +68,11 @@ MsgIllegal:   DC.B "Illegal Instruction!",0
 MsgTrap:      DC.B "TRAP Instruction!",0
 MsgUnknown:   DC.B "Unknown Exception!",0
 
-    ALIGN   2
-    ;Isso preenche 762 com 00
-    ;DS.B    $00000762 - *, $00
-    DC.B    "ROMv4.1",0   ; String de identificação
-    ;DS.B    $00002968 - *, $00
-    ORG     $3FFC
-checksum_rom:
-    DC.L    0     ; Valor calculado
+;    ALIGN   2
+;    ;Isso preenche 762 com 00
+;    ;DS.B    $00000762 - *, $00
+;    DC.B    "ROMv4.1",0   ; String de identificação
+;    ;DS.B    $00002968 - *, $00
+;    ORG     $3FFC
+;checksum_rom:
+;    DC.L    0     ; Valor calculado
