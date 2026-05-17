@@ -18,8 +18,8 @@ CHECKSUMER := python3 checksum_put.py
 CHIP_TYPE := AT29C512
 
 # Nomes de arquivos
-SOURCE := test.asm
-TARGET := test
+SOURCE := vbug2-0.asm
+TARGET := vbug2-0
 #TARGET := $(basename $(SOURCE))
 TARGET_OBJ := $(TARGET).o
 TARGET_ELF := $(TARGET).elf
@@ -62,14 +62,10 @@ compile:
 # Compilação segura que detecta TODOS os erros
 compile_linker:
 	@echo "Compiler compile_linker..."
-	#vasmm68k_mot -Felf -quiet -L listing.txt -o test_ram2.o test_ram2.asm
-	@$(ASSEMBLER) $(ELF_FLAGS) -L $(TARGET).lst -o $(TARGET_OBJ) $(SOURCE)
+	$(ASSEMBLER) $(ELF_FLAGS) -L $(TARGET).lst -o $(TARGET_OBJ) $(SOURCE)
 	@echo "Linker..."
-	#m68k-elf-ld -T layout.ld test_ram2.o -o test_ram2.elf
-	#m68k-elf-ld -T layout.ld --print-memory-usage -Map=mapfile.txt test_ram2.o -o test_ram2.elf
-	@$(LINKER) -T $(LAYOUT_FILE) --print-memory-usage -Map=$(TARGET).map $(TARGET_OBJ) -o $(TARGET_ELF)
+	$(LINKER) -T $(LAYOUT_FILE) --print-memory-usage -Map=$(TARGET).map $(TARGET_OBJ) -o $(TARGET_ELF)
 	@echo "Objcopy..."
-	#m68k-elf-objcopy -O binary test_ram2.elf test_ram2.bin
 	@$(OBJCOPY) -O binary $(TARGET_ELF) $(TARGET_BIN)
 	@echo "╔══════════════════════════╗"
 	@echo "║  COMPILACAO TERMINADA!   ║"

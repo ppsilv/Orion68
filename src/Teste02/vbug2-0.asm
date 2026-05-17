@@ -327,17 +327,26 @@ ClearRam:
         CMPA.L  A0,A1
         BHI     .ClearLoop
         RTS
-; =============================================================================
-; 3. CÓDIGO DE INICIALIZAÇÃO (START)
-; =============================================================================
-Vbug2Start:
-        ORI     #$0700,SR           ; Desabilita interrupções (M68K)
-        ;MOVE.W #$2700,SR           ; Habilita interrupções
-        LEA     $FFFF0,SP           ; Garante o Stack Pointer (se o hardware não carregou)
-        ;AINDA NÃO DÁ PARA VALIDAR A ROM TROQUEI POR UMA MUITO MAIOR 
-        ;É PRECISO REAVALIAR O SISTEMA DE VALIDAÇÃO
-        ;JSR     VALIDATE_ROM        ; Verifica a ROM
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;END OF BASIC CODE
+;
+;VBug2.0 init
+;
 
+Vbug2Start:
+        ori.w   #$0700,SR    ; Desabilita as interrupções (Nível 7)
+        LEA     $FFFF0,SP ; Garante o Stack Pointer (se o hardware não carregou)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;This gives hardware time to get up
+;
+        MOVE.L  #$003FFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
+.DELAY01:
+        SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
+        BNE.S   .DELAY01     ; Pula se não for zero (10 ciclos se pular, 8 se não)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+        ;JSR     InitUart
         ;Set USP( user stack pointer)
 ;        LEA     USER_SP,A0
 ;        MOVE.L  A0,USP        ; 🔥 Define User Stack Pointe
@@ -363,15 +372,12 @@ Vbug2Start:
         ;Initialize UART
         JSR  InitUart   
         ;Initialize TRAP1
-        JSR  InitTrap1
+        ;JSR  InitTrap1
 
-;        MOVE.W  #15,D0                   ; Limita inicialização às 16 Traps primárias
-;        LEA     DefaultHandler,A1
-;InitRamLoop:
-;        MOVE.L  A1,(A0)+
-;        DBRA    D0,InitRamLoop
-
-        ;roda um programa aqui inicialização terminada
+mainLoop:
+        JSR     PicoClearScreen
+        LEA     MsgMSGINIT,A0
+        JSR     PicoPrintString
 
 subLoop:        
         move.b  #$41,D0
@@ -379,13 +385,12 @@ subLoop:
         move.b  #$42,D0
         JSR     PicoWriteChar
 
-        MOVE.L  #$001FFFF,D1  ; Contador para o delay (ajuste se precisar de mais)
+        MOVE.L  #$001FFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
 .DELAY01:
         SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
-        BNE.S   .DELAY01      ; Pula se não for zero (10 ciclos se pular, 8 se não)
+        BNE.S   .DELAY01     ; Pula se não for zero (10 ciclos se pular, 8 se não)
 
         JMP     subLoop
-
 
         INCLUDE "drv_uart.asm"
         INCLUDE "drv_pico_vga.asm"
@@ -398,8 +403,3 @@ subLoop:
         INCLUDE "section_bss.asm"
 
         END
-
-   
-
-
-

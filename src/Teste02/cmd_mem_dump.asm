@@ -112,5 +112,4 @@ NoEndLine:
 .fim
         RTS
 
-NewLine:
-        RTS        
+     
