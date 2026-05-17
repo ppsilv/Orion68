@@ -14,7 +14,7 @@ START:
         ori.w   #$0700,SR    ; Desabilita as interrupções (Nível 7)
         LEA     $FFFF0,SP ; Garante o Stack Pointer (se o hardware não carregou)
 
-        MOVE.L  #$01FFFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
+        MOVE.L  #$003FFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
 .DELAY01:
         SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
         BNE.S   .DELAY01     ; Pula se não for zero (10 ciclos se pular, 8 se não)

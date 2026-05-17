@@ -23,7 +23,7 @@ Source: "test.asm"
 01:00000000 007C0700        	    14:         ori.w   #$0700,SR    ; Desabilita as interrupções (Nível 7)
 01:00000004 4FF9000FFFF0    	    15:         LEA     $FFFF0,SP ; Garante o Stack Pointer (se o hardware não carregou)
                             	    16: 
-01:0000000A 223C001FFFFF    	    17:         MOVE.L  #$01FFFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
+01:0000000A 223C0003FFFF    	    17:         MOVE.L  #$003FFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
                             	    18: .DELAY01:
 01:00000010 5381            	    19:         SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
 01:00000012 66FC            	    20:         BNE.S   .DELAY01     ; Pula se não for zero (10 ciclos se pular, 8 se não)
