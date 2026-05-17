@@ -2,7 +2,7 @@
         ORG     $00000000
         ; --- Vetores de Exceção do 68000 ---
         DC.L    $000FFFF0         ; SP inicial
-        DC.L    Vbug2Start       ; PC inicial
+        DC.L    Vbug2Start        ; PC inicial
         DC.L    SERVICE_BUS_ERR   ; Bus Error
         DC.L    SERVICE_ADDR_ERR  ; Address Error
         DC.L    SERVICE_ILLEGAL   ; Illegal Instruction
@@ -71,15 +71,29 @@ ROM_JUMPTABLE:
 ; =============================================================================
 ; FIM DA TABELA DE VETORES (Endereço $000400 alcançado de forma contínua!)
 ; =============================================================================
+
+ROMBASE           equ $00000
+ROMSIZE           equ $3FFFF    ;256K WORDS
+RAMBASE           equ $80000
+RAMSIZE           equ $7FFFF    ;512K WORDS
+USER_SP           equ $6F000
+RAM_VECTOR_BASE   equ RAMBASE
+RAM_VARIABLES     equ RAMBASE+$400
+RAM_VECTOR_CODE   equ RAMBASE+RAM_VARIABLES+$400
+RAM_USER_APP_AREA equ $82000
+
+CMD_CCONIN        equ 1
+CMD_CCONOUT       equ 2
+CMD_CCONOUTSTR    equ 3
+CMD_PTERM0        equ 0
+
+;Memory map for vectors
+;0x80000 -> 0x803FF - 1024bytes Ram vector table
+;0x80400 -> 0x80800 - 1024bytes Ram variables
+;0x80800 -> 0x80C00 - 5120bytes Ram vector code
+;0x82000 -> 0x84000 - 8192bytes Ram user app area
         SECTION .text
         ORG $00001000
-
-ROMBASE         equ $00000
-ROMSIZE         equ $3FFFF    ;256K WORDS
-RAMBASE         equ $80000
-RAMSIZE         equ $7FFFF    ;512K WORDS
-USER_SP         equ $6F000
-RAM_VECTOR_BASE equ RAMBASE
 
 SERVICE_BUS_ERR:
         RTE
@@ -266,7 +280,7 @@ Int6Handler:
         RTE
 Int7Handler:        
         MOVEM.L D0-D7/A0-A6,-(A7)
-        ADDQ.L  #1,system_tick
+        ADDQ.L  #1,systemTick
         MOVEM.L (A7)+,D0-D7/A0-A6
         RTE
 
@@ -276,19 +290,30 @@ Universal_Trampoline:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TODO USAR TRAP1 PARA ISSO AQUI        
 WriteChar:
-        RTS
-ReadChar:
+        MOVE.B  D0,D1
+        MOVE.B  #CMD_CCONOUT,D0
+        TRAP    #1
         RTS
 WriteString:
-        RTS
+        MOVE.B  #CMD_CCONOUTSTR,D0
+        TRAP    #1
+        RTS    
+ReadChar:
+        MOVE.B  #CMD_CCONIN,D0
+        TRAP    #1
+        RTS            
 PrintAddrHex:
         RTS
 NewLine:
         MOVE.L  D0,-(SP)          ; Salva D0
-        MOVE.B  #10,D0
-        JSR     WriteChar
-        MOVE.B  #13,D0
-        JSR     WriteChar
+        MOVE.L  D1,-(SP)          ; Salva D1
+        MOVE.B  #10,D1
+        MOVE.B  #CMD_CCONOUT,D0
+        TRAP    #1
+        MOVE.B  #13,D1
+        MOVE.B  #CMD_CCONOUT,D0
+        TRAP    #1
+        MOVE.L  (SP)+,D1          ; Restaura D1
         MOVE.L  (SP)+,D0          ; Restaura D0
         RTS
 ;Essa rotina não pode limpar toda a RAM senão ela sobreescreve o StackPointer
@@ -306,7 +331,7 @@ ClearRam:
 ; 3. CÓDIGO DE INICIALIZAÇÃO (START)
 ; =============================================================================
 Vbug2Start:
-        ORI     #$2700,SR           ; Desabilita interrupções (M68K)
+        ORI     #$0700,SR           ; Desabilita interrupções (M68K)
         ;MOVE.W #$2700,SR           ; Habilita interrupções
         LEA     $FFFF0,SP           ; Garante o Stack Pointer (se o hardware não carregou)
         ;AINDA NÃO DÁ PARA VALIDAR A ROM TROQUEI POR UMA MUITO MAIOR 
@@ -314,8 +339,8 @@ Vbug2Start:
         ;JSR     VALIDATE_ROM        ; Verifica a ROM
 
         ;Set USP( user stack pointer)
-        LEA     USER_SP,A0
-        MOVE.L  A0,USP        ; 🔥 Define User Stack Pointe
+;        LEA     USER_SP,A0
+;        MOVE.L  A0,USP        ; 🔥 Define User Stack Pointe
         ;Initialize memory size
         MOVE.L  #$00000000,romBase
         MOVE.L  #$00004000,romSize
@@ -326,12 +351,10 @@ Vbug2Start:
         MOVE.L  A1,cconout
         MOVE.L  UartReadChar,A1         ; Initialize cconin console char in
         MOVE.L  A1,cconin
-        MOVE.L  UartWriteChar,A1    ; Initialize uart output,INPUT and baud
+        MOVE.L  #UART_BASE,A1    ; Initialize uart output,INPUT and baud
         MOVE.L  A1,currentUart
         MOVE.L  #B115200,currentBaudRate
         LEA     RAM_VECTOR_BASE,A0
-        MOVE.W  #15,D0                   ; Limita inicialização às 16 Traps primárias
-        LEA     DefaultHandler,A1
 
         ;Initializations
 
@@ -342,11 +365,27 @@ Vbug2Start:
         ;Initialize TRAP1
         JSR  InitTrap1
 
-InitRamLoop:
-        MOVE.L  A1,(A0)+
-        DBRA    D0,InitRamLoop
+;        MOVE.W  #15,D0                   ; Limita inicialização às 16 Traps primárias
+;        LEA     DefaultHandler,A1
+;InitRamLoop:
+;        MOVE.L  A1,(A0)+
+;        DBRA    D0,InitRamLoop
 
         ;roda um programa aqui inicialização terminada
+
+subLoop:        
+        move.b  #$41,D0
+        JSR     UartWriteChar
+        move.b  #$42,D0
+        JSR     PicoWriteChar
+
+        MOVE.L  #$001FFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
+.DELAY01:
+        SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
+        BNE.S   .DELAY01     ; Pula se não for zero (10 ciclos se pular, 8 se não)
+
+        JMP     subLoop
+
 
         INCLUDE "drv_uart.asm"
         INCLUDE "drv_pico_vga.asm"

@@ -48,7 +48,7 @@ CMD_SET_TXT_COLOR equ  $A2
 CMD_GO_HOME       equ  $A1
 
 ;Uart register offsets
-UART_BASE   equ         $FF9100
+UART_BASE   equ     $FF4000
 RHR         equ     $FF4001   ; receive holding register (read)
 THR         equ     $FF4001   ; transmit holding register (write)
 IER         equ     $FF4003   ; interrupt enable register

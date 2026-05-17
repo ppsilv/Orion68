@@ -2,7 +2,7 @@
 ; SECTION bss
 ;-----------------------------------------------------------------------
     SECTION .bss
-    ORG     RAM_VARIABLES               ; Área para variáveis
+    ORG     $80000 ;RAM_VARIABLES               ; Área para variáveis
 ;=== System variables
 romBase             DS.L 1
 romSize             DS.L 1

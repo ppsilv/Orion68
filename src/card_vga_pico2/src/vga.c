@@ -176,7 +176,7 @@ void video_welcome_screen(){
     vga->setTextColor(RED, BLACK);
     vga->printString("Tcpbox Vpico2 vga312k   VGA BIOS VRP2350\n");
     vga->setTextColor(YELLOW, BLACK);
-    vga->printString("Version 1.0.26.03.00RA\n");
+    vga->printString("Version 1.0.26.05.00RA\n");
     vga->setTextColor(CYAN, BLACK);
     if ( video_mode < MODE_TEXT_80_S){
         vga->printString("Copyright (C) 2026 pdsilva(aka pgordao).\nV1.0 Vpico2vga312k\n");
@@ -234,7 +234,7 @@ int main(){
 
     video_welcome_screen();
     // Show eeprom status
-    print_mem_status();
+    //print_mem_status();
     //void i2c_scanner();
 /*
     uint8_t byte = eeprom_read_byte(0);
@@ -250,7 +250,7 @@ int main(){
     byte = eeprom_read_byte(5);
     vga->printString1("byte_5 = ",byte);
 */
-    dump(0,64);
+    //dump(0,64);
 
   // === config threads ========================
   // for core 0

@@ -4927,6 +4927,20 @@
 		)
 		(uuid "6b351edc-baee-43dc-96fa-263634710893")
 	)
+	(text "NÃO IMPLEMENTADO\nNOT IMPLEMENTED"
+		(exclude_from_sim no)
+		(at 69.85 61.214 0)
+		(effects
+			(font
+				(size 2.27 2.27)
+				(thickness 0.454)
+				(bold yes)
+				(color 255 0 0 1)
+			)
+			(justify left)
+		)
+		(uuid "878ca81d-97e9-4105-a7a0-b91544ad0385")
+	)
 	(text "19 18 17 16 | 15\n 1  0  0  0 |  0 = F80000\n 1  0  0  0 |  1 = F88000                \n 1  0  0  1 |  0 = F90000                                                                \n 1  0  0  1 |  1 = F98000                                                \n 1  0  1  0 |  0 = FA0000                                               \n 1  0  1  0 |  1 = FA8000                                               \n 1  0  1  1 |  0 = FB0000                                               \n 1  0  1  1 |  1 = FB8000\npino 1 (A0)  = A15 do 68000\npino 2 (A1)  = A16 do 68000\npino 3 (A2)  = A17 do 68000\npino 4 (/E0) = A18 do 68000\npino 5 (/E1) = /LDS R/W /AS do 68000\npino 6 (E2)  = A19 do 68000\n\ncom isso a saida pino 7 /Y7 só deve ser acessada com 0xB8000"
 		(exclude_from_sim no)
 		(at 148.082 42.418 0)
@@ -5770,6 +5784,16 @@
 		)
 		(uuid "40fa25ef-0066-4727-ac45-42af4f3e352c")
 	)
+	(polyline
+		(pts
+			(xy 32.385 71.12) (xy 31.75 71.755)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "441fa1b6-44af-448a-8e2c-c1ac3028d382")
+	)
 	(wire
 		(pts
 			(xy 85.09 113.03) (xy 96.52 113.03)
@@ -6070,6 +6094,17 @@
 		)
 		(uuid "66e183aa-492c-4324-9e45-a0167bb4f71d")
 	)
+	(polyline
+		(pts
+			(xy 106.68 12.7) (xy 106.68 71.12)
+		)
+		(stroke
+			(width 2)
+			(type dash)
+			(color 255 0 0 1)
+		)
+		(uuid "678b1225-105e-46bd-b078-8cf224bca095")
+	)
 	(wire
 		(pts
 			(xy 73.66 135.89) (xy 81.28 135.89)
@@ -6229,6 +6264,17 @@
 			(type default)
 		)
 		(uuid "789894f1-c870-4513-973a-5ad12498e279")
+	)
+	(polyline
+		(pts
+			(xy 31.75 12.7) (xy 106.68 12.7)
+		)
+		(stroke
+			(width 2)
+			(type dash)
+			(color 255 0 0 1)
+		)
+		(uuid "78a81df8-5552-4e32-8d09-60c75c993d0a")
 	)
 	(wire
 		(pts
@@ -7190,6 +7236,17 @@
 		)
 		(uuid "d3290a17-b2f1-4c7b-ac7d-4c781156772a")
 	)
+	(polyline
+		(pts
+			(xy 106.68 71.12) (xy 32.385 71.12)
+		)
+		(stroke
+			(width 2)
+			(type dash)
+			(color 255 0 0 1)
+		)
+		(uuid "d3754a41-dd86-4acb-ad4c-32051458ed10")
+	)
 	(wire
 		(pts
 			(xy 27.94 73.66) (xy 29.21 72.39)
@@ -7219,6 +7276,17 @@
 			(type default)
 		)
 		(uuid "d9dbbf0e-acce-47b8-b833-7b5d86c8d8cb")
+	)
+	(polyline
+		(pts
+			(xy 31.75 12.7) (xy 31.75 71.755)
+		)
+		(stroke
+			(width 2)
+			(type dash)
+			(color 255 0 0 1)
+		)
+		(uuid "da693752-7f50-4275-8315-afd16df97022")
 	)
 	(wire
 		(pts

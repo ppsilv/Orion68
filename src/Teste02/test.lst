@@ -1,0 +1,958 @@
+Sections:
+00: ".vectors" (0-8)
+01: ".text" (0-22A)
+02: ".rodata" (0-0)
+03: ".data" (0-480)
+04: ".bss" (0-2238)
+
+
+Source: "test.asm"
+                            	     1:             SECTION .vectors
+                            	     2:             ORG     $00000000
+00:00000000 000FFFF0        	     3:             DC.L    $000FFFF0    ; Stack Pointer
+00:00000004 00000000        	     4:             DC.L    START     ; PC aponta para o início do código
+                            	     5: 
+                            	     6:             ORG     $00000400
+                            	     7: ; Exemplo rápido de teste de RAM (Base em $00004000)
+                            	     8: RAM_START      equ $080000
+                            	     9: RAM_END        equ $0FFFFF 
+                            	    10: 
+                            	    11:             SECTION .text  
+                            	    12: 
+                            	    13: START:
+01:00000000 007C0700        	    14:         ori.w   #$0700,SR    ; Desabilita as interrupções (Nível 7)
+01:00000004 4FF9000FFFF0    	    15:         LEA     $FFFF0,SP ; Garante o Stack Pointer (se o hardware não carregou)
+                            	    16: 
+01:0000000A 223C001FFFFF    	    17:         MOVE.L  #$01FFFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
+                            	    18: .DELAY01:
+01:00000010 5381            	    19:         SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
+01:00000012 66FC            	    20:         BNE.S   .DELAY01     ; Pula se não for zero (10 ciclos se pular, 8 se não)
+                            	    21: 
+01:00000014 6138            	    22:         JSR     InitUart
+01:00000016 223C000001FF    	    23:         MOVE.L  #$1FF,D1    ; Contador para o delay (ajuste se precisar de mais)
+                            	    24: .DELAY00:
+01:0000001C 5381            	    25:         SUBQ.L  #1,D1       ; Subtrai 1 de D1 (4 ciclos)
+01:0000001E 66FC            	    26:         BNE.S   .DELAY00    ; Pula se não for zero (10 ciclos se pular, 8 se não)
+                            	    27: 
+                            	    28: mainLoop:
+01:00000020 610000DC        	    29:         JSR     PicoClearScreen
+01:00000024 41F9000000A3    	    30:         LEA     MsgMSGINIT,A0
+01:0000002A 610000F4        	    31:         JSR     PicoPrintString
+                            	    32: 
+                            	    33: subLoop:        
+01:0000002E 103C0041        	    34:         move.b  #$41,D0
+01:00000032 615A            	    35:         JSR     UartWriteChar
+01:00000034 103C0042        	    36:         move.b  #$42,D0
+01:00000038 610000D2        	    37:         JSR     PicoWriteChar
+                            	    38: 
+01:0000003C 223C0001FFFF    	    39:         MOVE.L  #$001FFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
+                            	    40: .DELAY01:
+01:00000042 5381            	    41:         SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
+01:00000044 66FC            	    42:         BNE.S   .DELAY01     ; Pula se não for zero (10 ciclos se pular, 8 se não)
+                            	    43: 
+01:00000046 60E6            	    44:         JMP     subLoop
+                            	    45: 
+                            	    46: 
+                            	    47: 
+                            	    48: WriteChar:
+01:00000048 4E75            	    49:         RTS
+                            	    50: ReadChar:
+01:0000004A 4E75            	    51:         RTS
+                            	    52: WriteString:
+01:0000004C 4E75            	    53:         RTS
+                            	    54: 
+                            	    55:         INCLUDE "drv_uart.asm"
+
+Source: "drv_uart.asm"
+                            	     1: 
+                            	     2: 
+                            	     3: 
+                            	     4: 
+                            	     5: ;Uart register offsets
+                            	     6: UART_BASE   equ     $FF4000
+                            	     7: RHR         equ     $FF4001   ; receive holding register (read)
+                            	     8: THR         equ     $FF4001   ; transmit holding register (write)
+                            	     9: IER         equ     $FF4003   ; interrupt enable register
+                            	    10: ISR         equ     $FF4005   ; interrupt status register (read)
+                            	    11: FCR         equ     $FF4005   ; FIFO control register (write)
+                            	    12: LCR         equ     $FF4007   ; line control register
+                            	    13: MCR         equ     $FF4009   ; modem control register
+                            	    14: LSR         equ     $FF400B   ; line status register
+                            	    15: MSR         equ     $FF400D   ; modem status register
+                            	    16: SPR         equ     $FF400F   ; scratchpad register (reserved for system use)
+                            	    17: DLL         equ     $FF4001   ; divisor latch LSB
+                            	    18: DLM         equ     $FF4003   ; divisor latch MSB
+                            	    19: ; aliases for register names (used by different manufacturers)cd ..
+                            	    20: RBR         equ     RHR ; receive buffer register
+                            	    21: IIR         equ     ISR ; interrupt identification register
+                            	    22: SCR         equ     SPR ; scratch register
+                            	    23: 
+                            	    24: B009600     equ         $0060
+                            	    25: B019200     equ         $0030
+                            	    26: B038400     equ         $0018
+                            	    27: B057600     equ         $0010
+                            	    28: B115200     equ         $0008
+                            	    29: B230400     equ         $0004
+                            	    30: B460800     equ         $0002
+                            	    31: B921600     equ         $0001
+                            	    32: 
+                            	    33: 
+                            	    34: B009600L    equ         $60
+                            	    35: B019200L    equ         $30
+                            	    36: B038400L    equ         $18
+                            	    37: B057600L    equ         $10
+                            	    38: B115200L    equ         $08
+                            	    39: B230400L    equ         $04
+                            	    40: B460800L    equ         $02
+                            	    41: B921600L    equ         $01
+                            	    42: B009600H    equ         $00
+                            	    43: B019200H    equ         $00     
+                            	    44: B038400H    equ         $00     
+                            	    45: B057600H    equ         $00     
+                            	    46: B115200H    equ         $00     
+                            	    47: B230400H    equ         $00
+                            	    48: B460800H    equ         $00
+                            	    49: B921600H    equ         $00
+                            	    50: 
+                            	    51: 
+                            	    52: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	    53: ; Initialize uart
+                            	    54: ; Change A1
+                            	    55: ; Parametros: none
+                            	    56: ; ----------------------------------------------------------------------
+                            	    57: InitUart:
+01:0000004E 43F900080010    	    58:         lea     currentUart,A1
+01:00000054 203900080014    	    59:         move.l  currentBaudRate,D0
+01:0000005A 13FC008300FF4007	    60:         move.b  #%10000011,LCR   ;(A1)    ;DLAB=1
+01:00000062 4E71            	    61:         NOP
+01:00000064 4E71            	    62:         NOP      
+01:00000066 13FC000800FF4001	    63:         move.b  #$08,DLL     ;(A1)       ; set divisor latch low byte
+01:0000006E 13FC000000FF4003	    64:         move.b  #$00,DLM     ;(A1)       ; set divisor latch high byte
+01:00000076 13FC000300FF4007	    65:         move.b  #%00000011,LCR  ;(A1)      ; 8 data bits, no parity, 1 stop bit, DLAB=0
+01:0000007E 13FC000D00FF4005	    66:         move.b  #%00001101,FCR ;(A1)     ; enable FIFO
+01:00000086 423900FF400F    	    67:         clr.b   SCR    ;(A1)                 ; clear the scratch register
+01:0000008C 4E75            	    68:         RTS
+                            	    69: 
+                            	    70: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	    71: ; Write char
+                            	    72: ; Change A1
+                            	    73: ; Receive char in D0
+                            	    74: UartWriteChar:
+01:0000008E 43F900080010    	    75:         lea     currentUart,A1
+                            	    76: .WaitTx:
+01:00000094 0839000500FF400B	    77:         btst    #5,LSR  ;(A1)      ; wait until transmit holding register is empty
+01:0000009C 67F6            	    78:         beq     .WaitTx
+01:0000009E 13C000FF4001    	    79:         move.b  D0,THR  ;(A1)      ; transmit byte
+01:000000A4 4E75            	    80:         RTS
+                            	    81: 
+                            	    82: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	    83: ; Write char
+                            	    84: ; Change A1
+                            	    85: ;
+                            	    86: ; Return char in D0)
+                            	    87: UartReadChar:
+01:000000A6 43F900080010    	    88:         lea     currentUart,A1
+                            	    89: .WaitRx:
+01:000000AC 0839000000FF400B	    90:         btst    #0,LSR ;(A1)        ; RX ready?
+01:000000B4 67F6            	    91:         beq     .WaitRx
+01:000000B6 103900FF4001    	    92:         move.b  RHR,D0
+01:000000BC 4E75            	    93:         RTS
+                            	    94: 
+
+Source: "test.asm"
+                            	    56:         INCLUDE "drv_pico_vga.asm"
+
+Source: "drv_pico_vga.asm"
+                            	     1: 
+                            	     2: 
+                            	     3: 
+                            	     4: 
+                            	     5: ;;picoVGA Register address
+                            	     6: PICO_BASE_ADDR equ $FF8000
+                            	     7: WRITE_SCREEN   equ $FF8001        ;;Endereço real  3 0x03  o pico enxerga 0x00
+                            	     8: REG_02         equ $FF8003        ;;Endereço real  3 0x03  o pico enxerga 0x01
+                            	     9: REG_03         equ $FF8005        ;;Endereço real  5 0x05  o pico enxerga 0x02
+                            	    10: REG_04         equ $FF8007        ;;Endereço real  7 0x07  o pico enxerga 0x03
+                            	    11: CONFIG_REG     equ $FF8009        ;;Endereço real  9 0x09  o pico enxerga 0x04
+                            	    12: REG_06         equ $FF800B        ;;Endereço real 11 0x0b  o pico enxerga 0x05
+                            	    13: REG_07         equ $FF800D        ;;Endereço real 13 0x0d  o pico enxerga 0x06
+                            	    14: REG_08         equ $FF800F        ;;Endereço real 15 0x0f  o pico enxerga 0x07
+                            	    15: ;Begin Register for reads
+                            	    16: REG_09         equ $FF8011        ;;Endereço real 17 0x11  o pico enxerga 0x08
+                            	    17: REG_0A         equ $FF8013        ;;Endereço real 19 0x13  o pico enxerga 0x09
+                            	    18: REG_0B         equ $FF8015        ;;Endereço real 21 0x15  o pico enxerga 0x0A
+                            	    19: REG_0C         equ $FF8017        ;;Endereço real 23 0x17  o pico enxerga 0x0B
+                            	    20: REG_0D         equ $FF8019        ;;Endereço real 25 0x19  o pico enxerga 0x0C
+                            	    21: REG_0E         equ $FF801B        ;;Endereço real 27 0x1b  o pico enxerga 0x0D
+                            	    22: REG_0F         equ $FF801D        ;;Endereço real 29 0x1d  o pico enxerga 0x0E
+                            	    23: REG_10         equ $FF801F        ;;Endereço real 31 0x1f  o pico enxerga 0x0F
+                            	    24: ;End
+                            	    25: REG_11         equ $FF8021        ;;Endereço real 33 0x21  o pico enxerga 0x10
+                            	    26: REG_12         equ $FF8023        ;;Endereço real 35 0x23  o pico enxerga 0x11
+                            	    27: REG_13         equ $FF8025        ;;Endereço real 37 0x25  o pico enxerga 0x12
+                            	    28: SET_MODE       equ $FF8027        ;;Endereço real 39 0x27  o pico enxerga 0x13 (0=Texto+Scroll, 1=Texto Fixo, 2=320x20
+                            	    29: SET_TXT_COLOR  equ $FF8029        ;;Endereço real 41 0x29  o pico enxerga 0x14
+                            	    30: CHANGE_CUR_POS equ $FF802B        ;;Endereço real 43 0x2b  o pico enxerga 0x15
+                            	    31: REG_X_HIGH     equ $FF802D        ;;Endereço real 45 0x2d  o pico enxerga 0x16
+                            	    32: REG_X_LOW      equ $FF802F        ;;Endereço real 47 0x2f  o pico enxerga 0x17
+                            	    33: REG_Y_HIGH     equ $FF8031        ;;Endereço real 49 0x31  o pico enxerga 0x18
+                            	    34: REG_Y_LOW      equ $FF8033        ;;Endereço real 51 0x33  o pico enxerga 0x19
+                            	    35: CHANGE_BUFFER  equ $FF8035        ;;Endereço real 53 0x35  o pico enxerga 0x1A
+                            	    36: SELECT_SCREEN  equ $FF8037        ;;Endereço real 55 0x37  o pico enxerga 0x1B
+                            	    37: SET_HORIZONTAL equ $FF8039        ;;Endereço real 57 0x39  o pico enxerga 0x1C
+                            	    38: SET_VERTICAL   equ $FF803B        ;;Endereço real 59 0x3b  o pico enxerga 0x1D
+                            	    39: RUN_CMD        equ $FF803D        ;;Endereço real 61 0x3d  o pico enxerga 0x1E
+                            	    40: CORINGA        equ $FF803F        ;;Endereço real 63 0x3f  o pico enxerga 0x1F    
+                            	    41: 
+                            	    42: ;Commands
+                            	    43: CMD_SYSTEM_ENABLE equ  $A5
+                            	    44: CMD_CLEAR_SCREEN  equ  $A4
+                            	    45: CMD_SET_CUR_POS   equ  $A3
+                            	    46: CMD_SET_TXT_COLOR equ  $A2
+                            	    47: CMD_GO_HOME       equ  $A1
+                            	    48: 
+                            	    49: InitPicoVga:
+01:000000BE 4E75            	    50:         RTS
+                            	    51: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	    52: ; Cursor go home
+                            	    53: ; Receive cmd in D0
+                            	    54: ;
+                            	    55: PicoRunCmd:
+01:000000C0 13C000FF803D    	    56:         MOVE.B  D0,RUN_CMD
+01:000000C6 4E75            	    57:         RTS
+                            	    58: 
+                            	    59: 
+                            	    60: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	    61: ; Cursor go home
+                            	    62: ; 
+                            	    63: PicoGoHome:
+01:000000C8 103C00A1        	    64:         MOVE.B  #CMD_GO_HOME,D0
+01:000000CC 13C000FF803D    	    65:         MOVE.B  D0,RUN_CMD
+01:000000D2 4E75            	    66:         RTS
+                            	    67: 
+                            	    68: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	    69: ; Set cursor position
+                            	    70: ; Detroy: A1
+                            	    71: ; Receive X in D0
+                            	    72: ; Receive Y in D1
+                            	    73: PicoSetCursor:
+01:000000D4 13C000FF802F    	    74:         MOVE.B  D0,REG_X_LOW
+01:000000DA E048            	    75:         LSR.W   #8,D0             ; Desloca o byte alto para a posição baixa em D0
+01:000000DC 13C000FF802D    	    76:         MOVE.B  D0,REG_X_HIGH
+01:000000E2 13C100FF8033    	    77:         MOVE.B  D1,REG_Y_LOW
+01:000000E8 E049            	    78:         LSR.W   #8,D1             ; Desloca o byte alto para a posição baixa em D0
+01:000000EA 13C100FF8031    	    79:         MOVE.B  D1,REG_Y_HIGH
+01:000000F0 43F900FF803D    	    80:         LEA     RUN_CMD,A1    
+01:000000F6 103C00A3        	    81:         MOVE.B  #CMD_SET_CUR_POS,D0
+01:000000FA 1280            	    82:         MOVE.B  D0,(A1);
+01:000000FC 4E75            	    83:         RTS
+                            	    84: 
+                            	    85: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	    86: ; Clear screen
+                            	    87: ; Destroy: A1 
+                            	    88: ; Command in D0
+                            	    89: PicoClearScreen:
+01:000000FE 43F900FF803D    	    90:         LEA     RUN_CMD,A1    
+01:00000104 103C00A4        	    91:         MOVE.B  #CMD_CLEAR_SCREEN,D0
+01:00000108 1280            	    92:         MOVE.B  D0,(A1);
+01:0000010A 4E75            	    93:         RTS
+                            	    94: 
+                            	    95: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	    96: ; Write char in picoVGA
+                            	    97: ; Destroy: A1,D1
+                            	    98: PicoWriteChar:
+01:0000010C 43F900FF8001    	    99:             LEA     WRITE_SCREEN,A1
+01:00000112 1280            	   100:             MOVE.B  D0,(A1)     ; Escreve no endereço do PicoVGA (LDS ativo)
+01:00000114 223C000000FF    	   101:             MOVE.L  #$FF,D1    ; Contador para o delay (ajuste se precisar de mais)
+                            	   102: .DELAY00:
+01:0000011A 5381            	   103:             SUBQ.L  #1,D1       ; Subtrai 1 de D1 (4 ciclos)
+01:0000011C 66FC            	   104:             BNE.S   .DELAY00    ; Pula se não for zero (10 ciclos se pular, 8 se não)
+01:0000011E 4E75            	   105:             RTS
+                            	   106: 
+                            	   107: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	   108: ; Imprime string terminada em ZERO
+                            	   109: ; Destroy: A0 = String's address
+                            	   110: ;
+                            	   111: PicoPrintString:
+01:00000120 1018            	   112:         MOVE.B  (A0)+,D0      ; Pega caractere e avança ponteiro
+01:00000122 6704            	   113:         BEQ.S   .Done         ; Se for zero, termina
+01:00000124 61E6            	   114:         BSR.S   PicoWriteChar ; Chama sua função gloriosa!
+01:00000126 60F8            	   115:         BRA.S   PicoPrintString   ; Loop para o próximo
+                            	   116: .Done:
+01:00000128 4E75            	   117:         RTS
+                            	   118: 
+                            	   119: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	   120: ; PrintHexAddress - Imprime endereço de 32 bits
+                            	   121: ; Entrada: D0 = endereço
+                            	   122: ;
+                            	   123: PicoPrintHexAddress:
+01:0000012A 4840            	   124:         SWAP    D0                ; Imprime parte alta primeiro
+01:0000012C 6102            	   125:         JSR     .PrintWordHex
+01:0000012E 4840            	   126:         SWAP    D0                ; Parte baixa
+                            	   127: .PrintWordHex:
+01:00000130 E158            	   128:         ROL.W   #8,D0             ; Byte mais significativo primeiro
+01:00000132 6102            	   129:         JSR     PicoPrintByteHex
+01:00000134 E058            	   130:         ROR.W   #8,D0             ; Byte menos significativo
+                            	   131: PicoPrintByteHex:
+01:00000136 1F00            	   132:         MOVE.B  D0,-(SP)          ; Salva byte original
+01:00000138 E808            	   133:         LSR.B   #4,D0             ; Nibble alto
+01:0000013A 6106            	   134:         BSR     .PrintNibble
+01:0000013C 101F            	   135:         MOVE.B  (SP)+,D0          ; Recupera byte
+01:0000013E 0200000F        	   136:         ANDI.B  #$0F,D0           ; Nibble baixo
+                            	   137: .PrintNibble:
+01:00000142 B03C0009        	   138:         CMP.B   #9,D0
+01:00000146 6302            	   139:         BLS     .Decimal
+01:00000148 5E00            	   140:         ADD.B   #7,D0             ; Ajuste para A-F
+                            	   141: .Decimal:
+01:0000014A D03C0030        	   142:         ADD.B   #'0',D0
+01:0000014E 60BC            	   143:         JMP     PicoWriteChar    ; Usa JMP para tail call optimization
+                            	   144: 
+
+Source: "test.asm"
+                            	    57:         INCLUDE "cmd_mem_dump.asm"
+
+Source: "cmd_mem_dump.asm"
+                            	     1: 
+                            	     2: 
+                            	     3: 
+                            	     4: 
+                            	     5: ; ----------------------------------------------------------------------
+                            	     6: ; MemDump - Imprime dump de memória formatado
+                            	     7: ; Entrada:
+                            	     8: ;   A0 = Endereço inicial (ex: $80000)
+                            	     9: ;   D0 = Quantidade de bytes (ex: 256)
+                            	    10: ; ----------------------------------------------------------------------
+                            	    11: MEMDUMP:
+01:00000150 41F900000000    	    12:         LEA     MsgDumpHeader,A0
+01:00000156 6100FEF4        	    13:         JSR     WriteString
+01:0000015A 207900080234    	    14:         MOVE.L  (addressInHex),A0
+01:00000160 2008            	    15:         MOVE.L  A0,D0
+01:00000162 61C6            	    16:         JSR     PicoPrintHexAddress
+01:00000164 610000C2        	    17:         JSR     NewLine
+                            	    18: 
+01:00000168 41F900000013    	    19:         LEA     MsgDumpHeader1,A0
+01:0000016E 6100FEDC        	    20:         JSR     WriteString
+                            	    21: 
+01:00000172 207900080234    	    22:         MOVE.L  (addressInHex),A0
+                            	    23:         ; Calcula endereço final
+                            	    24: 
+                            	    25: DUMPLOOPMASTER:
+01:00000178 7200            	    26:         CLR.L   D1
+01:0000017A 2208            	    27:         MOVE.L  A0,D1
+01:0000017C 0681000000FF    	    28:         ADDI.L  #$000000FF,D1             ; D1 = endereço final
+                            	    29:         ;MOVE.L  D1,D0
+                            	    30:         ;JSR     PicoPrintHexAddress
+                            	    31:         ;JSR     new_line
+                            	    32: 
+                            	    33:         ;aguarda um caractere ser digitado mas nao usa é somente para parar a execução aqui
+                            	    34:         ;JSR     ReadChar
+                            	    35: 
+                            	    36: 
+                            	    37: DumpLoop:
+                            	    38:         ; Nova linha a cada 16 bytes
+01:00000182 2008            	    39:         MOVE.L  A0,D0
+01:00000184 02800000000F    	    40:         ANDI.L  #$0000000F,D0     ; Verifica se é início de linha
+01:0000018A 6614            	    41:         BNE     NoNewLine
+                            	    42: 
+                            	    43:         ; Imprime endereço
+01:0000018C 2008            	    44:         MOVE.L  A0,D0
+01:0000018E 619A            	    45:         JSR     PicoPrintHexAddress    ; Imprime 8 dígitos hex
+                            	    46: 
+01:00000190 103C003A        	    47:         MOVE.B  #':',D0
+01:00000194 6100FEB2        	    48:         JSR     WriteChar
+01:00000198 103C0020        	    49:         MOVE.B  #' ',D0
+01:0000019C 6100FEAA        	    50:         JSR     WriteChar
+                            	    51: 
+                            	    52: NoNewLine:
+                            	    53:         ; Imprime byte em hex
+01:000001A0 1018            	    54:         MOVE.B  (A0)+,D0
+01:000001A2 6192            	    55:         JSR     PicoPrintByteHex
+                            	    56: 
+01:000001A4 103C0020        	    57:         MOVE.B  #' ',D0
+01:000001A8 6100FE9E        	    58:         JSR     WriteChar
+                            	    59: 
+                            	    60:         ; Verifica fim da linha (16 bytes)
+01:000001AC 2008            	    61:         MOVE.L  A0,D0
+01:000001AE 02800000000F    	    62:         ANDI.L  #$0000000F,D0
+01:000001B4 664E            	    63:         BNE     NoEndLine
+                            	    64: 
+                            	    65:         ; Imprime caracteres ASCII
+01:000001B6 103C0020        	    66:         MOVE.B  #' ',D0
+01:000001BA 6100FE8C        	    67:         JSR     WriteChar
+01:000001BE 103C007C        	    68:         MOVE.B  #'|',D0
+01:000001C2 6100FE84        	    69:         JSR     WriteChar
+                            	    70: 
+01:000001C6 43E8FFF0        	    71:         LEA     -16(A0),A1        ; Volta ao início da linha
+01:000001CA 740F            	    72:         MOVEQ   #15,D2            ; 16 caracteres
+                            	    73: 
+                            	    74: AsciiLoop:
+01:000001CC 1019            	    75:         MOVE.B  (A1)+,D0
+01:000001CE B03C0020        	    76:         CMP.B   #32,D0            ; Verifica se é imprimível
+01:000001D2 6D0C            	    77:         BLT     NonPrintable
+01:000001D4 B03C007E        	    78:         CMP.B   #126,D0
+01:000001D8 6E06            	    79:         BGT     NonPrintable
+                            	    80: 
+01:000001DA 6100FE6C        	    81:         JSR     WriteChar
+01:000001DE 6008            	    82:         BRA     NextAscii
+                            	    83: 
+                            	    84: NonPrintable:
+01:000001E0 103C002E        	    85:         MOVE.B  #'.',D0           ; Substitui não imprimíveis
+01:000001E4 6100FE62        	    86:         JSR     WriteChar
+                            	    87: 
+                            	    88: NextAscii:
+01:000001E8 51CAFFE2        	    89:         DBRA    D2,AsciiLoop
+                            	    90: 
+01:000001EC 103C007C        	    91:         MOVE.B  #'|',D0
+01:000001F0 6100FE56        	    92:         JSR     WriteChar
+01:000001F4 103C000D        	    93:         MOVE.B  #13,D0            ; CR
+01:000001F8 6100FE4E        	    94:         JSR     WriteChar
+01:000001FC 103C000A        	    95:         MOVE.B  #10,D0            ; LF
+01:00000200 6100FE46        	    96:         JSR     WriteChar
+                            	    97: 
+                            	    98: NoEndLine:
+                            	    99:         ; Verifica fim do dump
+01:00000204 B1C1            	   100:         CMP.L   D1,A0
+01:00000206 6300FF7A        	   101:         BLS     DumpLoop
+                            	   102: 
+01:0000020A 2F08            	   103:         MOVE.L  A0,-(SP)          ; Salva endereço atual
+01:0000020C 41F900000310    	   104:         LEA     MsgHitAnyKey,A0
+01:00000212 6100FE38        	   105:         JSR     WriteString
+01:00000216 6100FE32        	   106:         JSR     ReadChar
+01:0000021A B03C001B        	   107:         CMP.B   #$1B,D0
+01:0000021E 6706            	   108:         BEQ     .fim
+                            	   109: 
+01:00000220 205F            	   110:         MOVE.L  (SP)+,A0          ; Recupera endereço atual
+01:00000222 6000FF54        	   111:         BRA     DUMPLOOPMASTER
+                            	   112: .fim
+01:00000226 4E75            	   113:         RTS
+                            	   114: 
+                            	   115: NewLine:
+01:00000228 4E75            	   116:         RTS        
+
+Source: "test.asm"
+                            	    58: 
+                            	    59:         ;ORG $00008000
+                            	    60: ;        INCLUDE "trap1.asm"
+                            	    61: 
+                            	    62:         INCLUDE "section_data.asm"
+
+Source: "section_data.asm"
+                            	     1: ; ----------------------------------------------------------------------
+                            	     2: ; SECTION data
+                            	     3: ;-----------------------------------------------------------------------
+                            	     4:     SECTION .rodata
+                            	     5:     SECTION .data
+                            	     6: 
+                            	     7: ; ----------------------------------------------------------------------
+                            	     8: ; Strings do Sistema
+                            	     9: ; ----------------------------------------------------------------------
+                            	    10: MsgDumpHeader:
+03:00000000 4D656D6F72792044	    11:     DC.B    "Memory Dump from :",0
+03:00000008 756D702066726F6D
+03:00000010 203A
+03:00000012 00
+                            	    12: MsgDumpHeader1:
+03:00000013 4164647265737320	    13:     DC.B    "Address   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F  ASCII",13,10
+03:0000001B 2020303020303120
+03:00000023 3032203033203034
+03:0000002B 2030352030362030
+03:00000033 3720303820303920
+03:0000003B 3041203042203043
+03:00000043 2030442030452030
+03:0000004B 4620204153434949
+03:00000053 0D
+03:00000054 0A
+03:00000055 2D2D2D2D2D2D2D2D	    14:     DC.B    "--------  -----------------------------------------------  ----------------",13,10,0
+03:0000005D 20202D2D2D2D2D2D
+03:00000065 2D2D2D2D2D2D2D2D
+03:0000006D 2D2D2D2D2D2D2D2D
+03:00000075 2D2D2D2D2D2D2D2D
+03:0000007D 2D2D2D2D2D2D2D2D
+03:00000085 2D2D2D2D2D2D2D2D
+03:0000008D 2D20202D2D2D2D2D
+03:00000095 2D2D2D2D2D2D2D2D
+03:0000009D 2D2D2D
+03:000000A0 0D
+03:000000A1 0A
+03:000000A2 00
+                            	    15: MsgMSGINIT:
+03:000000A3 0D              	    16:     DC.B    13,10,"Orion68 - copyright (C) pdsilva(pgordao).VBug2.0",13,10
+03:000000A4 0A
+03:000000A5 4F72696F6E363820
+03:000000AD 2D20636F70797269
+03:000000B5 6768742028432920
+03:000000BD 706473696C766128
+03:000000C5 70676F7264616F29
+03:000000CD 2E56427567322E30
+03:000000D5 0D
+03:000000D6 0A
+03:000000D7 4D43363830303020	    17:     DC.B    "MC68000 System Monitor",13,10
+03:000000DF 53797374656D204D
+03:000000E7 6F6E69746F72
+03:000000ED 0D
+03:000000EE 0A
+                            	    18:     INCLUDE "build_date.inc"
+
+Source: "build_date.inc"
+                            	     1: ;From here it is generated and pushed by update_build.sh
+                            	     2: BUILD_DATE:
+03:000000EF 4275696C642E3A20	     3:       DC.B "Build.: 2026-05-15",13,10
+03:000000F7 323032362D30352D
+03:000000FF 3135
+03:00000101 0D
+03:00000102 0A
+03:00000103 53657269616C3A20	     4:       DC.B "Serial: 000001",13,10,0
+03:0000010B 303030303031
+03:00000111 0D
+03:00000112 0A
+03:00000113 00
+                            	     5: ;End generated code
+                            	     6: 
+
+Source: "section_data.asm"
+                            	    19:     INCLUDE "build_counter.inc"
+
+Source: "build_counter.inc"
+03:00000114 436F6D70696C6174	     1:       DC.B "Compilation: #00",0
+03:0000011C 696F6E3A20233030
+03:00000124 00
+                            	     2: 
+
+Source: "section_data.asm"
+03:00000125 2D2D2D2D2D2D2D2D	    20:     DC.B    "-------------------------------------------",13,10,13,10,0
+03:0000012D 2D2D2D2D2D2D2D2D
+03:00000135 2D2D2D2D2D2D2D2D
+03:0000013D 2D2D2D2D2D2D2D2D
+03:00000145 2D2D2D2D2D2D2D2D
+03:0000014D 2D2D2D
+03:00000150 0D
+03:00000151 0A
+03:00000152 0D
+03:00000153 0A
+03:00000154 00
+                            	    21: MsgMenuText:
+03:00000155 332E204C6F616420	    22:     DC.B    "3. Load Program (PC)",13,10
+03:0000015D 50726F6772616D20
+03:00000165 28504329
+03:00000169 0D
+03:0000016A 0A
+03:0000016B 352E2052756E2050	    23:     DC.B    "5. Run Program",13,10
+03:00000173 726F6772616D
+03:00000179 0D
+03:0000017A 0A
+03:0000017B 372E204D656D6F72	    24:     DC.B    "7. Memory dump from address buffer",13,10
+03:00000183 792064756D702066
+03:0000018B 726F6D2061646472
+03:00000193 6573732062756666
+03:0000019B 6572
+03:0000019D 0D
+03:0000019E 0A
+03:0000019F 382E205265616420	    25:     DC.B    "8. Read hexa value and put in address buffer",13,10
+03:000001A7 686578612076616C
+03:000001AF 756520616E642070
+03:000001B7 757420696E206164
+03:000001BF 6472657373206275
+03:000001C7 66666572
+03:000001CB 0D
+03:000001CC 0A
+03:000001CD 392E2046726F6D20	    26:     DC.B    "9. From screen to buffer E from buffer to screen",13,10
+03:000001D5 73637265656E2074
+03:000001DD 6F20627566666572
+03:000001E5 20452066726F6D20
+03:000001ED 6275666665722074
+03:000001F5 6F2073637265656E
+03:000001FD 0D
+03:000001FE 0A
+03:000001FF 3E20            	    27:     DC.B    "> ",0
+03:00000201 00
+                            	    28: MsgLoadDoneMsg:
+03:00000202 50726F6772616D20	    29:     DC.B    "Program loaded successfully!",13,10,0
+03:0000020A 6C6F616465642073
+03:00000212 7563636573736675
+03:0000021A 6C6C7921
+03:0000021E 0D
+03:0000021F 0A
+03:00000220 00
+                            	    30: MsgWritePrompt:
+03:00000221 5772697465204164	    31:     DC.B    "Write Address: ",0
+03:00000229 64726573733A20
+03:00000230 00
+                            	    32: MsgWriteDoneMsg:
+03:00000231 0D              	    33:     DC.B    13,10,"Data written to memory!",13,10,0
+03:00000232 0A
+03:00000233 4461746120777269
+03:0000023B 7474656E20746F20
+03:00000243 6D656D6F727921
+03:0000024A 0D
+03:0000024B 0A
+03:0000024C 00
+                            	    34: MsgRunPrompt:
+03:0000024D 0D              	    35:     DC.B    13,10,"Running program...",13,10,0
+03:0000024E 0A
+03:0000024F 52756E6E696E6720
+03:00000257 70726F6772616D2E
+03:0000025F 2E2E
+03:00000261 0D
+03:00000262 0A
+03:00000263 00
+                            	    36: MsgNoProgramToRUN:
+03:00000264 4E6F2070726F6772	    37:     DC.B    "No program loaded to run",13,10,0
+03:0000026C 616D206C6F616465
+03:00000274 6420746F2072756E
+03:0000027C 0D
+03:0000027D 0A
+03:0000027E 00
+                            	    38: MsgPromptNotImplemented:
+03:0000027F 4E6F7420496D706C	    39:     DC.B    "Not Implemented!",13,10,0
+03:00000287 656D656E74656421
+03:0000028F 0D
+03:00000290 0A
+03:00000291 00
+                            	    40: MsgBufferEmpty:
+03:00000292 4F6F6F7073204275	    41:     DC.B    "Ooops Buffer Empty!",13,10,0
+03:0000029A 6666657220456D70
+03:000002A2 747921
+03:000002A5 0D
+03:000002A6 0A
+03:000002A7 00
+                            	    42: MsgTestHexInput:
+03:000002A8 0D              	    43:     DC.B    13,10,"Digite um endereco de no maximo 4bytes 8 caracteres!",13,10
+03:000002A9 0A
+03:000002AA 4469676974652075
+03:000002B2 6D20656E64657265
+03:000002BA 636F206465206E6F
+03:000002C2 206D6178696D6F20
+03:000002CA 3462797465732038
+03:000002D2 2063617261637465
+03:000002DA 72657321
+03:000002DE 0D
+03:000002DF 0A
+03:000002E0 6D61697320717565	    44:     DC.B    "mais que isso sera descatado os excedentes...",13,10,0
+03:000002E8 206973736F207365
+03:000002F0 7261206465736361
+03:000002F8 7461646F206F7320
+03:00000300 6578636564656E74
+03:00000308 65732E2E2E
+03:0000030D 0D
+03:0000030E 0A
+03:0000030F 00
+                            	    45: MsgHitAnyKey:
+03:00000310 0D              	    46:     DC.B    13,10,"Hit any <ENTER> to continue <ESC> to terminate: ",0
+03:00000311 0A
+03:00000312 48697420616E7920
+03:0000031A 3C454E5445523E20
+03:00000322 746F20636F6E7469
+03:0000032A 6E7565203C455343
+03:00000332 3E20746F20746572
+03:0000033A 6D696E6174653A20
+03:00000342 00
+                            	    47: MsgXmodemInit:
+03:00000343 584D4F44454D2052	    48:     DC.B    "XMODEM Receiver Initialized",13,10,0
+03:0000034B 6563656976657220
+03:00000353 496E697469616C69
+03:0000035B 7A6564
+03:0000035E 0D
+03:0000035F 0A
+03:00000360 00
+                            	    49: MsgXmodemWaitingSoh:
+03:00000361 57616974696E6720	    50:     DC.B    "Waiting for SOH (Start of Header)...",13,10,0
+03:00000369 666F7220534F4820
+03:00000371 285374617274206F
+03:00000379 6620486561646572
+03:00000381 292E2E2E
+03:00000385 0D
+03:00000386 0A
+03:00000387 00
+                            	    51: MsgCs:
+03:00000388 436865636B73756D	    52:     DC.B    "Checksum ROM.: ",0
+03:00000390 20524F4D2E3A20
+03:00000397 00
+                            	    53: MsgCscalc:
+03:00000398 202D20436865636B	    54:     DC.B    " - Checksum CAL.: ",0
+03:000003A0 73756D2043414C2E
+03:000003A8 3A20
+03:000003AA 00
+                            	    55: MsgDefaultHandler:
+03:000003AB 2044656661756C74	    56:     DC.B    " Default handler wrote UART ",13,10,0
+03:000003B3 2068616E646C6572
+03:000003BB 2077726F74652055
+03:000003C3 41525420
+03:000003C7 0D
+03:000003C8 0A
+03:000003C9 00
+                            	    57: MsgViaTrap1:
+03:000003CA 4D656E736167656D	    58:     DC.B    "Mensagem via trap #1",13,10,0
+03:000003D2 2076696120747261
+03:000003DA 70202331
+03:000003DE 0D
+03:000003DF 0A
+03:000003E0 00
+03:000003E1 457863657074696F	    59: MsgDebug:     DC.B "Exception - PC: ",0
+03:000003E9 6E202D2050433A20
+03:000003F1 00
+03:000003F2 5374617475732052	    60: MsgSr:        DC.B "Status Reg: ",0
+03:000003FA 65673A20
+03:000003FE 00
+                            	    61: ;MsgSp:        DC.B "Stack Reg: ",0
+                            	    62: ;MsgSpu:       DC.B "StackU Reg: ",0
+03:000003FF 566563746F72206F	    63: MsgVector:    DC.B "Vector offset: ",0
+03:00000407 66667365743A20
+03:0000040E 00
+03:0000040F 566563746F72206E	    64: MsgVectorNum: DC.B "Vector number: ",0
+03:00000417 756D6265723A20
+03:0000041E 00
+03:0000041F 427573204572726F	    65: MsgBusError:  DC.B "Bus Error!",0
+03:00000427 7221
+03:00000429 00
+03:0000042A 4164647265737320	    66: MsgAddrError: DC.B "Address Error!",0
+03:00000432 4572726F7221
+03:00000438 00
+03:00000439 496C6C6567616C20	    67: MsgIllegal:   DC.B "Illegal Instruction!",0
+03:00000441 496E737472756374
+03:00000449 696F6E21
+03:0000044D 00
+03:0000044E 5452415020496E73	    68: MsgTrap:      DC.B "TRAP Instruction!",0
+03:00000456 7472756374696F6E
+03:0000045E 21
+03:0000045F 00
+03:00000460 556E6B6E6F776E20	    69: MsgUnknown:   DC.B "Unknown Exception!",0
+03:00000468 457863657074696F
+03:00000470 6E21
+03:00000472 00
+                            	    70: 
+                            	    71:     ALIGN   2
+                            	    72:     ;Isso preenche 762 com 00
+                            	    73:     ;DS.B    $00000762 - *, $00
+03:00000474 524F4D76342E31  	    74:     DC.B    "ROMv4.1",0   ; String de identificação
+03:0000047B 00
+                            	    75:     ;DS.B    $00002968 - *, $00
+                            	    76:     ORG     $3FFC
+                            	    77: checksum_rom:
+03:00003FFC 00000000        	    78:     DC.L    0     ; Valor calculado
+                            	    79: 
+
+Source: "test.asm"
+                            	    63:         INCLUDE "section_bss.asm"
+
+Source: "section_bss.asm"
+                            	     1: ; ----------------------------------------------------------------------
+                            	     2: ; SECTION bss
+                            	     3: ;-----------------------------------------------------------------------
+                            	     4:     SECTION .bss
+                            	     5:     ORG     $80000 ;RAM_VARIABLES               ; Área para variáveis
+                            	     6: ;=== System variables
+04:00080000 00000000        	     7: romBase             DS.L 1
+04:00080004 00000000        	     8: romSize             DS.L 1
+04:00080008 00000000        	     9: ramBase             DS.L 1
+04:0008000C 00000000        	    10: ramSize             DS.L 1
+04:00080010 00000000        	    11: currentUart         DS.L 1
+04:00080014 0000            	    12: currentBaudRate     DS.W 1
+04:00080016 00000000        	    13: cconout             DS.L 1
+04:0008001A 00000000        	    14: cconin              DS.L 1
+04:0008001E 00000000        	    15: currentTimer        DS.L 1
+                            	    16: ;flg_orion           DS.L   1         ;minhas_flags   
+                            	    17: 
+                            	    18:         ALIGN 2
+04:00080024 00              	    19: buf_xmodem          DS.B   512        ; Buffer de dados
+04:00080025 *
+                            	    20: ;flg_pgm_loaded      DS.B   1
+                            	    21: ;blockNumber         DS.B   1          ; Número do bloco atual
+                            	    22: ;expectedBlock       DS.B   1          ; Próximo bloco esperado
+                            	    23: 
+                            	    24:         ALIGN 4
+                            	    25: ;checksumCalc       DS.L   1
+                            	    26: ;monitorStack       DS.L   1
+04:00080230 00000000        	    27: systemTick          DS.L   1
+04:00080234 00000000        	    28: addressInHex        DS.L   1
+                            	    29: 
+                            	    30:         ORG $00082000
+                            	    31:         ALIGN 2
+04:00082000 00              	    32: buf_pgm             DS.B   8192
+04:00082001 *
+                            	    33:         END
+
+Source: "test.asm"
+                            	    64: 
+
+
+Symbols by name:
+AsciiLoop                       01:000001CC
+BUILD_DATE                      03:000000EF
+CMD_CLEAR_SCREEN                 E:000000A4
+CMD_GO_HOME                      E:000000A1
+CMD_SET_CUR_POS                  E:000000A3
+DLL                              E:00FF4001
+DLM                              E:00FF4003
+DUMPLOOPMASTER                  01:00000178
+DumpLoop                        01:00000182
+FCR                              E:00FF4005
+ISR                              E:00FF4005
+InitPicoVga                     01:000000BE
+InitUart                        01:0000004E
+LCR                              E:00FF4007
+LSR                              E:00FF400B
+MEMDUMP                         01:00000150
+MsgAddrError                    03:0000042A
+MsgBufferEmpty                  03:00000292
+MsgBusError                     03:0000041F
+MsgCs                           03:00000388
+MsgCscalc                       03:00000398
+MsgDebug                        03:000003E1
+MsgDefaultHandler               03:000003AB
+MsgDumpHeader                   03:00000000
+MsgDumpHeader1                  03:00000013
+MsgHitAnyKey                    03:00000310
+MsgIllegal                      03:00000439
+MsgLoadDoneMsg                  03:00000202
+MsgMSGINIT                      03:000000A3
+MsgMenuText                     03:00000155
+MsgNoProgramToRUN               03:00000264
+MsgPromptNotImplemented         03:0000027F
+MsgRunPrompt                    03:0000024D
+MsgSr                           03:000003F2
+MsgTestHexInput                 03:000002A8
+MsgTrap                         03:0000044E
+MsgUnknown                      03:00000460
+MsgVector                       03:000003FF
+MsgVectorNum                    03:0000040F
+MsgViaTrap1                     03:000003CA
+MsgWriteDoneMsg                 03:00000231
+MsgWritePrompt                  03:00000221
+MsgXmodemInit                   03:00000343
+MsgXmodemWaitingSoh             03:00000361
+NewLine                         01:00000228
+NextAscii                       01:000001E8
+NoEndLine                       01:00000204
+NoNewLine                       01:000001A0
+NonPrintable                    01:000001E0
+PicoClearScreen                 01:000000FE
+PicoGoHome                      01:000000C8
+PicoPrintByteHex                01:00000136
+PicoPrintHexAddress             01:0000012A
+PicoPrintString                 01:00000120
+PicoRunCmd                      01:000000C0
+PicoSetCursor                   01:000000D4
+PicoWriteChar                   01:0000010C
+REG_X_HIGH                       E:00FF802D
+REG_X_LOW                        E:00FF802F
+REG_Y_HIGH                       E:00FF8031
+REG_Y_LOW                        E:00FF8033
+RHR                              E:00FF4001
+RUN_CMD                          E:00FF803D
+ReadChar                        01:0000004A
+SCR                              E:00FF400F
+SPR                              E:00FF400F
+START                           01:00000000
+THR                              E:00FF4001
+UartReadChar                    01:000000A6
+UartWriteChar                   01:0000008E
+WRITE_SCREEN                     E:00FF8001
+WriteChar                       01:00000048
+WriteString                     01:0000004C
+addressInHex                     A:00080234
+buf_pgm                          A:00082000
+buf_xmodem                       A:00080024
+cconin                           A:0008001A
+cconout                          A:00080016
+checksum_rom                     A:00003FFC
+currentBaudRate                  A:00080014
+currentTimer                     A:0008001E
+currentUart                      A:00080010
+mainLoop                        01:00000020
+ramBase                          A:00080008
+ramSize                          A:0008000C
+romBase                          A:00080000
+romSize                          A:00080004
+subLoop                         01:0000002E
+systemTick                       A:00080230
+
+Symbols by value:
+00000000 MsgDumpHeader
+00000000 START
+00000013 MsgDumpHeader1
+00000020 mainLoop
+0000002E subLoop
+00000048 WriteChar
+0000004A ReadChar
+0000004C WriteString
+0000004E InitUart
+0000008E UartWriteChar
+000000A1 CMD_GO_HOME
+000000A3 CMD_SET_CUR_POS
+000000A3 MsgMSGINIT
+000000A4 CMD_CLEAR_SCREEN
+000000A6 UartReadChar
+000000BE InitPicoVga
+000000C0 PicoRunCmd
+000000C8 PicoGoHome
+000000D4 PicoSetCursor
+000000EF BUILD_DATE
+000000FE PicoClearScreen
+0000010C PicoWriteChar
+00000120 PicoPrintString
+0000012A PicoPrintHexAddress
+00000136 PicoPrintByteHex
+00000150 MEMDUMP
+00000155 MsgMenuText
+00000178 DUMPLOOPMASTER
+00000182 DumpLoop
+000001A0 NoNewLine
+000001CC AsciiLoop
+000001E0 NonPrintable
+000001E8 NextAscii
+00000202 MsgLoadDoneMsg
+00000204 NoEndLine
+00000221 MsgWritePrompt
+00000228 NewLine
+00000231 MsgWriteDoneMsg
+0000024D MsgRunPrompt
+00000264 MsgNoProgramToRUN
+0000027F MsgPromptNotImplemented
+00000292 MsgBufferEmpty
+000002A8 MsgTestHexInput
+00000310 MsgHitAnyKey
+00000343 MsgXmodemInit
+00000361 MsgXmodemWaitingSoh
+00000388 MsgCs
+00000398 MsgCscalc
+000003AB MsgDefaultHandler
+000003CA MsgViaTrap1
+000003E1 MsgDebug
+000003F2 MsgSr
+000003FF MsgVector
+0000040F MsgVectorNum
+0000041F MsgBusError
+0000042A MsgAddrError
+00000439 MsgIllegal
+0000044E MsgTrap
+00000460 MsgUnknown
+00003FFC checksum_rom
+00080000 romBase
+00080004 romSize
+00080008 ramBase
+0008000C ramSize
+00080010 currentUart
+00080014 currentBaudRate
+00080016 cconout
+0008001A cconin
+0008001E currentTimer
+00080024 buf_xmodem
+00080230 systemTick
+00080234 addressInHex
+00082000 buf_pgm
+00FF4001 DLL
+00FF4001 RHR
+00FF4001 THR
+00FF4003 DLM
+00FF4005 FCR
+00FF4005 ISR
+00FF4007 LCR
+00FF400B LSR
+00FF400F SCR
+00FF400F SPR
+00FF8001 WRITE_SCREEN
+00FF802D REG_X_HIGH
+00FF802F REG_X_LOW
+00FF8031 REG_Y_HIGH
+00FF8033 REG_Y_LOW
+00FF803D RUN_CMD

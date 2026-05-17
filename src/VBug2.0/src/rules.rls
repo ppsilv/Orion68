@@ -16,3 +16,14 @@ Nomes para rotinas de serviços
 Nomes de equates
     Com underscore entre palavras
     Tudo em maiusculas
+
+Nomes de buffers
+    com underscore entre palavras
+    inicio tem que ter buf_
+    Ex: buf_xxxx
+
+Nomes de flags
+    com underscore entre palavras
+    inicio tem que ter flg_
+    Ex: flg_xxxx
+

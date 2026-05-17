@@ -3,23 +3,23 @@
 
 
 ;Uart register offsets
-UART_BASE   equ         $FF4000
-RHR         equ         $1   ; receive holding register (read)
-THR         equ         $1   ; transmit holding register (write)
-IER         equ         $3   ; interrupt enable register
-ISR         equ         $5   ; interrupt status register (read)
-FCR         equ         $5   ; FIFO control register (write)
-LCR         equ         $7   ; line control register
-MCR         equ         $9   ; modem control register
-LSR         equ         $B   ; line status register
-MSR         equ         $D   ; modem status register
-SPR         equ         $F   ; scratchpad register (reserved for system use)
-DLL         equ         $1   ; divisor latch LSB
-DLM         equ         $3   ; divisor latch MSB
+UART_BASE   equ     $FF4000
+RHR         equ     $FF4001   ; receive holding register (read)
+THR         equ     $FF4001   ; transmit holding register (write)
+IER         equ     $FF4003   ; interrupt enable register
+ISR         equ     $FF4005   ; interrupt status register (read)
+FCR         equ     $FF4005   ; FIFO control register (write)
+LCR         equ     $FF4007   ; line control register
+MCR         equ     $FF4009   ; modem control register
+LSR         equ     $FF400B   ; line status register
+MSR         equ     $FF400D   ; modem status register
+SPR         equ     $FF400F   ; scratchpad register (reserved for system use)
+DLL         equ     $FF4001   ; divisor latch LSB
+DLM         equ     $FF4003   ; divisor latch MSB
 ; aliases for register names (used by different manufacturers)cd ..
-RBR         equ         RHR ; receive buffer register
-IIR         equ         ISR ; interrupt identification register
-SCR         equ         SPR ; scratch register
+RBR         equ     RHR ; receive buffer register
+IIR         equ     ISR ; interrupt identification register
+SCR         equ     SPR ; scratch register
 
 B009600     equ         $0060
 B019200     equ         $0030
@@ -57,14 +57,14 @@ B921600H    equ         $00
 InitUart:
         lea     currentUart,A1
         move.l  currentBaudRate,D0
-        move.b  #%10000011,LCR(A1)    ;DLAB=1
+        move.b  #%10000011,LCR   ;(A1)    ;DLAB=1
         NOP
         NOP      
-        move.b  #$08,DLL(A1)       ; set divisor latch low byte
-        move.b  #$00,DLM(A1)       ; set divisor latch high byte
-        move.b  #%00000011,LCR(A1) ; 8 data bits, no parity, 1 stop bit, DLAB=0
-        move.b  #%00001101,FCR(A1)    ; enable FIFO
-        clr.b   SCR(A1)                 ; clear the scratch register
+        move.b  #$08,DLL     ;(A1)       ; set divisor latch low byte
+        move.b  #$00,DLM     ;(A1)       ; set divisor latch high byte
+        move.b  #%00000011,LCR  ;(A1)      ; 8 data bits, no parity, 1 stop bit, DLAB=0
+        move.b  #%00001101,FCR ;(A1)     ; enable FIFO
+        clr.b   SCR    ;(A1)                 ; clear the scratch register
         RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -74,9 +74,9 @@ InitUart:
 UartWriteChar:
         lea     currentUart,A1
 .WaitTx:
-        btst    #5,LSR(A1)      ; wait until transmit holding register is empty
+        btst    #5,LSR  ;(A1)      ; wait until transmit holding register is empty
         beq     .WaitTx
-        move.b  D0,THR(A1)      ; transmit byte
+        move.b  D0,THR  ;(A1)      ; transmit byte
         RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -87,7 +87,7 @@ UartWriteChar:
 UartReadChar:
         lea     currentUart,A1
 .WaitRx:
-        btst    #0,LSR(A1)        ; RX ready?
+        btst    #0,LSR ;(A1)        ; RX ready?
         beq     .WaitRx
-        move.b  RHR(A1),D0
+        move.b  RHR,D0
         RTS
