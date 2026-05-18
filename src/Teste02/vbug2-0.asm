@@ -13,26 +13,26 @@
         DC.L    SERVICE_TRACE     ; Trace
         DC.L    SERVICE_LINE_A    ; Line A Emulator
         DC.L    SERVICE_LINE_F    ; Line F Emulator
-        DC.L    DefaultHandler     ; $60: Spurious Interrupt
-        DC.L    DefaultHandler     ; $64: Level 1 Interrupt
-        DC.L    DefaultHandler     ; $68: Level 2 Interrupt
-        DC.L    DefaultHandler     ; $6C: Level 3 Interrupt
-        DC.L    DefaultHandler     ; $70: Level 4 Interrupt
-        DC.L    DefaultHandler     ; $74: Level 5 Interrupt
-        DC.L    DefaultHandler     ; $78: Level 6 Interrupt
-        DC.L    DefaultHandler     ; $7C: Level 7 Interrupt
+        DC.L    DefaultHandler     
+        DC.L    DefaultHandler     
+        DC.L    DefaultHandler     
+        DC.L    DefaultHandler     
+        DC.L    DefaultHandler     
+        DC.L    DefaultHandler     
+        DC.L    DefaultHandler     
+        DC.L    DefaultHandler     
         DC.L    DefaultHandler
         DC.L    DefaultHandler
         DC.L    DefaultHandler
         DC.L    DefaultHandler
-        DC.L    SpuriousHandler
-        DC.L    Int1Handler
-        DC.L    Int2Handler
-        DC.L    Int3Handler
-        DC.L    Int4Handler
-        DC.L    Int5Handler
-        DC.L    Int6Handler
-        DC.L    Int7Handler
+        DC.L    SpuriousHandler    ; $60: Spurious handler
+        DC.L    Int1Handler        ; $64: Level 1 Interrupt
+        DC.L    Int2Handler        ; $68: Level 2 Interrupt
+        DC.L    Int3Handler        ; $6C: Level 3 Interrupt
+        DC.L    Int4Handler        ; $70: Level 4 Interrupt
+        DC.L    Int5Handler        ; $74: Level 5 Interrupt
+        DC.L    Int6Handler        ; $78: Level 6 Interrupt
+        DC.L    Int7Handler        ; $7C: Level 7 Interrupt
         DC.L    Trap0Handler
         DC.L    Trap1Handler
         DC.L    Trap2Handler
@@ -330,6 +330,14 @@ Vbug2Start:
         ;Set USP( user stack pointer)
 ;        LEA     USER_SP,A0
 ;        MOVE.L  A0,USP        ; 🔥 Define User Stack Pointe
+        ;Clear memory
+        LEA     $080000,A0
+        LEA     $0FFFFF,A1
+        MOVEQ   #0,D0
+.ClearLoop:
+        MOVE.L  D0,(A0)+
+        CMPA.L  A0,A1
+        BHI     .ClearLoop
         ;Initialize memory size
         MOVE.L  #$00000000,romBase
         MOVE.L  #$00004000,romSize
