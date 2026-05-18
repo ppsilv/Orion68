@@ -1,5 +1,20 @@
 
+VerificaEndereco:
 
+.DentroDaFaixa:
+        ; Se o código chegar aqui, significa que:
+        ; $80000 <= A0 <= $FFFFF (O endereço é válido!)
+        ; ... seu código para endereço válido aqui ...
+        BRA     .Fim
+
+.OutOfRange:
+        ; Se desviou para cá, o endereço é inválido (Menor que $80000 OU Maior que $FFFFF)
+        ; ... seu tratamento de erro aqui ...
+
+
+
+.Fim:
+        RTS
 
 
 ; ----------------------------------------------------------------------
@@ -8,10 +23,13 @@
 ;   A0 = Endereço inicial (ex: $80000)
 ;   D0 = Quantidade de bytes (ex: 256)
 ; ----------------------------------------------------------------------
-MEMDUMP:
+MemDump:
         LEA     MsgDumpHeader,A0
         JSR     WriteString
         MOVE.L  (addressInHex),A0
+        CMPA.L  #$FFFFF,A0        ; Compara A0 com o limite superior
+        BHI     OutOfRange       ; BHI (Branch if Higher): Desvia se A0 > $FFFFF
+
         MOVE.L  A0,D0
         JSR     PicoPrintHexAddress
         JSR     NewLine
@@ -21,19 +39,13 @@ MEMDUMP:
 
         MOVE.L  (addressInHex),A0
         ; Calcula endereço final
-
-DUMPLOOPMASTER:
-        CLR.L   D1
-        MOVE.L  A0,D1
-        ADDI.L  #$000000FF,D1             ; D1 = endereço final
-        ;MOVE.L  D1,D0
-        ;JSR     PicoPrintHexAddress
-        ;JSR     new_line
-
-        ;aguarda um caractere ser digitado mas nao usa é somente para parar a execução aqui
-        ;JSR     ReadChar
-
-
+DumpLoopMaster:
+        MOVE.W  #$0000,D0
+        MOVE.W  #$0008,D1
+        JSR     PicoSetCursor
+        CLR.L   D3
+        MOVE.L  A0,D3
+        ADDI.L  #$000000FF,D3             ; D3 = endereço final    
 DumpLoop:
         ; Nova linha a cada 16 bytes
         MOVE.L  A0,D0
@@ -60,7 +72,7 @@ NoNewLine:
         ; Verifica fim da linha (16 bytes)
         MOVE.L  A0,D0
         ANDI.L  #$0000000F,D0
-        BNE     NoEndLine
+        BNE     NoNewLine
 
         ; Imprime caracteres ASCII
         MOVE.B  #' ',D0
@@ -73,10 +85,10 @@ NoNewLine:
 
 AsciiLoop:
         MOVE.B  (A1)+,D0
-        CMP.B   #32,D0            ; Verifica se é imprimível
-        BLT     NonPrintable
-        CMP.B   #126,D0
-        BGT     NonPrintable
+        CMP.B   #$20,D0            ; Verifica se é imprimível
+        BLO     NonPrintable
+        CMP.B   #$7E,D0
+        BHI     NonPrintable
 
         JSR     WriteChar
         BRA     NextAscii
@@ -97,19 +109,27 @@ NextAscii:
 
 NoEndLine:
         ; Verifica fim do dump
-        CMP.L   D1,A0
+        CMP.L   D3,A0
         BLS     DumpLoop
 
         MOVE.L  A0,-(SP)          ; Salva endereço atual
         LEA     MsgHitAnyKey,A0
         JSR     WriteString
-        JSR     ReadChar
+        JSR     UartReadChar
         CMP.B   #$1B,D0
         BEQ     .fim
 
-        MOVE.L  (SP)+,A0          ; Recupera endereço atual
-        BRA     DUMPLOOPMASTER
-.fim
-        RTS
+        MOVE.B  #13,D0            ; CR
+        JSR     WriteChar
+        MOVE.B  #10,D0            ; LF
+        JSR     WriteChar
 
+        MOVE.L  (SP)+,A0          ; Recupera endereço atual
+        BRA     DumpLoopMaster
+.fim
+        JMP     subLoop
+OutOfRange:
+        LEA     MsgOutOfRange,A0
+        JSR     WriteString        
+        JMP     subLoop
      

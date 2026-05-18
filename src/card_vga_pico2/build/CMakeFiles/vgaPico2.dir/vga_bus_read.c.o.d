@@ -1,5 +1,5 @@
 CMakeFiles/vgaPico2.dir/vga_bus_read.c.o: \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/vga_bus_read.c \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/vga_bus_read.c \
  /home/pdsilva/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_pio/include/hardware/pio.h \
  /home/pdsilva/.pico-sdk/sdk/2.2.0/src/common/pico_base_headers/include/pico.h \
  /home/pdsilva/.pico-sdk/sdk/2.2.0/src/common/pico_base_headers/include/pico/types.h \
@@ -18,9 +18,9 @@ CMakeFiles/vgaPico2.dir/vga_bus_read.c.o: \
  /home/pdsilva/.pico-sdk/toolchain/14_2_Rel1/arm-none-eabi/include/sys/_intsup.h \
  /home/pdsilva/.pico-sdk/toolchain/14_2_Rel1/arm-none-eabi/include/sys/_stdint.h \
  /home/pdsilva/.pico-sdk/toolchain/14_2_Rel1/lib/gcc/arm-none-eabi/14.2.1/include/stddef.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/build/generated/pico_base/pico/version.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/build/generated/pico_base/pico/version.h \
  /home/pdsilva/.pico-sdk/sdk/2.2.0/src/common/pico_base_headers/include/pico/config.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/build/generated/pico_base/pico/config_autogen.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/build/generated/pico_base/pico/config_autogen.h \
  /home/pdsilva/.pico-sdk/sdk/2.2.0/src/boards/include/boards/pico2.h \
  /home/pdsilva/.pico-sdk/sdk/2.2.0/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
  /home/pdsilva/.pico-sdk/sdk/2.2.0/src/rp2350/pico_platform/include/pico/platform.h \
@@ -56,5 +56,5 @@ CMakeFiles/vgaPico2.dir/vga_bus_read.c.o: \
  /home/pdsilva/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_gpio/include/hardware/gpio_coproc.h \
  /home/pdsilva/.pico-sdk/sdk/2.2.0/src/rp2350/hardware_regs/include/hardware/regs/dreq.h \
  /home/pdsilva/.pico-sdk/sdk/2.2.0/src/rp2_common/hardware_pio/include/hardware/pio_instructions.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/build/vga_bus_read.pio.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/vga_bus_read.h
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/build/vga_bus_read.pio.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/vga_bus_read.h

@@ -39,16 +39,16 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/pdsilva/project/tcpbox68k/software/card_vga_pico2/build/pico-sdk/tools/cmake_install.cmake")
+  include("/home/pdsilva/project/Orion68/src/card_vga_pico2/build/pico-sdk/tools/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/pdsilva/project/tcpbox68k/software/card_vga_pico2/build/pico-sdk/src/cmake_install.cmake")
+  include("/home/pdsilva/project/Orion68/src/card_vga_pico2/build/pico-sdk/src/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/pdsilva/project/tcpbox68k/software/card_vga_pico2/build/pico-sdk/docs/cmake_install.cmake")
+  include("/home/pdsilva/project/Orion68/src/card_vga_pico2/build/pico-sdk/docs/cmake_install.cmake")
 endif()
 

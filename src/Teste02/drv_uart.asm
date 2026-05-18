@@ -80,11 +80,13 @@ InitUart1:
 ; Change A1
 ; Receive char in D0
 UartWriteChar:
+        MOVE.L A1,-(SP)
         move.l  currentUart,A1
 .WaitTx:
         btst    #5,LSR(A1)      ; wait until transmit holding register is empty
         beq     .WaitTx
         move.b  D0,THR(A1)      ; transmit byte
+        MOVE.L (SP)+,A1
         RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -93,12 +95,14 @@ UartWriteChar:
 ;
 ; Return char in D0)
 UartReadChar:
+        MOVE.L A1,-(SP)
         move.l  currentUart,A1
 .WaitRx:
         btst    #0,LSR(A1)        ; RX ready?
         beq     .WaitRx
 
         move.b  RHR(A1),D0
+        MOVE.L (SP)+,A1
         RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -107,6 +111,7 @@ UartReadChar:
 ;
 ; Return char in D0)
 UartReadCharEcho:
+        MOVE.L A1,-(SP)
         move.l  currentUart,A1
 .WaitRx:
         btst    #0,LSR(A1)        ; RX ready?
@@ -117,5 +122,79 @@ UartReadCharEcho:
         btst    #5,LSR(A1)      ; wait until transmit holding register is empty
         beq     .WaitTx
         move.b  D0,THR(A1)      ; transmit byte
+        MOVE.L (SP)+,A1
+        RTS
 
+; ----------------------------------------------------------------------
+; UART_WriteString - Envia string terminada em null para UART
+; Entrada:
+;   A0 = Ponteiro para a string (endereço da string)
+; ----------------------------------------------------------------------
+UartWriteString:
+        MOVE.L  A0,-(SP)      ; Preserva D0
+        MOVE.L  D0,-(SP)      ; Preserva D0
+.WriteLoop:
+        MOVE.B  (A0)+,D0      ; Pega caractere
+        BEQ     .Done
+        JSR     UartWriteChar ; Use sua rotine existente
+        BRA     .WriteLoop
+.Done:
+        MOVE.L  (SP)+,D0
+        MOVE.L  (SP)+,A0
+        RTS
+
+; Lê número hexadecimal (retorna em D0)
+UartReadHex:
+        MOVE.L  D1,-(SP)
+        MOVE.L  D2,-(SP)
+
+        MOVEQ   #0,D0
+        MOVEQ   #28,D1            ; Máximo 8 dígitos
+        MOVEQ   #0,D2            ; Resultado em D2
+.Loop:
+        CLR.L   D0
+        JSR     UartReadChar
+        CMP.B   #13,D0
+        BEQ     .Done
+        CMP.B   #10,D0
+        BEQ     .Done
+        ;Tratando os numeros
+        CMP.B   #'0',D0
+        BGE     .maiorQueZero
+        BRA     .Loop
+.maiorQueZero:
+        CMP.B   #'9',D0
+        BLE     .isdigit
+        ;Tratando as letras
+        CMP.B   #'A',D0
+        BGE     .maiorQueA
+        BRA     .Loop
+.maiorQueA:
+        CMP.B   #'F',D0
+        BLE     .isletter
+        BRA     .Loop
+.isdigit:
+        SUB.B   #'0',D0
+        LSL.L   D1,D0
+        SUB.B   #4,D1
+        OR.L    D0,D2
+        LEA     addressInHex,A0
+        MOVE.L  D2,(A0)
+        BRA     .Loop
+.isletter:
+        SUB.B   #$37,D0
+        LSL.L   D1,D0
+        SUB.B   #4,D1
+        OR.L    D0,D2
+        LEA     addressInHex,A0
+        MOVE.L  D2,(A0)
+        BRA     .Loop
+.Done:
+        JSR     NewLine
+        LEA     addressInHex,A0
+        MOVE.L  (A0),D0
+        JSR     PrintHexAddress
+        JSR     NewLine
+        MOVE.L  (SP)+,D2
+        MOVE.L  (SP)+,D1
         RTS

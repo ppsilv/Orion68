@@ -1,5 +1,5 @@
 CMakeFiles/vgaPico2.dir/vga_drv.c.o: \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/vga_drv.c \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/vga_drv.c \
  /home/pdsilva/.pico-sdk/toolchain/14_2_Rel1/arm-none-eabi/include/stdio.h \
  /home/pdsilva/.pico-sdk/toolchain/14_2_Rel1/arm-none-eabi/include/_ansi.h \
  /home/pdsilva/.pico-sdk/toolchain/14_2_Rel1/arm-none-eabi/include/newlib.h \
@@ -30,9 +30,9 @@ CMakeFiles/vgaPico2.dir/vga_drv.c.o: \
  /home/pdsilva/.pico-sdk/toolchain/14_2_Rel1/arm-none-eabi/include/stdint.h \
  /home/pdsilva/.pico-sdk/toolchain/14_2_Rel1/arm-none-eabi/include/sys/_intsup.h \
  /home/pdsilva/.pico-sdk/toolchain/14_2_Rel1/arm-none-eabi/include/sys/_stdint.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/build/generated/pico_base/pico/version.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/build/generated/pico_base/pico/version.h \
  /home/pdsilva/.pico-sdk/sdk/2.2.0/src/common/pico_base_headers/include/pico/config.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/build/generated/pico_base/pico/config_autogen.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/build/generated/pico_base/pico/config_autogen.h \
  /home/pdsilva/.pico-sdk/sdk/2.2.0/src/boards/include/boards/pico2.h \
  /home/pdsilva/.pico-sdk/sdk/2.2.0/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
  /home/pdsilva/.pico-sdk/sdk/2.2.0/src/rp2350/pico_platform/include/pico/platform.h \
@@ -83,21 +83,21 @@ CMakeFiles/vgaPico2.dir/vga_drv.c.o: \
  /home/pdsilva/.pico-sdk/sdk/2.2.0/src/rp2350/hardware_structs/include/hardware/structs/dma.h \
  /home/pdsilva/.pico-sdk/sdk/2.2.0/src/rp2350/hardware_regs/include/hardware/regs/dma.h \
  /home/pdsilva/.pico-sdk/sdk/2.2.0/src/rp2350/hardware_structs/include/hardware/structs/dma_debug.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/build/vga320p_hsync.pio.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/build/vga320p_vsync.pio.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/build/vga320p_rgb.pio.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/build/vga640p_hsync.pio.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/build/vga640p_vsync.pio.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/build/vga640p_rgb.pio.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/build/vga_bus_read.pio.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/vga_drv.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/screen_mode.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/vga_primitives.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/cursor.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/build/vga320p_hsync.pio.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/build/vga320p_vsync.pio.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/build/vga320p_rgb.pio.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/build/vga640p_hsync.pio.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/build/vga640p_vsync.pio.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/build/vga640p_rgb.pio.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/build/vga_bus_read.pio.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/vga_drv.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/screen_mode.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/vga_primitives.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/cursor.h \
  /home/pdsilva/.pico-sdk/toolchain/14_2_Rel1/arm-none-eabi/include/string.h \
  /home/pdsilva/.pico-sdk/toolchain/14_2_Rel1/arm-none-eabi/include/sys/_locale.h \
  /home/pdsilva/.pico-sdk/toolchain/14_2_Rel1/arm-none-eabi/include/strings.h \
  /home/pdsilva/.pico-sdk/toolchain/14_2_Rel1/arm-none-eabi/include/sys/string.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/colors.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/font.h \
- /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/font_5x7.h
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/colors.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/font.h \
+ /home/pdsilva/project/Orion68/src/card_vga_pico2/font_5x7.h

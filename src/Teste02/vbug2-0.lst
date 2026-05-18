@@ -1,10 +1,10 @@
 Sections:
 00: ".vectors" (0-2C0)
 01: ".jumptable" (0-0)
-02: ".text" (0-598)
+02: ".text" (0-78C)
 03: ".rodata" (0-0)
-04: ".data" (0-473)
-05: ".bss" (0-2238)
+04: ".data" (0-4A9)
+05: ".bss" (0-263C)
 
 
 Source: "vbug2-0.asm"
@@ -12,7 +12,7 @@ Source: "vbug2-0.asm"
                             	     2:         ORG     $00000000
                             	     3:         ; --- Vetores de Exceção do 68000 ---
 00:00000000 000FFFF0        	     4:         DC.L    $000FFFF0         ; SP inicial
-00:00000004 00001212        	     5:         DC.L    Vbug2Start        ; PC inicial
+00:00000004 0000121A        	     5:         DC.L    Vbug2Start        ; PC inicial
 00:00000008 00001000        	     6:         DC.L    SERVICE_BUS_ERR   ; Bus Error
 00:0000000C 00001002        	     7:         DC.L    SERVICE_ADDR_ERR  ; Address Error
 00:00000010 00001004        	     8:         DC.L    SERVICE_ILLEGAL   ; Illegal Instruction
@@ -76,7 +76,7 @@ Source: "vbug2-0.asm"
                             	    65:         ; BRA     vbug2_start         ;       0x420
                             	    66:         ; BRA     warm_start          ;       0x424
                             	    67:         ; BRA     MenuLoop            ;       0x428
-                            	    68:         ; BRA     new_line            ;       0x42C
+                            	    68:         ; BRA     NewLine            ;       0x42C
                             	    69:         ; BRA     UART_WriteString    ;       0x430
                             	    70:         ; BRA     UART_INIT1          ;       0x434
                             	    71: ; =============================================================================
@@ -133,54 +133,54 @@ Source: "vbug2-0.asm"
 02:0000101C 322F0012        	   122:         MOVE.W  (18,SP),D1      ; ⭐⭐ SR (18 bytes abaixo)
 02:00001020 342F0014        	   123:         MOVE.W  (20,SP),D2      ; ⭐⭐ Vector Offset (20 bytes abaixo)
                             	   124:         ; Mostra informações detalhadas
-02:00001024 41F9000003E1    	   125:         LEA     MsgDebug,A0
-02:0000102A 4EB811CC        	   126:         JSR     WriteString
+02:00001024 41F900000417    	   125:         LEA     MsgDebug,A0
+02:0000102A 4EB811D2        	   126:         JSR     WriteString
 02:0000102E 2000            	   127:         MOVE.L  D0,D0           ; PC
-02:00001030 4EB811DC        	   128:         JSR     PrintAddrHex
-02:00001034 4EB811DE        	   129:         JSR     NewLine
-02:00001038 41F9000003F2    	   130:         LEA     MsgSr,A0
-02:0000103E 4EB811CC        	   131:         JSR     WriteString
+02:00001030 4EB811E8        	   128:         JSR     PrintAddrHex
+02:00001034 4EB811EA        	   129:         JSR     NewLine
+02:00001038 41F900000428    	   130:         LEA     MsgSr,A0
+02:0000103E 4EB811D2        	   131:         JSR     WriteString
 02:00001042 3001            	   132:         MOVE.W  D1,D0           ; SR
-02:00001044 4EB811DC        	   133:         JSR     PrintAddrHex
-02:00001048 4EB811DE        	   134:         JSR     NewLine
-02:0000104C 41F9000003FF    	   135:         LEA     MsgVector,A0
-02:00001052 4EB811CC        	   136:         JSR     WriteString
+02:00001044 4EB811E8        	   133:         JSR     PrintAddrHex
+02:00001048 4EB811EA        	   134:         JSR     NewLine
+02:0000104C 41F900000435    	   135:         LEA     MsgVector,A0
+02:00001052 4EB811D2        	   136:         JSR     WriteString
 02:00001056 3002            	   137:         MOVE.W  D2,D0           ; Vector offset
-02:00001058 4EB811DC        	   138:         JSR     PrintAddrHex
-02:0000105C 4EB811DE        	   139:         JSR     NewLine
+02:00001058 4EB811E8        	   138:         JSR     PrintAddrHex
+02:0000105C 4EB811EA        	   139:         JSR     NewLine
                             	   140:         ; --- ANALISA O VETOR ---
 02:00001060 E44A            	   141:         LSR.W   #2,D2           ; Divide por 4 para get vector number
 02:00001062 024200FF        	   142:         ANDI.W  #$FF,D2         ; Vector number em D2
-02:00001066 41F90000040F    	   143:         LEA     MsgVectorNum,A0
-02:0000106C 4EB811CC        	   144:         JSR     WriteString
+02:00001066 41F900000445    	   143:         LEA     MsgVectorNum,A0
+02:0000106C 4EB811D2        	   144:         JSR     WriteString
 02:00001070 3002            	   145:         MOVE.W  D2,D0
-02:00001072 4EB811DC        	   146:         JSR     PrintAddrHex
-02:00001076 4EB811DE        	   147:         JSR     NewLine
+02:00001072 4EB811E8        	   146:         JSR     PrintAddrHex
+02:00001076 4EB811EA        	   147:         JSR     NewLine
                             	   148:         ; --- MOSTRA QUAL EXCEÇÃO É ---
 02:0000107A B47C0008        	   149:         CMP.W   #8,D2
 02:0000107E 6608            	   150:         BNE     .not_bus_error
-02:00001080 41F90000041F    	   151:         LEA     MsgBusError,A0
+02:00001080 41F900000455    	   151:         LEA     MsgBusError,A0
 02:00001086 6030            	   152:         BRA     .show_msg
                             	   153: .not_bus_error:
 02:00001088 B47C0009        	   154:         CMP.W   #9,D2
 02:0000108C 6608            	   155:         BNE     .not_address_error
-02:0000108E 41F90000042A    	   156:         LEA     MsgAddrError,A0
+02:0000108E 41F900000460    	   156:         LEA     MsgAddrError,A0
 02:00001094 6022            	   157:         BRA     .show_msg
                             	   158: .not_address_error:
 02:00001096 B47C000A        	   159:         CMP.W   #10,D2
 02:0000109A 6608            	   160:         BNE     .not_illegal
-02:0000109C 41F900000439    	   161:         LEA     MsgIllegal,A0
+02:0000109C 41F90000046F    	   161:         LEA     MsgIllegal,A0
 02:000010A2 6014            	   162:         BRA     .show_msg
                             	   163: .not_illegal:
 02:000010A4 B47C0020        	   164:         CMP.W   #32,D2
 02:000010A8 6508            	   165:         BLO     .other_exception
-02:000010AA 41F90000044E    	   166:         LEA     MsgTrap,A0
+02:000010AA 41F900000484    	   166:         LEA     MsgTrap,A0
 02:000010B0 6006            	   167:         BRA     .show_msg
                             	   168: .other_exception:
-02:000010B2 41F900000460    	   169:         LEA     MsgUnknown,A0
+02:000010B2 41F900000496    	   169:         LEA     MsgUnknown,A0
                             	   170: .show_msg:
-02:000010B8 4EB811CC        	   171:         JSR     WriteString
-02:000010BC 4EB811DE        	   172:         JSR     NewLine
+02:000010B8 4EB811D2        	   171:         JSR     WriteString
+02:000010BC 4EB811EA        	   172:         JSR     NewLine
                             	   173:         ; Pequeno delay para visualização
 02:000010C0 76054843        	   174:         MOVE.L  #$50000,D3
                             	   175: .DELAY:
@@ -272,7 +272,7 @@ Source: "vbug2-0.asm"
 02:000011AE 4E73            	   261:         RTE
                             	   262: Int7Handler:        
 02:000011B0 48E7FFFE        	   263:         MOVEM.L D0-D7/A0-A6,-(A7)
-02:000011B4 52B900080230    	   264:         ADDQ.L  #1,systemTick
+02:000011B4 52B900080634    	   264:         ADDQ.L  #1,systemTick
 02:000011BA 4CDF7FFF        	   265:         MOVEM.L (A7)+,D0-D7/A0-A6
 02:000011BE 4E73            	   266:         RTE
                             	   267: 
@@ -282,43 +282,43 @@ Source: "vbug2-0.asm"
                             	   271: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                             	   272: ;; TODO USAR TRAP1 PARA ISSO AQUI        
                             	   273: WriteChar:
-02:000011C2 1200            	   274:         MOVE.B  D0,D1
-02:000011C4 103C0002        	   275:         MOVE.B  #2,D0
-02:000011C8 4E41            	   276:         TRAP    #1
-02:000011CA 4E75            	   277:         RTS
-                            	   278: WriteString:
-02:000011CC 103C0003        	   279:         MOVE.B  #CMD_CCONOUTSTR,D0
-02:000011D0 4E41            	   280:         TRAP    #1
-02:000011D2 4E75            	   281:         RTS    
-                            	   282: ReadChar:
-02:000011D4 103C0001        	   283:         MOVE.B  #CMD_CCONIN,D0
-02:000011D8 4E41            	   284:         TRAP    #1
-02:000011DA 4E75            	   285:         RTS            
-                            	   286: PrintAddrHex:
-02:000011DC 4E75            	   287:         RTS
-                            	   288: NewLine:
-02:000011DE 2F00            	   289:         MOVE.L  D0,-(SP)          ; Salva D0
-02:000011E0 2F01            	   290:         MOVE.L  D1,-(SP)          ; Salva D1
-02:000011E2 123C000A        	   291:         MOVE.B  #10,D1
-02:000011E6 103C0002        	   292:         MOVE.B  #CMD_CCONOUT,D0
-02:000011EA 4E41            	   293:         TRAP    #1
-02:000011EC 123C000D        	   294:         MOVE.B  #13,D1
-02:000011F0 103C0002        	   295:         MOVE.B  #CMD_CCONOUT,D0
-02:000011F4 4E41            	   296:         TRAP    #1
-02:000011F6 221F            	   297:         MOVE.L  (SP)+,D1          ; Restaura D1
-02:000011F8 201F            	   298:         MOVE.L  (SP)+,D0          ; Restaura D0
-02:000011FA 4E75            	   299:         RTS
+02:000011C2 4EB81536        	   274:         JSR     PicoWriteChar
+02:000011C6 4E75            	   275:         RTS
+02:000011C8 1200            	   276:         MOVE.B  D0,D1
+02:000011CA 103C0002        	   277:         MOVE.B  #2,D0
+02:000011CE 4E41            	   278:         TRAP    #1
+02:000011D0 4E75            	   279:         RTS
+                            	   280: WriteString:
+02:000011D2 4EB8154E        	   281:         JSR     PicoPrintString
+02:000011D6 4E75            	   282:         RTS
+02:000011D8 103C0003        	   283:         MOVE.B  #CMD_CCONOUTSTR,D0
+02:000011DC 4E41            	   284:         TRAP    #1
+02:000011DE 4E75            	   285:         RTS    
+                            	   286: ReadChar:
+02:000011E0 103C0001        	   287:         MOVE.B  #CMD_CCONIN,D0
+02:000011E4 4E41            	   288:         TRAP    #1
+02:000011E6 4E75            	   289:         RTS            
+                            	   290: PrintAddrHex:
+02:000011E8 4E75            	   291:         RTS
+                            	   292: NewLine:
+02:000011EA 48E7C000        	   293:         MOVEM.L  D0/D1,-(SP)          ; Salva D0
+02:000011EE 103C000A        	   294:         MOVE.B  #10,D0
+02:000011F2 4EB811C2        	   295:         JSR     WriteChar
+02:000011F6 103C000D        	   296:         MOVE.B  #13,D0
+02:000011FA 4EB811C2        	   297:         JSR     WriteChar
+02:000011FE 4CDF0003        	   298:         MOVEM.L  (SP)+,D0/D1          ; Restaura D0
+02:00001202 4E75            	   299:         RTS
                             	   300: ;Essa rotina não pode limpar toda a RAM senão ela sobreescreve o StackPointer
                             	   301: ;Acho que um limite seguro 512 bytes abaixo de $FFFFF.        
                             	   302: ClearRam:
-02:000011FC 41F900080000    	   303:         LEA     $080000,A0
-02:00001202 43F9000FFE00    	   304:         LEA     $0FFE00,A1
-02:00001208 7000            	   305:         MOVEQ   #0,D0
+02:00001204 41F900080000    	   303:         LEA     $080000,A0
+02:0000120A 43F9000FFE00    	   304:         LEA     $0FFE00,A1
+02:00001210 7000            	   305:         MOVEQ   #0,D0
                             	   306: .ClearLoop:
-02:0000120A 20C0            	   307:         MOVE.L  D0,(A0)+
-02:0000120C B3C8            	   308:         CMPA.L  A0,A1
-02:0000120E 62FA            	   309:         BHI     .ClearLoop
-02:00001210 4E75            	   310:         RTS
+02:00001212 20C0            	   307:         MOVE.L  D0,(A0)+
+02:00001214 B3C8            	   308:         CMPA.L  A0,A1
+02:00001216 62FA            	   309:         BHI     .ClearLoop
+02:00001218 4E75            	   310:         RTS
                             	   311: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                             	   312: ;END OF BASIC CODE
                             	   313: ;
@@ -326,75 +326,143 @@ Source: "vbug2-0.asm"
                             	   315: ;
                             	   316: 
                             	   317: Vbug2Start:
-02:00001212 007C0700        	   318:         ori.w   #$0700,SR    ; Desabilita as interrupções (Nível 7)
-02:00001216 4FF9000FFFF0    	   319:         LEA     $FFFF0,SP ; Garante o Stack Pointer (se o hardware não carregou)
+02:0000121A 007C0700        	   318:         ori.w   #$0700,SR    ; Desabilita as interrupções (Nível 7)
+02:0000121E 4FF9000FFFF0    	   319:         LEA     $FFFF0,SP ; Garante o Stack Pointer (se o hardware não carregou)
                             	   320: 
                             	   321: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                             	   322: ;This gives hardware time to get up
                             	   323: ;
-02:0000121C 223C0003FFFF    	   324:         MOVE.L  #$003FFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
+02:00001224 223C0003FFFF    	   324:         MOVE.L  #$003FFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
                             	   325: .DELAY01:
-02:00001222 5381            	   326:         SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
-02:00001224 66FC            	   327:         BNE.S   .DELAY01     ; Pula se não for zero (10 ciclos se pular, 8 se não)
+02:0000122A 5381            	   326:         SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
+02:0000122C 66FC            	   327:         BNE.S   .DELAY01     ; Pula se não for zero (10 ciclos se pular, 8 se não)
                             	   328: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                             	   329: 
                             	   330:         ;Set USP( user stack pointer)
                             	   331: ;        LEA     USER_SP,A0
                             	   332: ;        MOVE.L  A0,USP        ; 🔥 Define User Stack Pointe
                             	   333:         ;Initialize memory size
-02:00001226 23FC000000000008	   334:         MOVE.L  #$00000000,romBase
-02:0000122E 0000
-02:00001230 23FC000040000008	   335:         MOVE.L  #$00004000,romSize
-02:00001238 0004
-02:0000123A 23FC000800000008	   336:         MOVE.L  #RAMBASE,ramBase    ;Total ram 1572864 de 0x8000 até 0x180000
-02:00001242 0008
-02:00001244 23FC0007FFFF0008	   337:         MOVE.L  #RAMSIZE,ramSize
-02:0000124C 000C
+02:0000122E 23FC000000000008	   334:         MOVE.L  #$00000000,romBase
+02:00001236 0000
+02:00001238 23FC000040000008	   335:         MOVE.L  #$00004000,romSize
+02:00001240 0004
+02:00001242 23FC000800000008	   336:         MOVE.L  #RAMBASE,ramBase    ;Total ram 1572864 de 0x8000 até 0x180000
+02:0000124A 0008
+02:0000124C 23FC0007FFFF0008	   337:         MOVE.L  #RAMSIZE,ramSize
+02:00001254 000C
                             	   338:         ;Initialize variables
-02:0000124E 227813AA        	   339:         MOVE.L  PicoWriteChar,A1    ; Initialize cconout console char out
-02:00001252 23C900080016    	   340:         MOVE.L  A1,cconout
-02:00001258 2278133C        	   341:         MOVE.L  UartReadCharEcho,A1         ; Initialize cconin console char in
-02:0000125C 23C90008001A    	   342:         MOVE.L  A1,cconin
-02:00001262 227C00FF4000    	   343:         MOVE.L  #UART_BASE,A1    ; Initialize uart output,INPUT and baud
-02:00001268 23C900080010    	   344:         MOVE.L  A1,currentUart
-02:0000126E 23FC000000080008	   345:         MOVE.L  #B115200,currentBaudRate
-02:00001276 0014
-02:00001278 41F900080000    	   346:         LEA     RAM_VECTOR_BASE,A0
+02:00001256 22781536        	   339:         MOVE.L  PicoWriteChar,A1    ; Initialize cconout console char out
+02:0000125A 23C900080016    	   340:         MOVE.L  A1,cconout
+02:00001260 227813FA        	   341:         MOVE.L  UartReadCharEcho,A1         ; Initialize cconin console char in
+02:00001264 23C90008001A    	   342:         MOVE.L  A1,cconin
+02:0000126A 227C00FF4000    	   343:         MOVE.L  #UART_BASE,A1    ; Initialize uart output,INPUT and baud
+02:00001270 23C900080010    	   344:         MOVE.L  A1,currentUart
+02:00001276 23FC000000080008	   345:         MOVE.L  #B115200,currentBaudRate
+02:0000127E 0014
+02:00001280 41F900080000    	   346:         LEA     RAM_VECTOR_BASE,A0
                             	   347: 
                             	   348:         ;Initializations
                             	   349: 
                             	   350:         ;Initialize picoVga
-02:0000127E 4EB8135C        	   351:         JSR  InitPicoVga
+02:00001286 4EB814AE        	   351:         JSR  InitPicoVga
                             	   352:         ;Initialize UART
-02:00001282 4EB812E6        	   353:         JSR  InitUart1   
+02:0000128A 4EB8139C        	   353:         JSR  InitUart1   
                             	   354:         ;Initialize TRAP1
-02:00001286 4EB8158C        	   355:         JSR  InitTrap1
+02:0000128E 4EB81754        	   355:         JSR  InitTrap1
                             	   356: 
                             	   357: mainLoop:
-02:0000128A 4EB8139C        	   358:         JSR     PicoClearScreen
-02:0000128E 41F9000000A3    	   359:         LEA     MsgMSGINIT,A0
-02:00001294 4EB813BE        	   360:         JSR     PicoPrintString
+02:00001292 4EB81524        	   358:         JSR     PicoClearScreen
+02:00001296 41F9000000A3    	   359:         LEA     MsgOrionInit,A0
+02:0000129C 4EB8154E        	   360:         JSR     PicoPrintString
                             	   361: 
-                            	   362: subLoop:        
-02:00001298 4EB81328        	   363:         JSR     UartReadChar
-02:0000129C 4EB81314        	   364:         JSR     UartWriteChar
-02:000012A0 4EB813AA        	   365:         JSR     PicoWriteChar
+                            	   362: subLoop:    
+                            	   363:         ;MOVE.W  #$0000,D0
+                            	   364:         ;MOVE.W  #$0008,D1
+                            	   365:         ;JSR     PicoSetCursor
                             	   366: 
-02:000012A4 4EF81298        	   367:         JMP     subLoop
+02:000012A0 4EB81524        	   367:         JSR     PicoClearScreen
                             	   368: 
-                            	   369: 
-                            	   370: 
-02:000012A8 223C0001FFFF    	   371:         MOVE.L  #$001FFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
-                            	   372: .DELAY01:
-02:000012AE 5381            	   373:         SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
-02:000012B0 66FC            	   374:         BNE.S   .DELAY01     ; Pula se não for zero (10 ciclos se pular, 8 se não)
-                            	   375: 
-02:000012B2 4EF81298        	   376:         JMP     subLoop
-                            	   377: 
-                            	   378: 
-                            	   379: ;Includes
-                            	   380: 
-                            	   381:         INCLUDE "drv_uart.asm"
+02:000012A4 41F900000155    	   369:         LEA     MsgMenuText,A0
+02:000012AA 4EB8154E        	   370:         JSR     PicoPrintString
+02:000012AE 4EB813E2        	   371:         JSR     UartReadChar
+02:000012B2 4EB81536        	   372:         JSR     PicoWriteChar
+                            	   373: 
+02:000012B6 B03C0035        	   374:         CMP.B   #'5',D0
+02:000012BA 671A            	   375:         BEQ     RunProgram
+02:000012BC B03C0037        	   376:         CMP.B   #'7',D0
+02:000012C0 670002C4        	   377:         BEQ     MemDump
+02:000012C4 B03C0038        	   378:         CMP.B   #'8',D0
+02:000012C8 6742            	   379:         BEQ     ReadInHexa
+02:000012CA B03C0039        	   380:         CMP.B   #'9',D0
+02:000012CE 67000162        	   381:         BEQ     UartReadHex
+                            	   382: 
+02:000012D2 4EF812A0        	   383:         JMP     subLoop
+                            	   384: 
+                            	   385: ; 5. Executa programa na RAM
+                            	   386: RunProgram:
+02:000012D6 41F900080624    	   387:         LEA     flg_pgm_loaded,A0   ; Get flag program loaded
+02:000012DC 1010            	   388:         MOVE.B  (A0),D0              ; Program  loaded
+02:000012DE B03C0001        	   389:         CMP.B   #1,D0
+02:000012E2 670C            	   390:         BEQ     .run_program
+02:000012E4 41F90000029A    	   391:         LEA     MsgNoProgramToRUN,A0
+02:000012EA 4EB811D2        	   392:         JSR     WriteString
+02:000012EE 60B0            	   393:         BRA     subLoop
+                            	   394: .run_program
+02:000012F0 41F900000283    	   395:         LEA     MsgRunPrompt,A0
+02:000012F6 4EB811D2        	   396:         JSR     WriteString
+02:000012FA 204F            	   397:         MOVE.L  SP,A0
+02:000012FC 23C800080630    	   398:         MOVE.L  A0,monitorStack
+02:00001302 41F900082000    	   399:         LEA     buf_pgm,A0   ; A0 aponta para o endereço buffer onde esta o progama
+02:00001308 4E90            	   400:         JSR     (A0)        ; Chama o código como uma sub-rotina (salva o endereço de retorno)
+02:0000130A 6094            	   401:         BRA     subLoop
+                            	   402: 
+                            	   403: ReadInHexa:
+02:0000130C 41F9000002DE    	   404:         LEA     MsgTestHexInput,A0
+02:00001312 4EB811D2        	   405:         JSR     WriteString
+02:00001316 4EB81432        	   406:         JSR     UartReadHex
+02:0000131A 6084            	   407:         bra     subLoop
+                            	   408: 
+                            	   409: ; Lê número hexadecimal (retorna em D0)
+                            	   410: UART_ReadHex1:
+02:0000131C 2F01            	   411:         MOVE.L  D1,-(SP)
+02:0000131E 2F02            	   412:         MOVE.L  D2,-(SP)
+                            	   413: 
+02:00001320 41F900000257    	   414:         LEA     MsgWritePrompt,A0
+02:00001326 4EB811D2        	   415:         JSR     WriteString
+                            	   416: 
+02:0000132A 4EB811EA        	   417:         JSR     NewLine
+                            	   418: 
+02:0000132E 7000            	   419:         MOVEQ   #0,D0
+02:00001330 7200            	   420:         MOVEQ   #0,D1            ; Máximo 8 dígitos
+02:00001332 7400            	   421:         MOVEQ   #0,D2            ; Resultado em D2
+                            	   422: 
+                            	   423: .Loop:
+02:00001334 4EB813E2        	   424:         JSR     UartReadChar
+02:00001338 B03C000D        	   425:         CMP.B   #13,D0
+02:0000133C 670E            	   426:         BEQ     .Done
+02:0000133E B03C000A        	   427:         CMP.B   #10,D0
+02:00001342 6708            	   428:         BEQ     .Done
+02:00001344 4EB900080224    	   429:         JSR     buf_put
+02:0000134A 60E8            	   430:         BRA     .Loop
+                            	   431: .Done:
+                            	   432: 
+                            	   433: .loop1:
+02:0000134C 4EB900080424    	   434:         JSR     buf_get
+02:00001352 B03C00FF        	   435:         CMP.B   #-1,D0          ; Buffer vazio?
+02:00001356 6706            	   436:         BEQ     .fim      ; Se sim, ignora
+02:00001358 4EB811C2        	   437:         JSR     WriteChar
+02:0000135C 60EE            	   438:         BRA     .loop1
+                            	   439: .fim:
+02:0000135E 241F            	   440:         MOVE.L  (SP)+,D2
+02:00001360 221F            	   441:         MOVE.L  (SP)+,D1
+02:00001362 4EB811EA        	   442:         JSR     NewLine
+02:00001366 6000FF38        	   443:         bra     subLoop ;provisoriamente
+02:0000136A 4E75            	   444:         RTS
+                            	   445: 
+                            	   446: 
+                            	   447: ;Includes
+                            	   448: 
+                            	   449:         INCLUDE "drv_uart.asm"
 
 Source: "drv_uart.asm"
                             	     1: 
@@ -454,74 +522,153 @@ Source: "drv_uart.asm"
                             	    55: ; Parametros: none
                             	    56: ; ----------------------------------------------------------------------
                             	    57: InitUart:
-02:000012B6 227900080010    	    58:         move.l  currentUart,A1
-02:000012BC 203900080014    	    59:         move.l  currentBaudRate,D0
-02:000012C2 137C00830007    	    60:         move.b  #%10000011,LCR(A1) ;DLAB=1
-02:000012C8 137C00080001    	    61:         move.b  #$08,DLL(A1)       ; set divisor latch low byte
-02:000012CE 137C00000003    	    62:         move.b  #$00,DLM(A1)       ; set divisor latch high byte
-02:000012D4 137C00030007    	    63:         move.b  #%00000011,LCR(A1) ; 8 data bits, no parity, 1 stop bit, DLAB=0
-02:000012DA 137C000D0005    	    64:         move.b  #%00001101,FCR(A1) ; enable FIFO
-02:000012E0 4229000F        	    65:         clr.b   SCR(A1)            ; clear the scratch register
-02:000012E4 4E75            	    66:         RTS
+02:0000136C 227900080010    	    58:         move.l  currentUart,A1
+02:00001372 203900080014    	    59:         move.l  currentBaudRate,D0
+02:00001378 137C00830007    	    60:         move.b  #%10000011,LCR(A1) ;DLAB=1
+02:0000137E 137C00080001    	    61:         move.b  #$08,DLL(A1)       ; set divisor latch low byte
+02:00001384 137C00000003    	    62:         move.b  #$00,DLM(A1)       ; set divisor latch high byte
+02:0000138A 137C00030007    	    63:         move.b  #%00000011,LCR(A1) ; 8 data bits, no parity, 1 stop bit, DLAB=0
+02:00001390 137C000D0005    	    64:         move.b  #%00001101,FCR(A1) ; enable FIFO
+02:00001396 4229000F        	    65:         clr.b   SCR(A1)            ; clear the scratch register
+02:0000139A 4E75            	    66:         RTS
                             	    67: InitUart1:
-02:000012E6 227900080010    	    68:         move.l  currentUart,A1
-02:000012EC 203900080014    	    69:         move.l  currentBaudRate,D0
-02:000012F2 137C000D0005    	    70:         move.b  #%00001101,FCR(a1)      ; enable FIFO
-02:000012F8 137C00830007    	    71:         move.b  #%10000011,LCR(a1)      ; 8 data bits, no parity, 1 stop bit, DLAB=1
-02:000012FE 13400001        	    72:         move.b  D0,DLL(A1)              ; Byte 0 (LSB) -> DLL
-02:00001302 E088            	    73:         lsr.l   #8,D0                   ; Shift right 8 bits
-02:00001304 13400003        	    74:         move.b  D0,DLM(A1)              ; Byte 1 (agora no LSB) -> DLM
-02:00001308 08A900070007    	    75:         bclr.b  #7,LCR(a1)              ; 8 data bits, no parity, 1 stop bit, DLAB=0
-02:0000130E 4229000F        	    76:         clr.b   SCR(a1)                 ; clear the scratch register
-02:00001312 4E75            	    77:         RTS
+02:0000139C 227900080010    	    68:         move.l  currentUart,A1
+02:000013A2 203900080014    	    69:         move.l  currentBaudRate,D0
+02:000013A8 137C000D0005    	    70:         move.b  #%00001101,FCR(a1)      ; enable FIFO
+02:000013AE 137C00830007    	    71:         move.b  #%10000011,LCR(a1)      ; 8 data bits, no parity, 1 stop bit, DLAB=1
+02:000013B4 13400001        	    72:         move.b  D0,DLL(A1)              ; Byte 0 (LSB) -> DLL
+02:000013B8 E088            	    73:         lsr.l   #8,D0                   ; Shift right 8 bits
+02:000013BA 13400003        	    74:         move.b  D0,DLM(A1)              ; Byte 1 (agora no LSB) -> DLM
+02:000013BE 08A900070007    	    75:         bclr.b  #7,LCR(a1)              ; 8 data bits, no parity, 1 stop bit, DLAB=0
+02:000013C4 4229000F        	    76:         clr.b   SCR(a1)                 ; clear the scratch register
+02:000013C8 4E75            	    77:         RTS
                             	    78: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                             	    79: ; Write char
                             	    80: ; Change A1
                             	    81: ; Receive char in D0
                             	    82: UartWriteChar:
-02:00001314 227900080010    	    83:         move.l  currentUart,A1
-                            	    84: .WaitTx:
-02:0000131A 08290005000B    	    85:         btst    #5,LSR(A1)      ; wait until transmit holding register is empty
-02:00001320 67F8            	    86:         beq     .WaitTx
-02:00001322 13400001        	    87:         move.b  D0,THR(A1)      ; transmit byte
-02:00001326 4E75            	    88:         RTS
-                            	    89: 
-                            	    90: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            	    91: ; Read char block
-                            	    92: ; Change A1
-                            	    93: ;
-                            	    94: ; Return char in D0)
-                            	    95: UartReadChar:
-02:00001328 227900080010    	    96:         move.l  currentUart,A1
-                            	    97: .WaitRx:
-02:0000132E 08290000000B    	    98:         btst    #0,LSR(A1)        ; RX ready?
-02:00001334 67F8            	    99:         beq     .WaitRx
-                            	   100: 
-02:00001336 10290001        	   101:         move.b  RHR(A1),D0
-02:0000133A 4E75            	   102:         RTS
+02:000013CA 2F09            	    83:         MOVE.L A1,-(SP)
+02:000013CC 227900080010    	    84:         move.l  currentUart,A1
+                            	    85: .WaitTx:
+02:000013D2 08290005000B    	    86:         btst    #5,LSR(A1)      ; wait until transmit holding register is empty
+02:000013D8 67F8            	    87:         beq     .WaitTx
+02:000013DA 13400001        	    88:         move.b  D0,THR(A1)      ; transmit byte
+02:000013DE 225F            	    89:         MOVE.L (SP)+,A1
+02:000013E0 4E75            	    90:         RTS
+                            	    91: 
+                            	    92: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	    93: ; Read char block
+                            	    94: ; Change A1
+                            	    95: ;
+                            	    96: ; Return char in D0)
+                            	    97: UartReadChar:
+02:000013E2 2F09            	    98:         MOVE.L A1,-(SP)
+02:000013E4 227900080010    	    99:         move.l  currentUart,A1
+                            	   100: .WaitRx:
+02:000013EA 08290000000B    	   101:         btst    #0,LSR(A1)        ; RX ready?
+02:000013F0 67F8            	   102:         beq     .WaitRx
                             	   103: 
-                            	   104: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            	   105: ; Read char block with echo
-                            	   106: ; Change A1
-                            	   107: ;
-                            	   108: ; Return char in D0)
-                            	   109: UartReadCharEcho:
-02:0000133C 227900080010    	   110:         move.l  currentUart,A1
-                            	   111: .WaitRx:
-02:00001342 08290000000B    	   112:         btst    #0,LSR(A1)        ; RX ready?
-02:00001348 67F8            	   113:         beq     .WaitRx
-02:0000134A 10290001        	   114:         move.b  RHR(A1),D0
-                            	   115: 
-                            	   116: .WaitTx:
-02:0000134E 08290005000B    	   117:         btst    #5,LSR(A1)      ; wait until transmit holding register is empty
-02:00001354 67F8            	   118:         beq     .WaitTx
-02:00001356 13400001        	   119:         move.b  D0,THR(A1)      ; transmit byte
+02:000013F2 10290001        	   104:         move.b  RHR(A1),D0
+02:000013F6 225F            	   105:         MOVE.L (SP)+,A1
+02:000013F8 4E75            	   106:         RTS
+                            	   107: 
+                            	   108: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	   109: ; Read char block with echo
+                            	   110: ; Change A1
+                            	   111: ;
+                            	   112: ; Return char in D0)
+                            	   113: UartReadCharEcho:
+02:000013FA 2F09            	   114:         MOVE.L A1,-(SP)
+02:000013FC 227900080010    	   115:         move.l  currentUart,A1
+                            	   116: .WaitRx:
+02:00001402 08290000000B    	   117:         btst    #0,LSR(A1)        ; RX ready?
+02:00001408 67F8            	   118:         beq     .WaitRx
+02:0000140A 10290001        	   119:         move.b  RHR(A1),D0
                             	   120: 
-02:0000135A 4E75            	   121:         RTS
-                            	   122: 
+                            	   121: .WaitTx:
+02:0000140E 08290005000B    	   122:         btst    #5,LSR(A1)      ; wait until transmit holding register is empty
+02:00001414 67F8            	   123:         beq     .WaitTx
+02:00001416 13400001        	   124:         move.b  D0,THR(A1)      ; transmit byte
+02:0000141A 225F            	   125:         MOVE.L (SP)+,A1
+02:0000141C 4E75            	   126:         RTS
+                            	   127: 
+                            	   128: ; ----------------------------------------------------------------------
+                            	   129: ; UART_WriteString - Envia string terminada em null para UART
+                            	   130: ; Entrada:
+                            	   131: ;   A0 = Ponteiro para a string (endereço da string)
+                            	   132: ; ----------------------------------------------------------------------
+                            	   133: UartWriteString:
+02:0000141E 2F08            	   134:         MOVE.L  A0,-(SP)      ; Preserva D0
+02:00001420 2F00            	   135:         MOVE.L  D0,-(SP)      ; Preserva D0
+                            	   136: .WriteLoop:
+02:00001422 1018            	   137:         MOVE.B  (A0)+,D0      ; Pega caractere
+02:00001424 6706            	   138:         BEQ     .Done
+02:00001426 4EB813CA        	   139:         JSR     UartWriteChar ; Use sua rotine existente
+02:0000142A 60F6            	   140:         BRA     .WriteLoop
+                            	   141: .Done:
+02:0000142C 201F            	   142:         MOVE.L  (SP)+,D0
+02:0000142E 205F            	   143:         MOVE.L  (SP)+,A0
+02:00001430 4E75            	   144:         RTS
+                            	   145: 
+                            	   146: ; Lê número hexadecimal (retorna em D0)
+                            	   147: UartReadHex:
+02:00001432 2F01            	   148:         MOVE.L  D1,-(SP)
+02:00001434 2F02            	   149:         MOVE.L  D2,-(SP)
+                            	   150: 
+02:00001436 7000            	   151:         MOVEQ   #0,D0
+02:00001438 721C            	   152:         MOVEQ   #28,D1            ; Máximo 8 dígitos
+02:0000143A 7400            	   153:         MOVEQ   #0,D2            ; Resultado em D2
+                            	   154: .Loop:
+02:0000143C 7000            	   155:         CLR.L   D0
+02:0000143E 4EB813E2        	   156:         JSR     UartReadChar
+02:00001442 B03C000D        	   157:         CMP.B   #13,D0
+02:00001446 674C            	   158:         BEQ     .Done
+02:00001448 B03C000A        	   159:         CMP.B   #10,D0
+02:0000144C 6746            	   160:         BEQ     .Done
+                            	   161:         ;Tratando os numeros
+02:0000144E B03C0030        	   162:         CMP.B   #'0',D0
+02:00001452 6C02            	   163:         BGE     .maiorQueZero
+02:00001454 60E6            	   164:         BRA     .Loop
+                            	   165: .maiorQueZero:
+02:00001456 B03C0039        	   166:         CMP.B   #'9',D0
+02:0000145A 6F10            	   167:         BLE     .isdigit
+                            	   168:         ;Tratando as letras
+02:0000145C B03C0041        	   169:         CMP.B   #'A',D0
+02:00001460 6C02            	   170:         BGE     .maiorQueA
+02:00001462 60D8            	   171:         BRA     .Loop
+                            	   172: .maiorQueA:
+02:00001464 B03C0046        	   173:         CMP.B   #'F',D0
+02:00001468 6F16            	   174:         BLE     .isletter
+02:0000146A 60D0            	   175:         BRA     .Loop
+                            	   176: .isdigit:
+02:0000146C 903C0030        	   177:         SUB.B   #'0',D0
+02:00001470 E3A8            	   178:         LSL.L   D1,D0
+02:00001472 5901            	   179:         SUB.B   #4,D1
+02:00001474 8480            	   180:         OR.L    D0,D2
+02:00001476 41F900080638    	   181:         LEA     addressInHex,A0
+02:0000147C 2082            	   182:         MOVE.L  D2,(A0)
+02:0000147E 60BC            	   183:         BRA     .Loop
+                            	   184: .isletter:
+02:00001480 903C0037        	   185:         SUB.B   #$37,D0
+02:00001484 E3A8            	   186:         LSL.L   D1,D0
+02:00001486 5901            	   187:         SUB.B   #4,D1
+02:00001488 8480            	   188:         OR.L    D0,D2
+02:0000148A 41F900080638    	   189:         LEA     addressInHex,A0
+02:00001490 2082            	   190:         MOVE.L  D2,(A0)
+02:00001492 60A8            	   191:         BRA     .Loop
+                            	   192: .Done:
+02:00001494 4EB811EA        	   193:         JSR     NewLine
+02:00001498 41F900080638    	   194:         LEA     addressInHex,A0
+02:0000149E 2010            	   195:         MOVE.L  (A0),D0
+02:000014A0 4EB81760        	   196:         JSR     PrintHexAddress
+02:000014A4 4EB811EA        	   197:         JSR     NewLine
+02:000014A8 241F            	   198:         MOVE.L  (SP)+,D2
+02:000014AA 221F            	   199:         MOVE.L  (SP)+,D1
+02:000014AC 4E75            	   200:         RTS
+                            	   201: 
 
 Source: "vbug2-0.asm"
-                            	   382:         INCLUDE "drv_pico_vga.asm"
+                            	   450:         INCLUDE "drv_pico_vga.asm"
 
 Source: "drv_pico_vga.asm"
                             	     1: 
@@ -573,299 +720,350 @@ Source: "drv_pico_vga.asm"
                             	    47: CMD_GO_HOME       equ  $A1
                             	    48: 
                             	    49: InitPicoVga:
-02:0000135C 4E75            	    50:         RTS
+02:000014AE 4E75            	    50:         RTS
                             	    51: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                             	    52: ; Cursor go home
                             	    53: ; Receive cmd in D0
                             	    54: ;
                             	    55: PicoRunCmd:
-02:0000135E 13C000FF803D    	    56:         MOVE.B  D0,RUN_CMD
-02:00001364 4E75            	    57:         RTS
+02:000014B0 13C000FF803D    	    56:         MOVE.B  D0,RUN_CMD
+02:000014B6 4E75            	    57:         RTS
                             	    58: 
                             	    59: 
                             	    60: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                             	    61: ; Cursor go home
                             	    62: ; 
                             	    63: PicoGoHome:
-02:00001366 103C00A1        	    64:         MOVE.B  #CMD_GO_HOME,D0
-02:0000136A 13C000FF803D    	    65:         MOVE.B  D0,RUN_CMD
-02:00001370 4E75            	    66:         RTS
+02:000014B8 103C00A1        	    64:         MOVE.B  #CMD_GO_HOME,D0
+02:000014BC 13C000FF803D    	    65:         MOVE.B  D0,RUN_CMD
+02:000014C2 4E75            	    66:         RTS
                             	    67: 
                             	    68: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
                             	    69: ; Set cursor position
-                            	    70: ; Detroy: A1
+                            	    70: ; Detroy:
                             	    71: ; Receive X in D0
                             	    72: ; Receive Y in D1
                             	    73: PicoSetCursor:
-02:00001372 13C000FF802F    	    74:         MOVE.B  D0,REG_X_LOW
-02:00001378 E048            	    75:         LSR.W   #8,D0             ; Desloca o byte alto para a posição baixa em D0
-02:0000137A 13C000FF802D    	    76:         MOVE.B  D0,REG_X_HIGH
-02:00001380 13C100FF8033    	    77:         MOVE.B  D1,REG_Y_LOW
-02:00001386 E049            	    78:         LSR.W   #8,D1             ; Desloca o byte alto para a posição baixa em D0
-02:00001388 13C100FF8031    	    79:         MOVE.B  D1,REG_Y_HIGH
-02:0000138E 43F900FF803D    	    80:         LEA     RUN_CMD,A1    
-02:00001394 103C00A3        	    81:         MOVE.B  #CMD_SET_CUR_POS,D0
-02:00001398 1280            	    82:         MOVE.B  D0,(A1);
-02:0000139A 4E75            	    83:         RTS
-                            	    84: 
-                            	    85: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            	    86: ; Clear screen
-                            	    87: ; Destroy: A1 
-                            	    88: ; Command in D0
-                            	    89: PicoClearScreen:
-02:0000139C 43F900FF803D    	    90:         LEA     RUN_CMD,A1    
-02:000013A2 103C00A4        	    91:         MOVE.B  #CMD_CLEAR_SCREEN,D0
-02:000013A6 1280            	    92:         MOVE.B  D0,(A1);
-02:000013A8 4E75            	    93:         RTS
-                            	    94: 
-                            	    95: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            	    96: ; Write char in picoVGA
-                            	    97: ; Destroy: A1,D1
-                            	    98: PicoWriteChar:
-02:000013AA 43F900FF8001    	    99:             LEA     WRITE_SCREEN,A1
-02:000013B0 1280            	   100:             MOVE.B  D0,(A1)     ; Escreve no endereço do PicoVGA (LDS ativo)
-02:000013B2 223C000000FF    	   101:             MOVE.L  #$FF,D1    ; Contador para o delay (ajuste se precisar de mais)
-                            	   102: .DELAY00:
-02:000013B8 5381            	   103:             SUBQ.L  #1,D1       ; Subtrai 1 de D1 (4 ciclos)
-02:000013BA 66FC            	   104:             BNE.S   .DELAY00    ; Pula se não for zero (10 ciclos se pular, 8 se não)
-02:000013BC 4E75            	   105:             RTS
-                            	   106: 
-                            	   107: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            	   108: ; Imprime string terminada em ZERO
-                            	   109: ; Destroy: A0 = String's address
-                            	   110: ;
-                            	   111: PicoPrintString:
-02:000013BE 1018            	   112:         MOVE.B  (A0)+,D0      ; Pega caractere e avança ponteiro
-02:000013C0 6704            	   113:         BEQ.S   .Done         ; Se for zero, termina
-02:000013C2 61E6            	   114:         BSR.S   PicoWriteChar ; Chama sua função gloriosa!
-02:000013C4 60F8            	   115:         BRA.S   PicoPrintString   ; Loop para o próximo
-                            	   116: .Done:
-02:000013C6 4E75            	   117:         RTS
-                            	   118: 
-                            	   119: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                            	   120: ; PrintHexAddress - Imprime endereço de 32 bits
-                            	   121: ; Entrada: D0 = endereço
-                            	   122: ;
-                            	   123: PicoPrintHexAddress:
-02:000013C8 4840            	   124:         SWAP    D0                ; Imprime parte alta primeiro
-02:000013CA 4EB813D0        	   125:         JSR     .PrintWordHex
-02:000013CE 4840            	   126:         SWAP    D0                ; Parte baixa
-                            	   127: .PrintWordHex:
-02:000013D0 E158            	   128:         ROL.W   #8,D0             ; Byte mais significativo primeiro
-02:000013D2 4EB813D8        	   129:         JSR     PicoPrintByteHex
-02:000013D6 E058            	   130:         ROR.W   #8,D0             ; Byte menos significativo
-                            	   131: PicoPrintByteHex:
-02:000013D8 1F00            	   132:         MOVE.B  D0,-(SP)          ; Salva byte original
-02:000013DA E808            	   133:         LSR.B   #4,D0             ; Nibble alto
-02:000013DC 6106            	   134:         BSR     .PrintNibble
-02:000013DE 101F            	   135:         MOVE.B  (SP)+,D0          ; Recupera byte
-02:000013E0 0200000F        	   136:         ANDI.B  #$0F,D0           ; Nibble baixo
-                            	   137: .PrintNibble:
-02:000013E4 B03C0009        	   138:         CMP.B   #9,D0
-02:000013E8 6302            	   139:         BLS     .Decimal
-02:000013EA 5E00            	   140:         ADD.B   #7,D0             ; Ajuste para A-F
-                            	   141: .Decimal:
-02:000013EC D03C0030        	   142:         ADD.B   #'0',D0
-02:000013F0 4EF813AA        	   143:         JMP     PicoWriteChar    ; Usa JMP para tail call optimization
-                            	   144: 
+02:000014C4 2F09            	    74:         MOVE.L A1,-(SP)
+02:000014C6 13C000FF802F    	    75:         MOVE.B  D0,REG_X_LOW
+02:000014CC 4E71            	    76:         NOP
+02:000014CE 4E71            	    77:         NOP
+02:000014D0 4E71            	    78:         NOP
+02:000014D2 4E71            	    79:         NOP
+02:000014D4 4E71            	    80:         NOP
+02:000014D6 E048            	    81:         LSR.W   #8,D0             ; Desloca o byte alto para a posição baixa em D0
+02:000014D8 13C000FF802D    	    82:         MOVE.B  D0,REG_X_HIGH
+02:000014DE 4E71            	    83:         NOP
+02:000014E0 4E71            	    84:         NOP
+02:000014E2 4E71            	    85:         NOP
+02:000014E4 4E71            	    86:         NOP
+02:000014E6 4E71            	    87:         NOP
+02:000014E8 13C100FF8033    	    88:         MOVE.B  D1,REG_Y_LOW
+02:000014EE 4E71            	    89:         NOP
+02:000014F0 4E71            	    90:         NOP
+02:000014F2 4E71            	    91:         NOP
+02:000014F4 4E71            	    92:         NOP
+02:000014F6 4E71            	    93:         NOP
+02:000014F8 E049            	    94:         LSR.W   #8,D1             ; Desloca o byte alto para a posição baixa em D0
+02:000014FA 13C100FF8031    	    95:         MOVE.B  D1,REG_Y_HIGH
+02:00001500 4E71            	    96:         NOP
+02:00001502 4E71            	    97:         NOP
+02:00001504 4E71            	    98:         NOP
+02:00001506 4E71            	    99:         NOP
+02:00001508 4E71            	   100:         NOP
+02:0000150A 43F900FF803D    	   101:         LEA     RUN_CMD,A1    
+02:00001510 103C00A3        	   102:         MOVE.B  #CMD_SET_CUR_POS,D0
+02:00001514 1280            	   103:         MOVE.B  D0,(A1);
+02:00001516 4E71            	   104:         NOP
+02:00001518 4E71            	   105:         NOP
+02:0000151A 4E71            	   106:         NOP
+02:0000151C 4E71            	   107:         NOP
+02:0000151E 4E71            	   108:         NOP
+02:00001520 225F            	   109:         MOVE.L (SP)+,A1
+02:00001522 4E75            	   110:         RTS
+                            	   111: 
+                            	   112: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	   113: ; Clear screen
+                            	   114: ; Destroy: A1 
+                            	   115: ; Command in D0
+                            	   116: PicoClearScreen:
+02:00001524 2F09            	   117:         MOVE.L A1,-(SP)
+02:00001526 43F900FF803D    	   118:         LEA     RUN_CMD,A1    
+02:0000152C 103C00A4        	   119:         MOVE.B  #CMD_CLEAR_SCREEN,D0
+02:00001530 1280            	   120:         MOVE.B  D0,(A1);
+02:00001532 225F            	   121:         MOVE.L (SP)+,A1
+02:00001534 4E75            	   122:         RTS
+                            	   123: 
+                            	   124: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	   125: ; Write char in picoVGA
+                            	   126: ; Destroy: A1,D1
+                            	   127: PicoWriteChar:
+02:00001536 2F09            	   128:         MOVE.L A1,-(SP)
+02:00001538 43F900FF8001    	   129:             LEA     WRITE_SCREEN,A1
+02:0000153E 1280            	   130:             MOVE.B  D0,(A1)     ; Escreve no endereço do PicoVGA (LDS ativo)
+02:00001540 223C000001FF    	   131:             MOVE.L  #$1FF,D1    ; Contador para o delay (ajuste se precisar de mais)
+                            	   132: .DELAY00:
+02:00001546 5381            	   133:             SUBQ.L  #1,D1       ; Subtrai 1 de D1 (4 ciclos)
+02:00001548 66FC            	   134:             BNE.S   .DELAY00    ; Pula se não for zero (10 ciclos se pular, 8 se não)
+02:0000154A 225F            	   135:         MOVE.L (SP)+,A1
+02:0000154C 4E75            	   136:             RTS
+                            	   137: ;last change
+                            	   138: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	   139: ; Imprime string terminada em ZERO
+                            	   140: ; Destroy: A0 = String's address
+                            	   141: ;
+                            	   142: PicoPrintString:
+02:0000154E 1018            	   143:         MOVE.B  (A0)+,D0      ; Pega caractere e avança ponteiro
+02:00001550 6704            	   144:         BEQ.S   .Done         ; Se for zero, termina
+02:00001552 61E2            	   145:         BSR.S   PicoWriteChar ; Chama sua função gloriosa!
+02:00001554 60F8            	   146:         BRA.S   PicoPrintString   ; Loop para o próximo
+                            	   147: .Done:
+02:00001556 4E75            	   148:         RTS
+                            	   149: 
+                            	   150: ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                            	   151: ; PrintHexAddress - Imprime endereço de 32 bits
+                            	   152: ; Entrada: D0 = endereço
+                            	   153: ;
+                            	   154: PicoPrintHexAddress:
+02:00001558 4840            	   155:         SWAP    D0                ; Imprime parte alta primeiro
+02:0000155A 4EB81560        	   156:         JSR     .PrintWordHex
+02:0000155E 4840            	   157:         SWAP    D0                ; Parte baixa
+                            	   158: .PrintWordHex:
+02:00001560 E158            	   159:         ROL.W   #8,D0             ; Byte mais significativo primeiro
+02:00001562 4EB81568        	   160:         JSR     PicoPrintByteHex
+02:00001566 E058            	   161:         ROR.W   #8,D0             ; Byte menos significativo
+                            	   162: PicoPrintByteHex:
+02:00001568 1F00            	   163:         MOVE.B  D0,-(SP)          ; Salva byte original
+02:0000156A E808            	   164:         LSR.B   #4,D0             ; Nibble alto
+02:0000156C 6106            	   165:         BSR     .PrintNibble
+02:0000156E 101F            	   166:         MOVE.B  (SP)+,D0          ; Recupera byte
+02:00001570 0200000F        	   167:         ANDI.B  #$0F,D0           ; Nibble baixo
+                            	   168: .PrintNibble:
+02:00001574 B03C0009        	   169:         CMP.B   #9,D0
+02:00001578 6302            	   170:         BLS     .Decimal
+02:0000157A 5E00            	   171:         ADD.B   #7,D0             ; Ajuste para A-F
+                            	   172: .Decimal:
+02:0000157C D03C0030        	   173:         ADD.B   #'0',D0
+02:00001580 4EF81536        	   174:         JMP     PicoWriteChar    ; Usa JMP para tail call optimization
+                            	   175: 
 
 Source: "vbug2-0.asm"
-                            	   383:         INCLUDE "cmd_mem_dump.asm"
+                            	   451:         INCLUDE "cmd_mem_dump.asm"
 
 Source: "cmd_mem_dump.asm"
                             	     1: 
-                            	     2: 
+                            	     2: VerificaEndereco:
                             	     3: 
-                            	     4: 
-                            	     5: ; ----------------------------------------------------------------------
-                            	     6: ; MemDump - Imprime dump de memória formatado
-                            	     7: ; Entrada:
-                            	     8: ;   A0 = Endereço inicial (ex: $80000)
-                            	     9: ;   D0 = Quantidade de bytes (ex: 256)
-                            	    10: ; ----------------------------------------------------------------------
-                            	    11: MEMDUMP:
-02:000013F4 41F900000000    	    12:         LEA     MsgDumpHeader,A0
-02:000013FA 4EB811CC        	    13:         JSR     WriteString
-02:000013FE 207900080234    	    14:         MOVE.L  (addressInHex),A0
-02:00001404 2008            	    15:         MOVE.L  A0,D0
-02:00001406 4EB813C8        	    16:         JSR     PicoPrintHexAddress
-02:0000140A 4EB811DE        	    17:         JSR     NewLine
+                            	     4: .DentroDaFaixa:
+                            	     5:         ; Se o código chegar aqui, significa que:
+                            	     6:         ; $80000 <= A0 <= $FFFFF (O endereço é válido!)
+                            	     7:         ; ... seu código para endereço válido aqui ...
+                            	     8:         BRA     .Fim
+                            	     9: 
+                            	    10: .OutOfRange:
+                            	    11:         ; Se desviou para cá, o endereço é inválido (Menor que $80000 OU Maior que $FFFFF)
+                            	    12:         ; ... seu tratamento de erro aqui ...
+                            	    13: 
+                            	    14: 
+                            	    15: 
+                            	    16: .Fim:
+02:00001584 4E75            	    17:         RTS
                             	    18: 
-02:0000140E 41F900000013    	    19:         LEA     MsgDumpHeader1,A0
-02:00001414 4EB811CC        	    20:         JSR     WriteString
-                            	    21: 
-02:00001418 207900080234    	    22:         MOVE.L  (addressInHex),A0
-                            	    23:         ; Calcula endereço final
-                            	    24: 
-                            	    25: DUMPLOOPMASTER:
-02:0000141E 7200            	    26:         CLR.L   D1
-02:00001420 2208            	    27:         MOVE.L  A0,D1
-02:00001422 0681000000FF    	    28:         ADDI.L  #$000000FF,D1             ; D1 = endereço final
-                            	    29:         ;MOVE.L  D1,D0
-                            	    30:         ;JSR     PicoPrintHexAddress
-                            	    31:         ;JSR     new_line
+                            	    19: 
+                            	    20: ; ----------------------------------------------------------------------
+                            	    21: ; MemDump - Imprime dump de memória formatado
+                            	    22: ; Entrada:
+                            	    23: ;   A0 = Endereço inicial (ex: $80000)
+                            	    24: ;   D0 = Quantidade de bytes (ex: 256)
+                            	    25: ; ----------------------------------------------------------------------
+                            	    26: MemDump:
+02:00001586 41F900000000    	    27:         LEA     MsgDumpHeader,A0
+02:0000158C 4EB811D2        	    28:         JSR     WriteString
+02:00001590 207900080638    	    29:         MOVE.L  (addressInHex),A0
+02:00001596 B1FC000FFFFF    	    30:         CMPA.L  #$FFFFF,A0        ; Compara A0 com o limite superior
+02:0000159C 620000EE        	    31:         BHI     OutOfRange       ; BHI (Branch if Higher): Desvia se A0 > $FFFFF
                             	    32: 
-                            	    33:         ;aguarda um caractere ser digitado mas nao usa é somente para parar a execução aqui
-                            	    34:         ;JSR     ReadChar
-                            	    35: 
+02:000015A0 2008            	    33:         MOVE.L  A0,D0
+02:000015A2 4EB81558        	    34:         JSR     PicoPrintHexAddress
+02:000015A6 4EB811EA        	    35:         JSR     NewLine
                             	    36: 
-                            	    37: DumpLoop:
-                            	    38:         ; Nova linha a cada 16 bytes
-02:00001428 2008            	    39:         MOVE.L  A0,D0
-02:0000142A 02800000000F    	    40:         ANDI.L  #$0000000F,D0     ; Verifica se é início de linha
-02:00001430 6616            	    41:         BNE     NoNewLine
-                            	    42: 
-                            	    43:         ; Imprime endereço
-02:00001432 2008            	    44:         MOVE.L  A0,D0
-02:00001434 4EB813C8        	    45:         JSR     PicoPrintHexAddress    ; Imprime 8 dígitos hex
-                            	    46: 
-02:00001438 103C003A        	    47:         MOVE.B  #':',D0
-02:0000143C 4EB811C2        	    48:         JSR     WriteChar
-02:00001440 103C0020        	    49:         MOVE.B  #' ',D0
-02:00001444 4EB811C2        	    50:         JSR     WriteChar
-                            	    51: 
-                            	    52: NoNewLine:
-                            	    53:         ; Imprime byte em hex
-02:00001448 1018            	    54:         MOVE.B  (A0)+,D0
-02:0000144A 4EB813D8        	    55:         JSR     PicoPrintByteHex
-                            	    56: 
-02:0000144E 103C0020        	    57:         MOVE.B  #' ',D0
-02:00001452 4EB811C2        	    58:         JSR     WriteChar
-                            	    59: 
-                            	    60:         ; Verifica fim da linha (16 bytes)
-02:00001456 2008            	    61:         MOVE.L  A0,D0
-02:00001458 02800000000F    	    62:         ANDI.L  #$0000000F,D0
-02:0000145E 664E            	    63:         BNE     NoEndLine
-                            	    64: 
-                            	    65:         ; Imprime caracteres ASCII
-02:00001460 103C0020        	    66:         MOVE.B  #' ',D0
-02:00001464 4EB811C2        	    67:         JSR     WriteChar
-02:00001468 103C007C        	    68:         MOVE.B  #'|',D0
-02:0000146C 4EB811C2        	    69:         JSR     WriteChar
-                            	    70: 
-02:00001470 43E8FFF0        	    71:         LEA     -16(A0),A1        ; Volta ao início da linha
-02:00001474 740F            	    72:         MOVEQ   #15,D2            ; 16 caracteres
-                            	    73: 
-                            	    74: AsciiLoop:
-02:00001476 1019            	    75:         MOVE.B  (A1)+,D0
-02:00001478 B03C0020        	    76:         CMP.B   #32,D0            ; Verifica se é imprimível
-02:0000147C 6D0C            	    77:         BLT     NonPrintable
-02:0000147E B03C007E        	    78:         CMP.B   #126,D0
-02:00001482 6E06            	    79:         BGT     NonPrintable
-                            	    80: 
-02:00001484 4EB811C2        	    81:         JSR     WriteChar
-02:00001488 6008            	    82:         BRA     NextAscii
-                            	    83: 
-                            	    84: NonPrintable:
-02:0000148A 103C002E        	    85:         MOVE.B  #'.',D0           ; Substitui não imprimíveis
-02:0000148E 4EB811C2        	    86:         JSR     WriteChar
-                            	    87: 
-                            	    88: NextAscii:
-02:00001492 51CAFFE2        	    89:         DBRA    D2,AsciiLoop
-                            	    90: 
-02:00001496 103C007C        	    91:         MOVE.B  #'|',D0
-02:0000149A 4EB811C2        	    92:         JSR     WriteChar
-02:0000149E 103C000D        	    93:         MOVE.B  #13,D0            ; CR
-02:000014A2 4EB811C2        	    94:         JSR     WriteChar
-02:000014A6 103C000A        	    95:         MOVE.B  #10,D0            ; LF
-02:000014AA 4EB811C2        	    96:         JSR     WriteChar
-                            	    97: 
-                            	    98: NoEndLine:
-                            	    99:         ; Verifica fim do dump
-02:000014AE B1C1            	   100:         CMP.L   D1,A0
-02:000014B0 6300FF76        	   101:         BLS     DumpLoop
+02:000015AA 41F900000013    	    37:         LEA     MsgDumpHeader1,A0
+02:000015B0 4EB811D2        	    38:         JSR     WriteString
+                            	    39: 
+02:000015B4 207900080638    	    40:         MOVE.L  (addressInHex),A0
+                            	    41:         ; Calcula endereço final
+                            	    42: DumpLoopMaster:
+02:000015BA 303C0000        	    43:         MOVE.W  #$0000,D0
+02:000015BE 323C0008        	    44:         MOVE.W  #$0008,D1
+02:000015C2 4EB814C4        	    45:         JSR     PicoSetCursor
+02:000015C6 7600            	    46:         CLR.L   D3
+02:000015C8 2608            	    47:         MOVE.L  A0,D3
+02:000015CA 0683000000FF    	    48:         ADDI.L  #$000000FF,D3             ; D3 = endereço final    
+                            	    49: DumpLoop:
+                            	    50:         ; Nova linha a cada 16 bytes
+02:000015D0 2008            	    51:         MOVE.L  A0,D0
+02:000015D2 02800000000F    	    52:         ANDI.L  #$0000000F,D0     ; Verifica se é início de linha
+02:000015D8 6616            	    53:         BNE     NoNewLine
+                            	    54: 
+                            	    55:         ; Imprime endereço
+02:000015DA 2008            	    56:         MOVE.L  A0,D0
+02:000015DC 4EB81558        	    57:         JSR     PicoPrintHexAddress    ; Imprime 8 dígitos hex
+                            	    58: 
+02:000015E0 103C003A        	    59:         MOVE.B  #':',D0
+02:000015E4 4EB811C2        	    60:         JSR     WriteChar
+02:000015E8 103C0020        	    61:         MOVE.B  #' ',D0
+02:000015EC 4EB811C2        	    62:         JSR     WriteChar
+                            	    63: 
+                            	    64: NoNewLine:
+                            	    65:         ; Imprime byte em hex
+02:000015F0 1018            	    66:         MOVE.B  (A0)+,D0
+02:000015F2 4EB81568        	    67:         JSR     PicoPrintByteHex
+                            	    68: 
+02:000015F6 103C0020        	    69:         MOVE.B  #' ',D0
+02:000015FA 4EB811C2        	    70:         JSR     WriteChar
+                            	    71: 
+                            	    72:         ; Verifica fim da linha (16 bytes)
+02:000015FE 2008            	    73:         MOVE.L  A0,D0
+02:00001600 02800000000F    	    74:         ANDI.L  #$0000000F,D0
+02:00001606 66E8            	    75:         BNE     NoNewLine
+                            	    76: 
+                            	    77:         ; Imprime caracteres ASCII
+02:00001608 103C0020        	    78:         MOVE.B  #' ',D0
+02:0000160C 4EB811C2        	    79:         JSR     WriteChar
+02:00001610 103C007C        	    80:         MOVE.B  #'|',D0
+02:00001614 4EB811C2        	    81:         JSR     WriteChar
+                            	    82: 
+02:00001618 43E8FFF0        	    83:         LEA     -16(A0),A1        ; Volta ao início da linha
+02:0000161C 740F            	    84:         MOVEQ   #15,D2            ; 16 caracteres
+                            	    85: 
+                            	    86: AsciiLoop:
+02:0000161E 1019            	    87:         MOVE.B  (A1)+,D0
+02:00001620 B03C0020        	    88:         CMP.B   #$20,D0            ; Verifica se é imprimível
+02:00001624 650C            	    89:         BLO     NonPrintable
+02:00001626 B03C007E        	    90:         CMP.B   #$7E,D0
+02:0000162A 6206            	    91:         BHI     NonPrintable
+                            	    92: 
+02:0000162C 4EB811C2        	    93:         JSR     WriteChar
+02:00001630 6008            	    94:         BRA     NextAscii
+                            	    95: 
+                            	    96: NonPrintable:
+02:00001632 103C002E        	    97:         MOVE.B  #'.',D0           ; Substitui não imprimíveis
+02:00001636 4EB811C2        	    98:         JSR     WriteChar
+                            	    99: 
+                            	   100: NextAscii:
+02:0000163A 51CAFFE2        	   101:         DBRA    D2,AsciiLoop
                             	   102: 
-02:000014B4 2F08            	   103:         MOVE.L  A0,-(SP)          ; Salva endereço atual
-02:000014B6 41F900000310    	   104:         LEA     MsgHitAnyKey,A0
-02:000014BC 4EB811CC        	   105:         JSR     WriteString
-02:000014C0 4EB811D4        	   106:         JSR     ReadChar
-02:000014C4 B03C001B        	   107:         CMP.B   #$1B,D0
-02:000014C8 6706            	   108:         BEQ     .fim
+02:0000163E 103C007C        	   103:         MOVE.B  #'|',D0
+02:00001642 4EB811C2        	   104:         JSR     WriteChar
+02:00001646 103C000D        	   105:         MOVE.B  #13,D0            ; CR
+02:0000164A 4EB811C2        	   106:         JSR     WriteChar
+02:0000164E 103C000A        	   107:         MOVE.B  #10,D0            ; LF
+02:00001652 4EB811C2        	   108:         JSR     WriteChar
                             	   109: 
-02:000014CA 205F            	   110:         MOVE.L  (SP)+,A0          ; Recupera endereço atual
-02:000014CC 6000FF50        	   111:         BRA     DUMPLOOPMASTER
-                            	   112: .fim
-02:000014D0 4E75            	   113:         RTS
+                            	   110: NoEndLine:
+                            	   111:         ; Verifica fim do dump
+02:00001656 B1C3            	   112:         CMP.L   D3,A0
+02:00001658 6300FF76        	   113:         BLS     DumpLoop
                             	   114: 
-                            	   115:      
+02:0000165C 2F08            	   115:         MOVE.L  A0,-(SP)          ; Salva endereço atual
+02:0000165E 41F900000346    	   116:         LEA     MsgHitAnyKey,A0
+02:00001664 4EB811D2        	   117:         JSR     WriteString
+02:00001668 4EB813E2        	   118:         JSR     UartReadChar
+02:0000166C B03C001B        	   119:         CMP.B   #$1B,D0
+02:00001670 6716            	   120:         BEQ     .fim
+                            	   121: 
+02:00001672 103C000D        	   122:         MOVE.B  #13,D0            ; CR
+02:00001676 4EB811C2        	   123:         JSR     WriteChar
+02:0000167A 103C000A        	   124:         MOVE.B  #10,D0            ; LF
+02:0000167E 4EB811C2        	   125:         JSR     WriteChar
+                            	   126: 
+02:00001682 205F            	   127:         MOVE.L  (SP)+,A0          ; Recupera endereço atual
+02:00001684 6000FF34        	   128:         BRA     DumpLoopMaster
+                            	   129: .fim
+02:00001688 4EF812A0        	   130:         JMP     subLoop
+                            	   131: OutOfRange:
+02:0000168C 41F90000021D    	   132:         LEA     MsgOutOfRange,A0
+02:00001692 4EB811D2        	   133:         JSR     WriteString        
+02:00001696 4EF812A0        	   134:         JMP     subLoop
+                            	   135:      
 
 Source: "vbug2-0.asm"
-                            	   384:         INCLUDE "trap1.asm"
+                            	   452:         INCLUDE "trap1.asm"
 
 Source: "trap1.asm"
                             	     1: 
                             	     2: MERDA:
-02:000014D2 4D45524441204D45	     3:     DC.B    "MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA ",13,10,0
-02:000014DA 524441204D455244
-02:000014E2 41204D4552444120
-02:000014EA 4D45524441204D45
-02:000014F2 524441204D455244
-02:000014FA 41204D4552444120
-02:00001502 4D45524441204D45
-02:0000150A 524441204D455244
-02:00001512 41204D4552444120
-02:0000151A 4D45524441204D45
-02:00001522 524441204D455244
-02:0000152A 41204D4552444120
-02:00001532 0D
-02:00001533 0A
-02:00001534 00
+02:0000169A 4D45524441204D45	     3:     DC.B    "MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA ",13,10,0
+02:000016A2 524441204D455244
+02:000016AA 41204D4552444120
+02:000016B2 4D45524441204D45
+02:000016BA 524441204D455244
+02:000016C2 41204D4552444120
+02:000016CA 4D45524441204D45
+02:000016D2 524441204D455244
+02:000016DA 41204D4552444120
+02:000016E2 4D45524441204D45
+02:000016EA 524441204D455244
+02:000016F2 41204D4552444120
+02:000016FA 0D
+02:000016FB 0A
+02:000016FC 00
                             	     4: 
                             	     5:     Align 2
                             	     6: ; -----------------------------------------------------------------------------
                             	     7: ; O SEU CÓDIGO DO TCPBOX68K (Agora rodando na RAM)
                             	     8: ; -----------------------------------------------------------------------------
                             	     9: vbug2_trap1:
-02:00001538 B07C0001        	    10:     CMP.W   #CMD_CCONIN,D0      ; Compara com CCONIN (ler caractere)
-02:0000153C 6714            	    11:     BEQ     trap_cconin         ; Se for 1, vai para leitura
-02:0000153E B07C0002        	    12:     CMP.W   #CMD_CCONOUT,D0     ; Compara com CCONOUT (escrever caractere)
-02:00001542 671E            	    13:     BEQ     trap_cconout        ; Se for 2, vai para escrita
-02:00001544 B07C0003        	    14:     CMP.W   #CMD_CCONOUTSTR,D0  ; Compara com CCONOUT (escrever string)
-02:00001548 6724            	    15:     BEQ     trap_strout         ; Se for 3, vai para escrita
-02:0000154A 4A40            	    16:     CMP.W   #CMD_PTERM0,D0      ; Compara com PTERM0 (terminar)
-02:0000154C 6732            	    17:     BEQ     trap_pterm0         ; Se for 0, vai para terminar
-02:0000154E 70FF            	    18:     MOVE.L  #-1,D0              ; Retorna erro se função não reconhecida
-02:00001550 4E73            	    19:     RTE
+02:00001700 B07C0001        	    10:     CMP.W   #CMD_CCONIN,D0      ; Compara com CCONIN (ler caractere)
+02:00001704 6714            	    11:     BEQ     trap_cconin         ; Se for 1, vai para leitura
+02:00001706 B07C0002        	    12:     CMP.W   #CMD_CCONOUT,D0     ; Compara com CCONOUT (escrever caractere)
+02:0000170A 671E            	    13:     BEQ     trap_cconout        ; Se for 2, vai para escrita
+02:0000170C B07C0003        	    14:     CMP.W   #CMD_CCONOUTSTR,D0  ; Compara com CCONOUT (escrever string)
+02:00001710 6724            	    15:     BEQ     trap_strout         ; Se for 3, vai para escrita
+02:00001712 4A40            	    16:     CMP.W   #CMD_PTERM0,D0      ; Compara com PTERM0 (terminar)
+02:00001714 6732            	    17:     BEQ     trap_pterm0         ; Se for 0, vai para terminar
+02:00001716 70FF            	    18:     MOVE.L  #-1,D0              ; Retorna erro se função não reconhecida
+02:00001718 4E73            	    19:     RTE
                             	    20: 
                             	    21: ; --------------------------------
                             	    22: ; TRAP_CCONIN - Ler caractere do console
                             	    23: ; Saída: D0.L - Caractere lido
                             	    24: ; --------------------------------
                             	    25: trap_cconin:
-02:00001552 20790008001A    	    26:     MOVE.L  (cconin),A0
-02:00001558 4E90            	    27:     JSR     (A0)
-02:0000155A 0280000000FF    	    28:     ANDI.L      #$FF,D0       ; Mantém apenas o byte inferior
-02:00001560 4E73            	    29:     RTE                   ; Retorna da exceção
+02:0000171A 20790008001A    	    26:     MOVE.L  (cconin),A0
+02:00001720 4E90            	    27:     JSR     (A0)
+02:00001722 0280000000FF    	    28:     ANDI.L      #$FF,D0       ; Mantém apenas o byte inferior
+02:00001728 4E73            	    29:     RTE                   ; Retorna da exceção
                             	    30: 
                             	    31: ; --------------------------------
                             	    32: ; TRAP_CCONOUT - Escrever caractere no console
                             	    33: ; Entrada: D1.L - Caractere a escrever
                             	    34: ; --------------------------------
                             	    35: trap_cconout:
-02:00001562 1001            	    36:     MOVE.B  D1,D0
-02:00001564 207900080016    	    37:     MOVE.L  (cconout),A0        ; Busca o endereço da rotina física da UART
-02:0000156A 4E90            	    38:     JSR     (A0)
-02:0000156C 4E73            	    39:     RTE      
+02:0000172A 1001            	    36:     MOVE.B  D1,D0
+02:0000172C 207900080016    	    37:     MOVE.L  (cconout),A0        ; Busca o endereço da rotina física da UART
+02:00001732 4E90            	    38:     JSR     (A0)
+02:00001734 4E73            	    39:     RTE      
                             	    40:                 
                             	    41: 
                             	    42: trap_strout:
-02:0000156E 227900080016    	    43:     MOVE.L  (cconout),A1
+02:00001736 227900080016    	    43:     MOVE.L  (cconout),A1
                             	    44: .strout:
-02:00001574 1018            	    45:     MOVE.B  (A0)+,D0
-02:00001576 4A00            	    46:     CMP.B   #0,D0
-02:00001578 6704            	    47:     BEQ     .fim
-02:0000157A 4E91            	    48:     JSR     (A1)
-02:0000157C 60F6            	    49:     BRA     .strout
+02:0000173C 1018            	    45:     MOVE.B  (A0)+,D0
+02:0000173E 4A00            	    46:     CMP.B   #0,D0
+02:00001740 6704            	    47:     BEQ     .fim
+02:00001742 4E91            	    48:     JSR     (A1)
+02:00001744 60F6            	    49:     BRA     .strout
                             	    50: .fim:
-02:0000157E 4E73            	    51:     RTE
+02:00001746 4E73            	    51:     RTE
                             	    52: 
                             	    53: ; --------------------------------
                             	    54: ; TRAP_PTERM0 - Terminar programa
                             	    55: ; --------------------------------
                             	    56: trap_pterm0:
-02:00001580 303C0000        	    57:     move.w  #0,d0         ; Código de saída 0
-02:00001584 6102            	    58:     bsr     hardware_exit ; Chama rotina de término
-02:00001586 4E73            	    59:     RTE     
+02:00001748 303C0000        	    57:     move.w  #0,d0         ; Código de saída 0
+02:0000174C 6102            	    58:     bsr     hardware_exit ; Chama rotina de término
+02:0000174E 4E73            	    59:     RTE     
                             	    60: 
                             	    61: ; --------------------------------
                             	    62: ; hardware_exit - Terminar execução
@@ -877,23 +1075,73 @@ Source: "trap1.asm"
                             	    68:     ; stop    #$2700
                             	    69: 
                             	    70:     ; Exemplo simples: loop infinito
-02:00001588 60FE            	    71:     BRA     hardware_exit
-02:0000158A 4E75            	    72:     RTS
+02:00001750 60FE            	    71:     BRA     hardware_exit
+02:00001752 4E75            	    72:     RTS
                             	    73: 
                             	    74: InitTrap1:
                             	    75:     ; -------------------------------------------------------------------------
                             	    76:     ; COMO INSTALAR NA RAM:
                             	    77:     ; Copiamos o endereço do nosso handler real para a posição $404 da RAM
                             	    78:     ; -------------------------------------------------------------------------
-02:0000158C 41F81538        	    79:     LEA     vbug2_trap1,A0             ; Pega o endereço da nossa rotina na RAM
-02:00001590 23C800080004    	    80:     MOVE.L  A0,($00080004)              ; Grava na posição da TRAP 1 na RAM!
-02:00001596 4E75            	    81:     RTS
+02:00001754 41F81700        	    79:     LEA     vbug2_trap1,A0             ; Pega o endereço da nossa rotina na RAM
+02:00001758 23C800080004    	    80:     MOVE.L  A0,($00080004)              ; Grava na posição da TRAP 1 na RAM!
+02:0000175E 4E75            	    81:     RTS
                             	    82:     ; A partir deste momento, qualquer instrução "TRAP #1" vai cair aqui!
                             	    83: 
 
 Source: "vbug2-0.asm"
-                            	   385: 
-                            	   386:         INCLUDE "section_data.asm"
+                            	   453:         INCLUDE "rot_print_hex_num.asm"
+
+Source: "rot_print_hex_num.asm"
+                            	     1: ; ----------------------------------------------------------------------
+                            	     2: ; PrintHexAddress - Imprime endereço de 32 bits
+                            	     3: ; Entrada: D0 = endereço
+                            	     4: ; ----------------------------------------------------------------------
+                            	     5: PrintHexAddress:
+02:00001760 4840            	     6:         SWAP    D0                ; Imprime parte alta primeiro
+02:00001762 4EB81768        	     7:         JSR     PrintWordHex
+02:00001766 4840            	     8:         SWAP    D0                ; Parte baixa
+                            	     9:         ; Continua para PrintWordHex
+                            	    10: 
+                            	    11: ; ----------------------------------------------------------------------
+                            	    12: ; PrintWordHex - Imprime word em hex (16 bits)
+                            	    13: ; Entrada: D0.w = valor
+                            	    14: ; ----------------------------------------------------------------------
+                            	    15: PrintWordHex:
+02:00001768 E158            	    16:         ROL.W   #8,D0             ; Byte mais significativo primeiro
+02:0000176A 4EB81770        	    17:         JSR     PrintByteHex
+02:0000176E E058            	    18:         ROR.W   #8,D0             ; Byte menos significativo
+                            	    19:         ; Continua para PrintByteHex
+                            	    20: 
+                            	    21: ; ----------------------------------------------------------------------
+                            	    22: ; PrintByteHex - Imprime byte em hex (8 bits)
+                            	    23: ; Entrada: D0.b = valor
+                            	    24: ; ----------------------------------------------------------------------
+                            	    25: PrintByteHex:
+02:00001770 1F00            	    26:         MOVE.B  D0,-(SP)          ; Salva byte original
+02:00001772 E808            	    27:         LSR.B   #4,D0             ; Nibble alto
+02:00001774 6106            	    28:         BSR     PrintNibble
+02:00001776 101F            	    29:         MOVE.B  (SP)+,D0          ; Recupera byte
+02:00001778 0200000F        	    30:         ANDI.B  #$0F,D0           ; Nibble baixo
+                            	    31:         ; Continua para PrintNibble
+                            	    32: ; ----------------------------------------------------------------------
+                            	    33: ; PrintNibble - Imprime um nibble em hex
+                            	    34: ; Entrada: D0.b bits 3-0 = nibble (0-15)
+                            	    35: ; ----------------------------------------------------------------------
+                            	    36: PrintNibble:
+02:0000177C B03C0009        	    37:         CMP.B   #9,D0
+02:00001780 6302            	    38:         BLS     .Decimal
+02:00001782 5E00            	    39:         ADD.B   #7,D0             ; Ajuste para A-F
+                            	    40: .Decimal:
+02:00001784 D03C0030        	    41:         ADD.B   #'0',D0
+02:00001788 4EF813CA        	    42:         JMP     UartWriteChar    ; Usa JMP para tail call optimization
+                            	    43: 
+
+Source: "vbug2-0.asm"
+                            	   454: 
+                            	   455: 
+                            	   456: 
+                            	   457:         INCLUDE "section_data.asm"
 
 Source: "section_data.asm"
                             	     1: ; ----------------------------------------------------------------------
@@ -934,7 +1182,7 @@ Source: "section_data.asm"
 04:000000A0 0D
 04:000000A1 0A
 04:000000A2 00
-                            	    15: MsgMSGINIT:
+                            	    15: MsgOrionInit:
 04:000000A3 0D              	    16:     DC.B    13,10,"Orion68 - copyright (C) pdsilva(pgordao).VBug2.0",13,10
 04:000000A4 0A
 04:000000A5 4F72696F6E363820
@@ -990,207 +1238,223 @@ Source: "section_data.asm"
 04:00000153 0A
 04:00000154 00
                             	    21: MsgMenuText:
-04:00000155 332E204C6F616420	    22:     DC.B    "3. Load Program (PC)",13,10
-04:0000015D 50726F6772616D20
-04:00000165 28504329
-04:00000169 0D
-04:0000016A 0A
-04:0000016B 352E2052756E2050	    23:     DC.B    "5. Run Program",13,10
-04:00000173 726F6772616D
-04:00000179 0D
-04:0000017A 0A
-04:0000017B 372E204D656D6F72	    24:     DC.B    "7. Memory dump from address buffer",13,10
-04:00000183 792064756D702066
-04:0000018B 726F6D2061646472
-04:00000193 6573732062756666
-04:0000019B 6572
-04:0000019D 0D
-04:0000019E 0A
-04:0000019F 382E205265616420	    25:     DC.B    "8. Read hexa value and put in address buffer",13,10
-04:000001A7 686578612076616C
-04:000001AF 756520616E642070
-04:000001B7 757420696E206164
-04:000001BF 6472657373206275
-04:000001C7 66666572
-04:000001CB 0D
-04:000001CC 0A
-04:000001CD 392E2046726F6D20	    26:     DC.B    "9. From screen to buffer E from buffer to screen",13,10
-04:000001D5 73637265656E2074
-04:000001DD 6F20627566666572
-04:000001E5 20452066726F6D20
-04:000001ED 6275666665722074
-04:000001F5 6F2073637265656E
-04:000001FD 0D
-04:000001FE 0A
-04:000001FF 3E20            	    27:     DC.B    "> ",0
-04:00000201 00
-                            	    28: MsgLoadDoneMsg:
-04:00000202 50726F6772616D20	    29:     DC.B    "Program loaded successfully!",13,10,0
-04:0000020A 6C6F616465642073
-04:00000212 7563636573736675
-04:0000021A 6C6C7921
-04:0000021E 0D
-04:0000021F 0A
-04:00000220 00
-                            	    30: MsgWritePrompt:
-04:00000221 5772697465204164	    31:     DC.B    "Write Address: ",0
-04:00000229 64726573733A20
-04:00000230 00
-                            	    32: MsgWriteDoneMsg:
-04:00000231 0D              	    33:     DC.B    13,10,"Data written to memory!",13,10,0
-04:00000232 0A
-04:00000233 4461746120777269
-04:0000023B 7474656E20746F20
-04:00000243 6D656D6F727921
-04:0000024A 0D
-04:0000024B 0A
-04:0000024C 00
-                            	    34: MsgRunPrompt:
-04:0000024D 0D              	    35:     DC.B    13,10,"Running program...",13,10,0
-04:0000024E 0A
-04:0000024F 52756E6E696E6720
-04:00000257 70726F6772616D2E
-04:0000025F 2E2E
-04:00000261 0D
-04:00000262 0A
-04:00000263 00
-                            	    36: MsgNoProgramToRUN:
-04:00000264 4E6F2070726F6772	    37:     DC.B    "No program loaded to run",13,10,0
-04:0000026C 616D206C6F616465
-04:00000274 6420746F2072756E
-04:0000027C 0D
-04:0000027D 0A
-04:0000027E 00
-                            	    38: MsgPromptNotImplemented:
-04:0000027F 4E6F7420496D706C	    39:     DC.B    "Not Implemented!",13,10,0
-04:00000287 656D656E74656421
-04:0000028F 0D
-04:00000290 0A
-04:00000291 00
-                            	    40: MsgBufferEmpty:
-04:00000292 4F6F6F7073204275	    41:     DC.B    "Ooops Buffer Empty!",13,10,0
-04:0000029A 6666657220456D70
-04:000002A2 747921
-04:000002A5 0D
-04:000002A6 0A
-04:000002A7 00
-                            	    42: MsgTestHexInput:
-04:000002A8 0D              	    43:     DC.B    13,10,"Digite um endereco de no maximo 4bytes 8 caracteres!",13,10
-04:000002A9 0A
-04:000002AA 4469676974652075
-04:000002B2 6D20656E64657265
-04:000002BA 636F206465206E6F
-04:000002C2 206D6178696D6F20
-04:000002CA 3462797465732038
-04:000002D2 2063617261637465
-04:000002DA 72657321
-04:000002DE 0D
+04:00000155 4D656E752063686F	    22:     DC.B    "Menu choose an option: ",13,10,13,10
+04:0000015D 6F736520616E206F
+04:00000165 7074696F6E3A20
+04:0000016C 0D
+04:0000016D 0A
+04:0000016E 0D
+04:0000016F 0A
+04:00000170 332E204C6F616420	    23:     DC.B    "3. Load Program (PC)",13,10
+04:00000178 50726F6772616D20
+04:00000180 28504329
+04:00000184 0D
+04:00000185 0A
+04:00000186 352E2052756E2050	    24:     DC.B    "5. Run Program",13,10
+04:0000018E 726F6772616D
+04:00000194 0D
+04:00000195 0A
+04:00000196 372E204D656D6F72	    25:     DC.B    "7. Memory dump from address buffer",13,10
+04:0000019E 792064756D702066
+04:000001A6 726F6D2061646472
+04:000001AE 6573732062756666
+04:000001B6 6572
+04:000001B8 0D
+04:000001B9 0A
+04:000001BA 382E205265616420	    26:     DC.B    "8. Read hexa value and put in address buffer",13,10
+04:000001C2 686578612076616C
+04:000001CA 756520616E642070
+04:000001D2 757420696E206164
+04:000001DA 6472657373206275
+04:000001E2 66666572
+04:000001E6 0D
+04:000001E7 0A
+04:000001E8 392E2046726F6D20	    27:     DC.B    "9. From screen to buffer E from buffer to screen",13,10
+04:000001F0 73637265656E2074
+04:000001F8 6F20627566666572
+04:00000200 20452066726F6D20
+04:00000208 6275666665722074
+04:00000210 6F2073637265656E
+04:00000218 0D
+04:00000219 0A
+04:0000021A 3E20            	    28:     DC.B    "> ",0
+04:0000021C 00
+                            	    29: MsgOutOfRange:
+04:0000021D 0D              	    30:     DC.B    13,10,"Invalid address range!",13,10,0
+04:0000021E 0A
+04:0000021F 496E76616C696420
+04:00000227 6164647265737320
+04:0000022F 72616E676521
+04:00000235 0D
+04:00000236 0A
+04:00000237 00
+                            	    31: MsgLoadDoneMsg:
+04:00000238 50726F6772616D20	    32:     DC.B    "Program loaded successfully!",13,10,0
+04:00000240 6C6F616465642073
+04:00000248 7563636573736675
+04:00000250 6C6C7921
+04:00000254 0D
+04:00000255 0A
+04:00000256 00
+                            	    33: MsgWritePrompt:
+04:00000257 5772697465204164	    34:     DC.B    "Write Address: ",0
+04:0000025F 64726573733A20
+04:00000266 00
+                            	    35: MsgWriteDoneMsg:
+04:00000267 0D              	    36:     DC.B    13,10,"Data written to memory!",13,10,0
+04:00000268 0A
+04:00000269 4461746120777269
+04:00000271 7474656E20746F20
+04:00000279 6D656D6F727921
+04:00000280 0D
+04:00000281 0A
+04:00000282 00
+                            	    37: MsgRunPrompt:
+04:00000283 0D              	    38:     DC.B    13,10,"Running program...",13,10,0
+04:00000284 0A
+04:00000285 52756E6E696E6720
+04:0000028D 70726F6772616D2E
+04:00000295 2E2E
+04:00000297 0D
+04:00000298 0A
+04:00000299 00
+                            	    39: MsgNoProgramToRUN:
+04:0000029A 4E6F2070726F6772	    40:     DC.B    "No program loaded to run",13,10,0
+04:000002A2 616D206C6F616465
+04:000002AA 6420746F2072756E
+04:000002B2 0D
+04:000002B3 0A
+04:000002B4 00
+                            	    41: MsgPromptNotImplemented:
+04:000002B5 4E6F7420496D706C	    42:     DC.B    "Not Implemented!",13,10,0
+04:000002BD 656D656E74656421
+04:000002C5 0D
+04:000002C6 0A
+04:000002C7 00
+                            	    43: MsgBufferEmpty:
+04:000002C8 4F6F6F7073204275	    44:     DC.B    "Ooops Buffer Empty!",13,10,0
+04:000002D0 6666657220456D70
+04:000002D8 747921
+04:000002DB 0D
+04:000002DC 0A
+04:000002DD 00
+                            	    45: MsgTestHexInput:
+04:000002DE 0D              	    46:     DC.B    13,10,"Digite um endereco de no maximo 4bytes 8 caracteres!",13,10
 04:000002DF 0A
-04:000002E0 6D61697320717565	    44:     DC.B    "mais que isso sera descatado os excedentes...",13,10,0
-04:000002E8 206973736F207365
-04:000002F0 7261206465736361
-04:000002F8 7461646F206F7320
-04:00000300 6578636564656E74
-04:00000308 65732E2E2E
-04:0000030D 0D
-04:0000030E 0A
-04:0000030F 00
-                            	    45: MsgHitAnyKey:
-04:00000310 0D              	    46:     DC.B    13,10,"Hit any <ENTER> to continue <ESC> to terminate: ",0
-04:00000311 0A
-04:00000312 48697420616E7920
-04:0000031A 3C454E5445523E20
-04:00000322 746F20636F6E7469
-04:0000032A 6E7565203C455343
-04:00000332 3E20746F20746572
-04:0000033A 6D696E6174653A20
-04:00000342 00
-                            	    47: MsgXmodemInit:
-04:00000343 584D4F44454D2052	    48:     DC.B    "XMODEM Receiver Initialized",13,10,0
-04:0000034B 6563656976657220
-04:00000353 496E697469616C69
-04:0000035B 7A6564
-04:0000035E 0D
-04:0000035F 0A
-04:00000360 00
-                            	    49: MsgXmodemWaitingSoh:
-04:00000361 57616974696E6720	    50:     DC.B    "Waiting for SOH (Start of Header)...",13,10,0
-04:00000369 666F7220534F4820
-04:00000371 285374617274206F
-04:00000379 6620486561646572
-04:00000381 292E2E2E
-04:00000385 0D
-04:00000386 0A
-04:00000387 00
-                            	    51: MsgCs:
-04:00000388 436865636B73756D	    52:     DC.B    "Checksum ROM.: ",0
-04:00000390 20524F4D2E3A20
-04:00000397 00
-                            	    53: MsgCscalc:
-04:00000398 202D20436865636B	    54:     DC.B    " - Checksum CAL.: ",0
-04:000003A0 73756D2043414C2E
-04:000003A8 3A20
-04:000003AA 00
-                            	    55: MsgDefaultHandler:
-04:000003AB 2044656661756C74	    56:     DC.B    " Default handler wrote UART ",13,10,0
-04:000003B3 2068616E646C6572
-04:000003BB 2077726F74652055
-04:000003C3 41525420
-04:000003C7 0D
-04:000003C8 0A
-04:000003C9 00
-                            	    57: MsgViaTrap1:
-04:000003CA 4D656E736167656D	    58:     DC.B    "Mensagem via trap #1",13,10,0
-04:000003D2 2076696120747261
-04:000003DA 70202331
-04:000003DE 0D
-04:000003DF 0A
+04:000002E0 4469676974652075
+04:000002E8 6D20656E64657265
+04:000002F0 636F206465206E6F
+04:000002F8 206D6178696D6F20
+04:00000300 3462797465732038
+04:00000308 2063617261637465
+04:00000310 72657321
+04:00000314 0D
+04:00000315 0A
+04:00000316 6D61697320717565	    47:     DC.B    "mais que isso sera descatado os excedentes...",13,10,0
+04:0000031E 206973736F207365
+04:00000326 7261206465736361
+04:0000032E 7461646F206F7320
+04:00000336 6578636564656E74
+04:0000033E 65732E2E2E
+04:00000343 0D
+04:00000344 0A
+04:00000345 00
+                            	    48: MsgHitAnyKey:
+04:00000346 0D              	    49:     DC.B    13,10,"Hit any <ENTER> to continue <ESC> to terminate: ",0
+04:00000347 0A
+04:00000348 48697420616E7920
+04:00000350 3C454E5445523E20
+04:00000358 746F20636F6E7469
+04:00000360 6E7565203C455343
+04:00000368 3E20746F20746572
+04:00000370 6D696E6174653A20
+04:00000378 00
+                            	    50: MsgXmodemInit:
+04:00000379 584D4F44454D2052	    51:     DC.B    "XMODEM Receiver Initialized",13,10,0
+04:00000381 6563656976657220
+04:00000389 496E697469616C69
+04:00000391 7A6564
+04:00000394 0D
+04:00000395 0A
+04:00000396 00
+                            	    52: MsgXmodemWaitingSoh:
+04:00000397 57616974696E6720	    53:     DC.B    "Waiting for SOH (Start of Header)...",13,10,0
+04:0000039F 666F7220534F4820
+04:000003A7 285374617274206F
+04:000003AF 6620486561646572
+04:000003B7 292E2E2E
+04:000003BB 0D
+04:000003BC 0A
+04:000003BD 00
+                            	    54: MsgCs:
+04:000003BE 436865636B73756D	    55:     DC.B    "Checksum ROM.: ",0
+04:000003C6 20524F4D2E3A20
+04:000003CD 00
+                            	    56: MsgCscalc:
+04:000003CE 202D20436865636B	    57:     DC.B    " - Checksum CAL.: ",0
+04:000003D6 73756D2043414C2E
+04:000003DE 3A20
 04:000003E0 00
-04:000003E1 457863657074696F	    59: MsgDebug:     DC.B "Exception - PC: ",0
-04:000003E9 6E202D2050433A20
-04:000003F1 00
-04:000003F2 5374617475732052	    60: MsgSr:        DC.B "Status Reg: ",0
-04:000003FA 65673A20
-04:000003FE 00
-                            	    61: ;MsgSp:        DC.B "Stack Reg: ",0
-                            	    62: ;MsgSpu:       DC.B "StackU Reg: ",0
-04:000003FF 566563746F72206F	    63: MsgVector:    DC.B "Vector offset: ",0
-04:00000407 66667365743A20
-04:0000040E 00
-04:0000040F 566563746F72206E	    64: MsgVectorNum: DC.B "Vector number: ",0
-04:00000417 756D6265723A20
-04:0000041E 00
-04:0000041F 427573204572726F	    65: MsgBusError:  DC.B "Bus Error!",0
-04:00000427 7221
-04:00000429 00
-04:0000042A 4164647265737320	    66: MsgAddrError: DC.B "Address Error!",0
-04:00000432 4572726F7221
-04:00000438 00
-04:00000439 496C6C6567616C20	    67: MsgIllegal:   DC.B "Illegal Instruction!",0
-04:00000441 496E737472756374
-04:00000449 696F6E21
-04:0000044D 00
-04:0000044E 5452415020496E73	    68: MsgTrap:      DC.B "TRAP Instruction!",0
-04:00000456 7472756374696F6E
-04:0000045E 21
+                            	    58: MsgDefaultHandler:
+04:000003E1 2044656661756C74	    59:     DC.B    " Default handler wrote UART ",13,10,0
+04:000003E9 2068616E646C6572
+04:000003F1 2077726F74652055
+04:000003F9 41525420
+04:000003FD 0D
+04:000003FE 0A
+04:000003FF 00
+                            	    60: MsgViaTrap1:
+04:00000400 4D656E736167656D	    61:     DC.B    "Mensagem via trap #1",13,10,0
+04:00000408 2076696120747261
+04:00000410 70202331
+04:00000414 0D
+04:00000415 0A
+04:00000416 00
+04:00000417 457863657074696F	    62: MsgDebug:     DC.B "Exception - PC: ",0
+04:0000041F 6E202D2050433A20
+04:00000427 00
+04:00000428 5374617475732052	    63: MsgSr:        DC.B "Status Reg: ",0
+04:00000430 65673A20
+04:00000434 00
+                            	    64: ;MsgSp:        DC.B "Stack Reg: ",0
+                            	    65: ;MsgSpu:       DC.B "StackU Reg: ",0
+04:00000435 566563746F72206F	    66: MsgVector:    DC.B "Vector offset: ",0
+04:0000043D 66667365743A20
+04:00000444 00
+04:00000445 566563746F72206E	    67: MsgVectorNum: DC.B "Vector number: ",0
+04:0000044D 756D6265723A20
+04:00000454 00
+04:00000455 427573204572726F	    68: MsgBusError:  DC.B "Bus Error!",0
+04:0000045D 7221
 04:0000045F 00
-04:00000460 556E6B6E6F776E20	    69: MsgUnknown:   DC.B "Unknown Exception!",0
-04:00000468 457863657074696F
-04:00000470 6E21
-04:00000472 00
-                            	    70: 
-                            	    71: ;    ALIGN   2
-                            	    72: ;    ;Isso preenche 762 com 00
-                            	    73: ;    ;DS.B    $00000762 - *, $00
-                            	    74: ;    DC.B    "ROMv4.1",0   ; String de identificação
-                            	    75: ;    ;DS.B    $00002968 - *, $00
-                            	    76: ;    ORG     $3FFC
-                            	    77: ;checksum_rom:
-                            	    78: ;    DC.L    0     ; Valor calculado
-                            	    79: 
+04:00000460 4164647265737320	    69: MsgAddrError: DC.B "Address Error!",0
+04:00000468 4572726F7221
+04:0000046E 00
+04:0000046F 496C6C6567616C20	    70: MsgIllegal:   DC.B "Illegal Instruction!",0
+04:00000477 496E737472756374
+04:0000047F 696F6E21
+04:00000483 00
+04:00000484 5452415020496E73	    71: MsgTrap:      DC.B "TRAP Instruction!",0
+04:0000048C 7472756374696F6E
+04:00000494 21
+04:00000495 00
+04:00000496 556E6B6E6F776E20	    72: MsgUnknown:   DC.B "Unknown Exception!",0
+04:0000049E 457863657074696F
+04:000004A6 6E21
+04:000004A8 00
+                            	    73: 
+                            	    74: ;    ALIGN   2
+                            	    75: ;    ;Isso preenche 762 com 00
+                            	    76: ;    ;DS.B    $00000762 - *, $00
+                            	    77: ;    DC.B    "ROMv4.1",0   ; String de identificação
+                            	    78: ;    ;DS.B    $00002968 - *, $00
+                            	    79: ;    ORG     $3FFC
+                            	    80: ;checksum_rom:
+                            	    81: ;    DC.L    0     ; Valor calculado
+                            	    82: 
 
 Source: "vbug2-0.asm"
-                            	   387:         INCLUDE "section_bss.asm"
+                            	   458:         INCLUDE "section_bss.asm"
 
 Source: "section_bss.asm"
                             	     1: ; ----------------------------------------------------------------------
@@ -1213,29 +1477,34 @@ Source: "section_bss.asm"
                             	    18:         ALIGN 2
 05:00080024 00              	    19: buf_xmodem          DS.B   512        ; Buffer de dados
 05:00080025 *
-                            	    20: ;flg_pgm_loaded      DS.B   1
-                            	    21: ;blockNumber         DS.B   1          ; Número do bloco atual
-                            	    22: ;expectedBlock       DS.B   1          ; Próximo bloco esperado
-                            	    23: 
-                            	    24:         ALIGN 4
-                            	    25: ;checksumCalc       DS.L   1
-                            	    26: ;monitorStack       DS.L   1
-05:00080230 00000000        	    27: systemTick          DS.L   1
-05:00080234 00000000        	    28: addressInHex        DS.L   1
-                            	    29: 
-                            	    30:         ORG $00082000
-                            	    31:         ALIGN 2
-05:00082000 00              	    32: buf_pgm             DS.B   8192
+05:00080224 00              	    20: buf_put             DS.B   512    
+05:00080225 *
+05:00080424 00              	    21: buf_get             DS.B   512    
+05:00080425 *
+                            	    22: 
+05:00080624 00              	    23: flg_pgm_loaded      DS.B   1
+                            	    24: ;blockNumber         DS.B   1          ; Número do bloco atual
+                            	    25: ;expectedBlock       DS.B   1          ; Próximo bloco esperado
+                            	    26: 
+                            	    27:         ALIGN 4
+                            	    28: ;checksumCalc       DS.L   1
+05:00080630 00000000        	    29: monitorStack       DS.L   1
+05:00080634 00000000        	    30: systemTick          DS.L   1
+05:00080638 00000000        	    31: addressInHex        DS.L   1
+                            	    32: 
+                            	    33:         ORG $00082000
+                            	    34:         ALIGN 2
+05:00082000 00              	    35: buf_pgm             DS.B   8192
 05:00082001 *
-                            	    33:         END
+                            	    36:         END
 
 Source: "vbug2-0.asm"
-                            	   388: 
-                            	   389:         END
+                            	   459: 
+                            	   460:         END
 
 
 Symbols by name:
-AsciiLoop                        A:00001476
+AsciiLoop                        A:0000161E
 B115200                          E:00000008
 BUILD_DATE                      04:000000EF
 CMD_CCONIN                       E:00000001
@@ -1245,18 +1514,18 @@ CMD_CLEAR_SCREEN                 E:000000A4
 CMD_GO_HOME                      E:000000A1
 CMD_PTERM0                       E:00000000
 CMD_SET_CUR_POS                  E:000000A3
-ClearRam                         A:000011FC
+ClearRam                         A:00001204
 DLL                              E:00000001
 DLM                              E:00000003
-DUMPLOOPMASTER                   A:0000141E
 DefaultHandler                   A:00001014
-DumpLoop                         A:00001428
+DumpLoop                         A:000015D0
+DumpLoopMaster                   A:000015BA
 FCR                              E:00000005
 ISR                              E:00000005
-InitPicoVga                      A:0000135C
-InitTrap1                        A:0000158C
-InitUart                         A:000012B6
-InitUart1                        A:000012E6
+InitPicoVga                      A:000014AE
+InitTrap1                        A:00001754
+InitUart                         A:0000136C
+InitUart1                        A:0000139C
 Int1Handler                      A:00001150
 Int2Handler                      A:00001160
 Int3Handler                      A:00001170
@@ -1266,50 +1535,56 @@ Int6Handler                      A:000011A0
 Int7Handler                      A:000011B0
 LCR                              E:00000007
 LSR                              E:0000000B
-MEMDUMP                          A:000013F4
-MERDA                            A:000014D2
-MsgAddrError                    04:0000042A
-MsgBufferEmpty                  04:00000292
-MsgBusError                     04:0000041F
-MsgCs                           04:00000388
-MsgCscalc                       04:00000398
-MsgDebug                        04:000003E1
-MsgDefaultHandler               04:000003AB
+MERDA                            A:0000169A
+MemDump                          A:00001586
+MsgAddrError                    04:00000460
+MsgBufferEmpty                  04:000002C8
+MsgBusError                     04:00000455
+MsgCs                           04:000003BE
+MsgCscalc                       04:000003CE
+MsgDebug                        04:00000417
+MsgDefaultHandler               04:000003E1
 MsgDumpHeader                   04:00000000
 MsgDumpHeader1                  04:00000013
-MsgHitAnyKey                    04:00000310
-MsgIllegal                      04:00000439
-MsgLoadDoneMsg                  04:00000202
-MsgMSGINIT                      04:000000A3
+MsgHitAnyKey                    04:00000346
+MsgIllegal                      04:0000046F
+MsgLoadDoneMsg                  04:00000238
 MsgMenuText                     04:00000155
-MsgNoProgramToRUN               04:00000264
-MsgPromptNotImplemented         04:0000027F
-MsgRunPrompt                    04:0000024D
-MsgSr                           04:000003F2
-MsgTestHexInput                 04:000002A8
-MsgTrap                         04:0000044E
-MsgUnknown                      04:00000460
-MsgVector                       04:000003FF
-MsgVectorNum                    04:0000040F
-MsgViaTrap1                     04:000003CA
-MsgWriteDoneMsg                 04:00000231
-MsgWritePrompt                  04:00000221
-MsgXmodemInit                   04:00000343
-MsgXmodemWaitingSoh             04:00000361
-NewLine                          A:000011DE
-NextAscii                        A:00001492
-NoEndLine                        A:000014AE
-NoNewLine                        A:00001448
-NonPrintable                     A:0000148A
-PicoClearScreen                  A:0000139C
-PicoGoHome                       A:00001366
-PicoPrintByteHex                 A:000013D8
-PicoPrintHexAddress              A:000013C8
-PicoPrintString                  A:000013BE
-PicoRunCmd                       A:0000135E
-PicoSetCursor                    A:00001372
-PicoWriteChar                    A:000013AA
-PrintAddrHex                     A:000011DC
+MsgNoProgramToRUN               04:0000029A
+MsgOrionInit                    04:000000A3
+MsgOutOfRange                   04:0000021D
+MsgPromptNotImplemented         04:000002B5
+MsgRunPrompt                    04:00000283
+MsgSr                           04:00000428
+MsgTestHexInput                 04:000002DE
+MsgTrap                         04:00000484
+MsgUnknown                      04:00000496
+MsgVector                       04:00000435
+MsgVectorNum                    04:00000445
+MsgViaTrap1                     04:00000400
+MsgWriteDoneMsg                 04:00000267
+MsgWritePrompt                  04:00000257
+MsgXmodemInit                   04:00000379
+MsgXmodemWaitingSoh             04:00000397
+NewLine                          A:000011EA
+NextAscii                        A:0000163A
+NoEndLine                        A:00001656
+NoNewLine                        A:000015F0
+NonPrintable                     A:00001632
+OutOfRange                       A:0000168C
+PicoClearScreen                  A:00001524
+PicoGoHome                       A:000014B8
+PicoPrintByteHex                 A:00001568
+PicoPrintHexAddress              A:00001558
+PicoPrintString                  A:0000154E
+PicoRunCmd                       A:000014B0
+PicoSetCursor                    A:000014C4
+PicoWriteChar                    A:00001536
+PrintAddrHex                     A:000011E8
+PrintByteHex                     A:00001770
+PrintHexAddress                  A:00001760
+PrintNibble                      A:0000177C
+PrintWordHex                     A:00001768
 RAMBASE                          E:00080000
 RAMSIZE                          E:0007FFFF
 RAM_VARIABLES                    E:00080400
@@ -1321,7 +1596,9 @@ REG_Y_LOW                        E:00FF8033
 RHR                              E:00000001
 ROM_JUMPTABLE                    A:00000400
 RUN_CMD                          E:00FF803D
-ReadChar                         A:000011D4
+ReadChar                         A:000011E0
+ReadInHexa                       A:0000130C
+RunProgram                       A:000012D6
 SCR                              E:0000000F
 SERVICE_ADDR_ERR                 A:00001002
 SERVICE_BUS_ERR                  A:00001000
@@ -1353,35 +1630,43 @@ TrapDHandler                     A:00001138
 TrapEHandler                     A:00001140
 TrapFHandler                     A:00001148
 UART_BASE                        E:00FF4000
-UartReadChar                     A:00001328
-UartReadCharEcho                 A:0000133C
-UartWriteChar                    A:00001314
+UART_ReadHex1                    A:0000131C
+UartReadChar                     A:000013E2
+UartReadCharEcho                 A:000013FA
+UartReadHex                      A:00001432
+UartWriteChar                    A:000013CA
+UartWriteString                  A:0000141E
 Universal_Trampoline             A:000011C0
-Vbug2Start                       A:00001212
+Vbug2Start                       A:0000121A
+VerificaEndereco                 A:00001584
 WRITE_SCREEN                     E:00FF8001
 WriteChar                        A:000011C2
-WriteString                      A:000011CC
-addressInHex                     A:00080234
+WriteString                      A:000011D2
+addressInHex                     A:00080638
+buf_get                          A:00080424
 buf_pgm                          A:00082000
+buf_put                          A:00080224
 buf_xmodem                       A:00080024
 cconin                           A:0008001A
 cconout                          A:00080016
 currentBaudRate                  A:00080014
 currentTimer                     A:0008001E
 currentUart                      A:00080010
-hardware_exit                    A:00001588
-mainLoop                         A:0000128A
+flg_pgm_loaded                   A:00080624
+hardware_exit                    A:00001750
+mainLoop                         A:00001292
+monitorStack                     A:00080630
 ramBase                          A:00080008
 ramSize                          A:0008000C
 romBase                          A:00080000
 romSize                          A:00080004
-subLoop                          A:00001298
-systemTick                       A:00080230
-trap_cconin                      A:00001552
-trap_cconout                     A:00001562
-trap_pterm0                      A:00001580
-trap_strout                      A:0000156E
-vbug2_trap1                      A:00001538
+subLoop                          A:000012A0
+systemTick                       A:00080634
+trap_cconin                      A:0000171A
+trap_cconout                     A:0000172A
+trap_pterm0                      A:00001748
+trap_strout                      A:00001736
+vbug2_trap1                      A:00001700
 
 Symbols by value:
 00000000 CMD_PTERM0
@@ -1403,35 +1688,36 @@ Symbols by value:
 00000013 MsgDumpHeader1
 000000A1 CMD_GO_HOME
 000000A3 CMD_SET_CUR_POS
-000000A3 MsgMSGINIT
+000000A3 MsgOrionInit
 000000A4 CMD_CLEAR_SCREEN
 000000EF BUILD_DATE
 00000155 MsgMenuText
-00000202 MsgLoadDoneMsg
-00000221 MsgWritePrompt
-00000231 MsgWriteDoneMsg
-0000024D MsgRunPrompt
-00000264 MsgNoProgramToRUN
-0000027F MsgPromptNotImplemented
-00000292 MsgBufferEmpty
-000002A8 MsgTestHexInput
-00000310 MsgHitAnyKey
-00000343 MsgXmodemInit
-00000361 MsgXmodemWaitingSoh
-00000388 MsgCs
-00000398 MsgCscalc
-000003AB MsgDefaultHandler
-000003CA MsgViaTrap1
-000003E1 MsgDebug
-000003F2 MsgSr
-000003FF MsgVector
+0000021D MsgOutOfRange
+00000238 MsgLoadDoneMsg
+00000257 MsgWritePrompt
+00000267 MsgWriteDoneMsg
+00000283 MsgRunPrompt
+0000029A MsgNoProgramToRUN
+000002B5 MsgPromptNotImplemented
+000002C8 MsgBufferEmpty
+000002DE MsgTestHexInput
+00000346 MsgHitAnyKey
+00000379 MsgXmodemInit
+00000397 MsgXmodemWaitingSoh
+000003BE MsgCs
+000003CE MsgCscalc
+000003E1 MsgDefaultHandler
+00000400 MsgViaTrap1
 00000400 ROM_JUMPTABLE
-0000040F MsgVectorNum
-0000041F MsgBusError
-0000042A MsgAddrError
-00000439 MsgIllegal
-0000044E MsgTrap
-00000460 MsgUnknown
+00000417 MsgDebug
+00000428 MsgSr
+00000435 MsgVector
+00000445 MsgVectorNum
+00000455 MsgBusError
+00000460 MsgAddrError
+0000046F MsgIllegal
+00000484 MsgTrap
+00000496 MsgUnknown
 00001000 SERVICE_BUS_ERR
 00001002 SERVICE_ADDR_ERR
 00001004 SERVICE_ILLEGAL
@@ -1469,44 +1755,55 @@ Symbols by value:
 000011B0 Int7Handler
 000011C0 Universal_Trampoline
 000011C2 WriteChar
-000011CC WriteString
-000011D4 ReadChar
-000011DC PrintAddrHex
-000011DE NewLine
-000011FC ClearRam
-00001212 Vbug2Start
-0000128A mainLoop
-00001298 subLoop
-000012B6 InitUart
-000012E6 InitUart1
-00001314 UartWriteChar
-00001328 UartReadChar
-0000133C UartReadCharEcho
-0000135C InitPicoVga
-0000135E PicoRunCmd
-00001366 PicoGoHome
-00001372 PicoSetCursor
-0000139C PicoClearScreen
-000013AA PicoWriteChar
-000013BE PicoPrintString
-000013C8 PicoPrintHexAddress
-000013D8 PicoPrintByteHex
-000013F4 MEMDUMP
-0000141E DUMPLOOPMASTER
-00001428 DumpLoop
-00001448 NoNewLine
-00001476 AsciiLoop
-0000148A NonPrintable
-00001492 NextAscii
-000014AE NoEndLine
-000014D2 MERDA
-00001538 vbug2_trap1
-00001552 trap_cconin
-00001562 trap_cconout
-0000156E trap_strout
-00001580 trap_pterm0
-00001588 hardware_exit
-0000158C InitTrap1
+000011D2 WriteString
+000011E0 ReadChar
+000011E8 PrintAddrHex
+000011EA NewLine
+00001204 ClearRam
+0000121A Vbug2Start
+00001292 mainLoop
+000012A0 subLoop
+000012D6 RunProgram
+0000130C ReadInHexa
+0000131C UART_ReadHex1
+0000136C InitUart
+0000139C InitUart1
+000013CA UartWriteChar
+000013E2 UartReadChar
+000013FA UartReadCharEcho
+0000141E UartWriteString
+00001432 UartReadHex
+000014AE InitPicoVga
+000014B0 PicoRunCmd
+000014B8 PicoGoHome
+000014C4 PicoSetCursor
+00001524 PicoClearScreen
+00001536 PicoWriteChar
+0000154E PicoPrintString
+00001558 PicoPrintHexAddress
+00001568 PicoPrintByteHex
+00001584 VerificaEndereco
+00001586 MemDump
+000015BA DumpLoopMaster
+000015D0 DumpLoop
+000015F0 NoNewLine
+0000161E AsciiLoop
+00001632 NonPrintable
+0000163A NextAscii
+00001656 NoEndLine
+0000168C OutOfRange
+0000169A MERDA
+00001700 vbug2_trap1
+0000171A trap_cconin
+0000172A trap_cconout
+00001736 trap_strout
+00001748 trap_pterm0
+00001750 hardware_exit
+00001754 InitTrap1
+00001760 PrintHexAddress
+00001768 PrintWordHex
+00001770 PrintByteHex
+0000177C PrintNibble
 0007FFFF RAMSIZE
 00080000 RAMBASE
 00080000 RAM_VECTOR_BASE
@@ -1520,9 +1817,13 @@ Symbols by value:
 0008001A cconin
 0008001E currentTimer
 00080024 buf_xmodem
-00080230 systemTick
-00080234 addressInHex
+00080224 buf_put
 00080400 RAM_VARIABLES
+00080424 buf_get
+00080624 flg_pgm_loaded
+00080630 monitorStack
+00080634 systemTick
+00080638 addressInHex
 00082000 buf_pgm
 00FF4000 UART_BASE
 00FF8001 WRITE_SCREEN

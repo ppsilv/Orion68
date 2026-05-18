@@ -16,7 +16,7 @@
     set pins, 1   ; Liga o LED (GPIO 25)
 
     wait 1 gpio CS
-    set pins, 0   ; Desliga o LED
+    set pins, 0 [3] ; Desliga o LED
 .wrap
 
 % c-sdk {

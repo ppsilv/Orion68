@@ -25,7 +25,7 @@ static const uint16_t bus_read_program_instructions[] = {
     0x400d, //  1: in     pins, 13
     0xe001, //  2: set    pins, 1
     0x208d, //  3: wait   1 gpio, 13
-    0xe000, //  4: set    pins, 0
+    0xe300, //  4: set    pins, 0                [3]
             //     .wrap
 };
 

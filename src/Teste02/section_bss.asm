@@ -17,13 +17,16 @@ currentTimer        DS.L 1
 
         ALIGN 2
 buf_xmodem          DS.B   512        ; Buffer de dados
-;flg_pgm_loaded      DS.B   1
+buf_put             DS.B   512    
+buf_get             DS.B   512    
+
+flg_pgm_loaded      DS.B   1
 ;blockNumber         DS.B   1          ; Número do bloco atual
 ;expectedBlock       DS.B   1          ; Próximo bloco esperado
 
         ALIGN 4
 ;checksumCalc       DS.L   1
-;monitorStack       DS.L   1
+monitorStack       DS.L   1
 systemTick          DS.L   1
 addressInHex        DS.L   1
 

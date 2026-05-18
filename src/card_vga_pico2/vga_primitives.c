@@ -329,7 +329,7 @@ void vga_scroll() {
     vga->setTextCursorPos(0,29);
 }
 
-static void setTextCursor(uint16_t x, uint16_t y) {
+static void setTextCursor_old(uint16_t x, uint16_t y) {
   vga_text_private_t* priv = (vga_text_private_t*)vga->_private;
   if((x >= priv->width) || (y >= priv->height)) 
     return;
@@ -349,6 +349,26 @@ static void setTextCursor(uint16_t x, uint16_t y) {
 
   priv->cursor->x = x;
   priv->cursor->y = y;
+}
+static void setTextCursor(uint16_t x, uint16_t y) {
+  vga_text_private_t* priv = (vga_text_private_t*)vga->_private;
+  
+  // 1. Verifica se a posição em caracteres está além da matriz de texto
+  if((x >= priv->width) || (y >= priv->height)) 
+    return;
+
+  // 2. Calcula a posição real em PIXELS usando variáveis locais
+  // para evitar o efeito bola de neve multiplicativa
+  uint16_t pixel_x = x * priv->font.width;
+  uint16_t pixel_y = y * priv->font.height;
+
+  // 3. Garante que a posição em pixels não vai estourar a resolução da tela
+  if (pixel_x >= priv->width)  pixel_x = 0;
+  if (pixel_y >= priv->height) pixel_y = 0;
+
+  // 4. Salva com segurança no cursor do sistema
+  priv->cursor->x = pixel_x;
+  priv->cursor->y = pixel_y;
 }
 /*
 static void setTextSize(uint8_t s) {

@@ -65,7 +65,7 @@ ROM_JUMPTABLE:
         ; BRA     vbug2_start         ;       0x420
         ; BRA     warm_start          ;       0x424
         ; BRA     MenuLoop            ;       0x428
-        ; BRA     new_line            ;       0x42C
+        ; BRA     NewLine            ;       0x42C
         ; BRA     UART_WriteString    ;       0x430
         ; BRA     UART_INIT1          ;       0x434
 ; =============================================================================
@@ -271,11 +271,15 @@ Universal_Trampoline:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TODO USAR TRAP1 PARA ISSO AQUI        
 WriteChar:
+        JSR     PicoWriteChar
+        RTS
         MOVE.B  D0,D1
         MOVE.B  #2,D0
         TRAP    #1
         RTS
 WriteString:
+        JSR     PicoPrintString
+        RTS
         MOVE.B  #CMD_CCONOUTSTR,D0
         TRAP    #1
         RTS    
@@ -286,16 +290,12 @@ ReadChar:
 PrintAddrHex:
         RTS
 NewLine:
-        MOVE.L  D0,-(SP)          ; Salva D0
-        MOVE.L  D1,-(SP)          ; Salva D1
-        MOVE.B  #10,D1
-        MOVE.B  #CMD_CCONOUT,D0
-        TRAP    #1
-        MOVE.B  #13,D1
-        MOVE.B  #CMD_CCONOUT,D0
-        TRAP    #1
-        MOVE.L  (SP)+,D1          ; Restaura D1
-        MOVE.L  (SP)+,D0          ; Restaura D0
+        MOVEM.L  D0/D1,-(SP)          ; Salva D0
+        MOVE.B  #10,D0
+        JSR     WriteChar
+        MOVE.B  #13,D0
+        JSR     WriteChar
+        MOVEM.L  (SP)+,D0/D1          ; Restaura D0
         RTS
 ;Essa rotina não pode limpar toda a RAM senão ela sobreescreve o StackPointer
 ;Acho que um limite seguro 512 bytes abaixo de $FFFFF.        
@@ -356,24 +356,92 @@ Vbug2Start:
 
 mainLoop:
         JSR     PicoClearScreen
-        LEA     MsgMSGINIT,A0
+        LEA     MsgOrionInit,A0
         JSR     PicoPrintString
 
-subLoop:        
+subLoop:    
+        ;MOVE.W  #$0000,D0
+        ;MOVE.W  #$0008,D1
+        ;JSR     PicoSetCursor
+
+        JSR     PicoClearScreen
+
+        LEA     MsgMenuText,A0
+        JSR     PicoPrintString
         JSR     UartReadChar
-        JSR     UartWriteChar
         JSR     PicoWriteChar
 
+        CMP.B   #'5',D0
+        BEQ     RunProgram
+        CMP.B   #'7',D0
+        BEQ     MemDump
+        CMP.B   #'8',D0
+        BEQ     ReadInHexa
+        CMP.B   #'9',D0
+        BEQ     UartReadHex
+
         JMP     subLoop
 
+; 5. Executa programa na RAM
+RunProgram:
+        LEA     flg_pgm_loaded,A0   ; Get flag program loaded
+        MOVE.B  (A0),D0              ; Program  loaded
+        CMP.B   #1,D0
+        BEQ     .run_program
+        LEA     MsgNoProgramToRUN,A0
+        JSR     WriteString
+        BRA     subLoop
+.run_program
+        LEA     MsgRunPrompt,A0
+        JSR     WriteString
+        MOVE.L  SP,A0
+        MOVE.L  A0,monitorStack
+        LEA     buf_pgm,A0   ; A0 aponta para o endereço buffer onde esta o progama
+        JSR     (A0)        ; Chama o código como uma sub-rotina (salva o endereço de retorno)
+        BRA     subLoop
 
+ReadInHexa:
+        LEA     MsgTestHexInput,A0
+        JSR     WriteString
+        JSR     UartReadHex
+        bra     subLoop
 
-        MOVE.L  #$001FFFF,D1 ; Contador para o delay (ajuste se precisar de mais)
-.DELAY01:
-        SUBQ.L  #1,D1         ; Subtrai 1 de D1 (4 ciclos)
-        BNE.S   .DELAY01     ; Pula se não for zero (10 ciclos se pular, 8 se não)
+; Lê número hexadecimal (retorna em D0)
+UART_ReadHex1:
+        MOVE.L  D1,-(SP)
+        MOVE.L  D2,-(SP)
 
-        JMP     subLoop
+        LEA     MsgWritePrompt,A0
+        JSR     WriteString
+
+        JSR     NewLine
+
+        MOVEQ   #0,D0
+        MOVEQ   #0,D1            ; Máximo 8 dígitos
+        MOVEQ   #0,D2            ; Resultado em D2
+
+.Loop:
+        JSR     UartReadChar
+        CMP.B   #13,D0
+        BEQ     .Done
+        CMP.B   #10,D0
+        BEQ     .Done
+        JSR     buf_put
+        BRA     .Loop
+.Done:
+
+.loop1:
+        JSR     buf_get
+        CMP.B   #-1,D0          ; Buffer vazio?
+        BEQ     .fim      ; Se sim, ignora
+        JSR     WriteChar
+        BRA     .loop1
+.fim:
+        MOVE.L  (SP)+,D2
+        MOVE.L  (SP)+,D1
+        JSR     NewLine
+        bra     subLoop ;provisoriamente
+        RTS
 
 
 ;Includes
@@ -382,6 +450,9 @@ subLoop:
         INCLUDE "drv_pico_vga.asm"
         INCLUDE "cmd_mem_dump.asm"
         INCLUDE "trap1.asm"
+        INCLUDE "rot_print_hex_num.asm"
+
+
 
         INCLUDE "section_data.asm"
         INCLUDE "section_bss.asm"

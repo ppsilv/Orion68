@@ -31,10 +31,10 @@ extern uint bus_sm;
 extern bool bus_try_get_event(uint8_t *value,uint8_t *reg,PIO pio, uint sm);
 
 //VGA variables
-uint16_t cursor_x = 0;
-uint16_t cursor_y = 0;
-uint8_t  text_color = 0;
-uint8_t  bg_color = 0;
+volatile uint16_t cursor_x = 0;
+volatile uint16_t cursor_y = 0;
+volatile uint8_t  text_color = 0;
+volatile uint8_t  bg_color = 0;
 sys_config_t vga_nvc_config;
 
 //Prototypes
@@ -68,7 +68,7 @@ static void create_timer(bool btimer)
 void dump(uint8_t addr,uint8_t size);
 static PT_THREAD (protothread_print_bus_read(struct pt *pt))
 {
-    char buf[256]={0};
+    static char buf[256]={0};
     uint8_t data;
     uint8_t reg;
     uint32_t valor=0;
@@ -97,7 +97,7 @@ static PT_THREAD (protothread_print_bus_read(struct pt *pt))
     while(1) {
         PT_YIELD_INTERVAL(1) ;
         data=0x00;reg=0x00;
-        if( bus_try_get_event(&data,&reg,bus_pio1, bus_sm) == true ){
+        while( bus_try_get_event(&data,&reg,bus_pio1, bus_sm) == true ){
            // sprintf(buf,"dat:%02X reg:%02X\n",data,reg);
            // vga->printString(buf);
             switch(reg){    
@@ -108,6 +108,7 @@ static PT_THREAD (protothread_print_bus_read(struct pt *pt))
                             break;
                         case CMD_CLEAR_SCREEN:
                             vga->clrscr();
+                            cursor_x = cursor_y = 0;
                             break;
                         case CMD_GO_HOME:
                             vga->set_vga_home();
@@ -130,25 +131,33 @@ static PT_THREAD (protothread_print_bus_read(struct pt *pt))
                     break;    
                 case D_WRITE_SCREEN:    
                         vga->pchar(data);  
+                        /*
                         idx++;
-                        if(idx > 2400){
+                        if(idx > 1920){
                             idx = 0;
                             vga->clrscr();
-                        }     
+                            cursor_x = cursor_y = 0;
+                        }*/     
                         break;
                 case D_REG_X_HIGH:
-                        cursor_x = (data <<8)|cursor_x;
+                        //cursor_x = (data <<8)|cursor_x;
+                        // Isola o lixo limpando os 8 bits baixos antigos antes de injetar o HIGH
+                        cursor_x = (uint16_t)(data << 8) | (cursor_x & 0x00FF);
                         break;
                 case D_REG_X_LOW:
-                        cursor_x = data;// | cursor_x;
+                        //cursor_x = data;// | cursor_x;
+                        // Preserva o HIGH atual e atualiza apenas os 8 bits baixos
+                        cursor_x = (cursor_x & 0xFF00) | data;
                         //sprintf(buf,"X-L data:%02X cursor_x:%02X",data,cursor_x);
                         //vga->printString(buf);
                         break;
                 case D_REG_Y_HIGH:
-                        cursor_y = (data <<8)|cursor_y;
+                        //cursor_y = (data <<8)|cursor_y;
+                        cursor_y = (uint16_t)(data << 8) | (cursor_y & 0x00FF);
                         break;
                 case D_REG_Y_LOW:
-                        cursor_y = data;// | cursor_y;
+                        //cursor_y = data;// | cursor_y;
+                        cursor_y = (cursor_y & 0xFF00) | data;
                         //sprintf(buf,"Y-L data:%02X cursor_y:%02X",data,cursor_y);
                         //vga->printString(buf);
                         break;
@@ -174,9 +183,9 @@ static PT_THREAD (protothread_print_bus_read(struct pt *pt))
 void video_welcome_screen(){
     vga->setTextCursorPos(0,0);
     vga->setTextColor(RED, BLACK);
-    vga->printString("Tcpbox Vpico2 vga312k   VGA BIOS VRP2350\n");
+    vga->printString("Orion Vpico2 vga312k   VGA BIOS VRP2350\n");
     vga->setTextColor(YELLOW, BLACK);
-    vga->printString("Version 1.0.26.05.00RA\n");
+    vga->printString("Version 1.0.21.18.00RA\n");
     vga->setTextColor(CYAN, BLACK);
     if ( video_mode < MODE_TEXT_80_S){
         vga->printString("Copyright (C) 2026 pdsilva(aka pgordao).\nV1.0 Vpico2vga312k\n");
@@ -211,16 +220,14 @@ int main(){
     pico_i2c_init();
     // start bus read
     initReadBus_Pio();
-    
+  
     // Verify if memory exists in the bus
     eeprom_ping();
     // load configuration
-    eeprom_load_config(&vga_nvc_config);
-
-    set_sys_clock_khz(150000, true);
+    eeprom_load_config(&vga_nvc_config);  set_sys_clock_khz(150000, true);
     if( is_coldstart ){
-        vga = create_screen( MODE_TEXT_80_S ); //, 0, 0, font );
-        video_mode = MODE_TEXT_80_S;
+      vga = create_screen( MODE_TEXT_80_S ); //, 0, 0, font );
+      video_mode = MODE_TEXT_80_S;
     }else{
         vga = create_screen(vga_nvc_config.video_mode ); //, 0, 0, font );
         video_mode = vga_nvc_config.video_mode;
@@ -234,7 +241,7 @@ int main(){
 
     video_welcome_screen();
     // Show eeprom status
-    //print_mem_status();
+//    print_mem_status();
     //void i2c_scanner();
 /*
     uint8_t byte = eeprom_read_byte(0);
@@ -250,7 +257,7 @@ int main(){
     byte = eeprom_read_byte(5);
     vga->printString1("byte_5 = ",byte);
 */
-    //dump(0,64);
+//    dump(0,64);
 
   // === config threads ========================
   // for core 0

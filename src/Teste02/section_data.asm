@@ -12,19 +12,22 @@ MsgDumpHeader:
 MsgDumpHeader1:
     DC.B    "Address   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F  ASCII",13,10
     DC.B    "--------  -----------------------------------------------  ----------------",13,10,0
-MsgMSGINIT:
+MsgOrionInit:
     DC.B    13,10,"Orion68 - copyright (C) pdsilva(pgordao).VBug2.0",13,10
     DC.B    "MC68000 System Monitor",13,10
     INCLUDE "build_date.inc"
     INCLUDE "build_counter.inc"
     DC.B    "-------------------------------------------",13,10,13,10,0
 MsgMenuText:
+    DC.B    "Menu choose an option: ",13,10,13,10
     DC.B    "3. Load Program (PC)",13,10
     DC.B    "5. Run Program",13,10
     DC.B    "7. Memory dump from address buffer",13,10
     DC.B    "8. Read hexa value and put in address buffer",13,10
     DC.B    "9. From screen to buffer E from buffer to screen",13,10
     DC.B    "> ",0
+MsgOutOfRange:
+    DC.B    13,10,"Invalid address range!",13,10,0
 MsgLoadDoneMsg:
     DC.B    "Program loaded successfully!",13,10,0
 MsgWritePrompt:

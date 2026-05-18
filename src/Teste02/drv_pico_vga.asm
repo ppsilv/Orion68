@@ -67,19 +67,46 @@ PicoGoHome:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Set cursor position
-; Detroy: A1
+; Detroy:
 ; Receive X in D0
 ; Receive Y in D1
 PicoSetCursor:
+        MOVE.L A1,-(SP)
         MOVE.B  D0,REG_X_LOW
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
         LSR.W   #8,D0             ; Desloca o byte alto para a posição baixa em D0
         MOVE.B  D0,REG_X_HIGH
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
         MOVE.B  D1,REG_Y_LOW
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
         LSR.W   #8,D1             ; Desloca o byte alto para a posição baixa em D0
         MOVE.B  D1,REG_Y_HIGH
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
         LEA     RUN_CMD,A1    
         MOVE.B  #CMD_SET_CUR_POS,D0
         MOVE.B  D0,(A1);
+        NOP
+        NOP
+        NOP
+        NOP
+        NOP
+        MOVE.L (SP)+,A1
         RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -87,23 +114,27 @@ PicoSetCursor:
 ; Destroy: A1 
 ; Command in D0
 PicoClearScreen:
+        MOVE.L A1,-(SP)
         LEA     RUN_CMD,A1    
         MOVE.B  #CMD_CLEAR_SCREEN,D0
         MOVE.B  D0,(A1);
+        MOVE.L (SP)+,A1
         RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Write char in picoVGA
 ; Destroy: A1,D1
 PicoWriteChar:
+        MOVE.L A1,-(SP)
             LEA     WRITE_SCREEN,A1
             MOVE.B  D0,(A1)     ; Escreve no endereço do PicoVGA (LDS ativo)
-            MOVE.L  #$FF,D1    ; Contador para o delay (ajuste se precisar de mais)
+            MOVE.L  #$1FF,D1    ; Contador para o delay (ajuste se precisar de mais)
 .DELAY00:
             SUBQ.L  #1,D1       ; Subtrai 1 de D1 (4 ciclos)
             BNE.S   .DELAY00    ; Pula se não for zero (10 ciclos se pular, 8 se não)
+        MOVE.L (SP)+,A1
             RTS
-
+;last change
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Imprime string terminada em ZERO
 ; Destroy: A0 = String's address

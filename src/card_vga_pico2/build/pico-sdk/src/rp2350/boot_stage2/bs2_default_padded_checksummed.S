@@ -1,4 +1,4 @@
-// Padded and checksummed version of: /home/pdsilva/Projects/tcpbox68k/software/card_vga_pico2/build/pico-sdk/src/rp2350/boot_stage2/bs2_default.bin
+// Padded and checksummed version of: /home/pdsilva/project/Orion68/src/card_vga_pico2/build/pico-sdk/src/rp2350/boot_stage2/bs2_default.bin
 
 .cpu cortex-m0plus
 .thumb
