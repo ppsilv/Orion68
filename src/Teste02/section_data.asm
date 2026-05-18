@@ -8,7 +8,7 @@
 ; Strings do Sistema
 ; ----------------------------------------------------------------------
 MsgDumpHeader:
-    DC.B    "Memory Dump from :",0
+    DC.B    " - Memory Dump from :",0
 MsgDumpHeader1:
     DC.B    "Address   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F  ASCII",13,10
     DC.B    "--------  -----------------------------------------------  ----------------",13,10,0
@@ -21,6 +21,7 @@ MsgOrionInit:
 MsgMenuText:
     DC.B    "Menu choose an option: ",13,10,13,10
     DC.B    "3. Load Program (PC)",13,10
+    DC.B    "4. Testa trap #1",13,10
     DC.B    "5. Run Program",13,10
     DC.B    "7. Memory dump from address buffer",13,10
     DC.B    "8. Read hexa value and put in address buffer",13,10

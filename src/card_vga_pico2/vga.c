@@ -185,7 +185,7 @@ void video_welcome_screen(){
     vga->setTextColor(RED, BLACK);
     vga->printString("Orion Vpico2 vga312k   VGA BIOS VRP2350\n");
     vga->setTextColor(YELLOW, BLACK);
-    vga->printString("Version 1.0.21.18.00RA\n");
+    vga->printString("Version 1.0.21.18.00RA\n"); /*1.0 version 21 week 18 day*/
     vga->setTextColor(CYAN, BLACK);
     if ( video_mode < MODE_TEXT_80_S){
         vga->printString("Copyright (C) 2026 pdsilva(aka pgordao).\nV1.0 Vpico2vga312k\n");

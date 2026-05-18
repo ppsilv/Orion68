@@ -336,16 +336,14 @@ Vbug2Start:
         MOVE.L  #RAMBASE,ramBase    ;Total ram 1572864 de 0x8000 até 0x180000
         MOVE.L  #RAMSIZE,ramSize
         ;Initialize variables
-        MOVE.L  PicoWriteChar,A1    ; Initialize cconout console char out
+        MOVE.L  #PicoWriteChar,A1    ; Initialize cconout console char out
         MOVE.L  A1,cconout
-        MOVE.L  UartReadCharEcho,A1         ; Initialize cconin console char in
+        MOVE.L  #UartReadCharEcho,A1         ; Initialize cconin console char in
         MOVE.L  A1,cconin
         MOVE.L  #UART_BASE,A1    ; Initialize uart output,INPUT and baud
         MOVE.L  A1,currentUart
         MOVE.L  #B115200,currentBaudRate
-        LEA     RAM_VECTOR_BASE,A0
 
-        ;Initializations
 
         ;Initialize picoVga
         JSR  InitPicoVga
@@ -360,10 +358,6 @@ mainLoop:
         JSR     PicoPrintString
 
 subLoop:    
-        ;MOVE.W  #$0000,D0
-        ;MOVE.W  #$0008,D1
-        ;JSR     PicoSetCursor
-
         JSR     PicoClearScreen
 
         LEA     MsgMenuText,A0
@@ -371,6 +365,8 @@ subLoop:
         JSR     UartReadChar
         JSR     PicoWriteChar
 
+        CMP.B   #'4',D0
+        BEQ     RunTrap1
         CMP.B   #'5',D0
         BEQ     RunProgram
         CMP.B   #'7',D0
@@ -381,7 +377,16 @@ subLoop:
         BEQ     UartReadHex
 
         JMP     subLoop
-
+;4 Testa trap 1
+RunTrap1:
+        LEA     MsgWritePrompt,A0
+        JSR     WriteString
+        JSR     UartReadChar
+        MOVE.B  D0,D1
+        MOVE.L  #$00000002,D0
+        TRAP    #1
+        JSR     UartReadChar
+        JMP     subLoop
 ; 5. Executa programa na RAM
 RunProgram:
         LEA     flg_pgm_loaded,A0   ; Get flag program loaded
