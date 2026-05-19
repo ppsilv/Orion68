@@ -1,20 +1,5 @@
 
-VerificaEndereco:
 
-.DentroDaFaixa:
-        ; Se o código chegar aqui, significa que:
-        ; $80000 <= A0 <= $FFFFF (O endereço é válido!)
-        ; ... seu código para endereço válido aqui ...
-        BRA     .Fim
-
-.OutOfRange:
-        ; Se desviou para cá, o endereço é inválido (Menor que $80000 OU Maior que $FFFFF)
-        ; ... seu tratamento de erro aqui ...
-
-
-
-.Fim:
-        RTS
 
 
 ; ----------------------------------------------------------------------
@@ -127,6 +112,7 @@ NoEndLine:
         MOVE.L  (SP)+,A0          ; Recupera endereço atual
         BRA     DumpLoopMaster
 .fim
+        MOVE.L  (SP)+,A0          ; Recupera endereço atual
         JMP     subLoop
 OutOfRange:
         LEA     MsgOutOfRange,A0

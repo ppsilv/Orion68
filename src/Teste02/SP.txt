@@ -1,0 +1,99 @@
+cmd_mem_dump.asm:        MOVE.L  A0,-(SP)          ; Salva endereço atual
+cmd_mem_dump.asm:        MOVE.L  (SP)+,A0          ; Recupera endereço atual
+drv_pico_vga.asm:        MOVE.L A1,-(SP)
+drv_pico_vga.asm:        MOVE.L (SP)+,A1
+drv_pico_vga.asm:        MOVE.L A1,-(SP)
+drv_pico_vga.asm:        MOVE.L (SP)+,A1
+drv_pico_vga.asm:        MOVE.L A1,-(SP)
+drv_pico_vga.asm:        MOVE.L (SP)+,A1
+drv_pico_vga.asm:        MOVE.B  D0,-(SP)          ; Salva byte original
+drv_pico_vga.asm:        MOVE.B  (SP)+,D0          ; Recupera byte
+drv_uart.asm:SPR         equ     $0F   ; scratchpad register (reserved for system use)
+drv_uart.asm:SCR         equ     SPR ; scratch register
+drv_uart.asm:        MOVE.L A1,-(SP)
+drv_uart.asm:        MOVE.L (SP)+,A1
+drv_uart.asm:        MOVE.L A1,-(SP)
+drv_uart.asm:        MOVE.L (SP)+,A1
+drv_uart.asm:        MOVE.L A1,-(SP)
+drv_uart.asm:        MOVE.L (SP)+,A1
+drv_uart.asm:        MOVE.L  A0,-(SP)      ; Preserva D0
+drv_uart.asm:        MOVE.L  D0,-(SP)      ; Preserva D0
+drv_uart.asm:        MOVE.L  (SP)+,D0
+drv_uart.asm:        MOVE.L  (SP)+,A0
+drv_uart.asm:        MOVE.L  D1,-(SP)
+drv_uart.asm:        MOVE.L  D2,-(SP)
+drv_uart.asm:        MOVE.L  (SP)+,D2
+drv_uart.asm:        MOVE.L  (SP)+,D1
+Makefile:SPLITTER := python3 split68k.py
+Makefile:	@$(SPLITTER) $(TARGET_BIN)
+Makefile_backup:SPLITTER := python3 split68k.py
+Makefile_backup:	@$(SPLITTER) $(TARGET_BIN)
+rot_print_hex_num.asm:        MOVE.B  D0,-(SP)          ; Salva byte original
+rot_print_hex_num.asm:        MOVE.B  (SP)+,D0          ; Recupera byte
+spool_load.py:                print(f"[SPOOL] Transmitindo {tamanho} bytes para o Orion68K...")
+vbug2-0.asm:        DC.L    $000FFFF0         ; SP inicial
+vbug2-0.asm:USER_SP           equ $6F000
+vbug2-0.asm:        MOVEM.L D0-D7/A0-A6,-(SP)
+vbug2-0.asm:        MOVE.L  (14,SP),D0      ; ⭐⭐ PC (14 bytes abaixo por causa dos registradores salvos)
+vbug2-0.asm:        MOVE.W  (18,SP),D1      ; ⭐⭐ SR (18 bytes abaixo)
+vbug2-0.asm:        MOVE.W  (20,SP),D2      ; ⭐⭐ Vector Offset (20 bytes abaixo)
+vbug2-0.asm:        MOVEM.L (SP)+,D0-D7/A0-A6
+vbug2-0.asm:        MOVEM.L  D0/D1,-(SP)          ; Salva D0
+vbug2-0.asm:        MOVEM.L  (SP)+,D0/D1          ; Restaura D0
+vbug2-0.asm:        LEA     $FFFF0,SP ; Garante o Stack Pointer (se o hardware não carregou)
+vbug2-0.asm:        ;Set USP( user stack pointer)
+vbug2-0.asm:;        LEA     USER_SP,A0
+vbug2-0.asm:;        MOVE.L  A0,USP        ; 🔥 Define User Stack Pointe
+vbug2-0.asm:        MOVE.L  SP,A0
+vbug2-0.asm:        MOVE.L  D1,-(SP)
+vbug2-0.asm:        MOVE.L  D2,-(SP)
+vbug2-0.asm:        MOVE.L  (SP)+,D2
+vbug2-0.asm:        MOVE.L  (SP)+,D1
+vbug2-0.lst:00:00000000 000FFFF0        	     4:         DC.L    $000FFFF0         ; SP inicial
+vbug2-0.lst:                            	    79: USER_SP           equ $6F000
+vbug2-0.lst:02:00001014 48E7FFFE        	   119:         MOVEM.L D0-D7/A0-A6,-(SP)
+vbug2-0.lst:02:00001018 202F000E        	   121:         MOVE.L  (14,SP),D0      ; ⭐⭐ PC (14 bytes abaixo por causa dos registradores salvos)
+vbug2-0.lst:02:0000101C 322F0012        	   122:         MOVE.W  (18,SP),D1      ; ⭐⭐ SR (18 bytes abaixo)
+vbug2-0.lst:02:00001020 342F0014        	   123:         MOVE.W  (20,SP),D2      ; ⭐⭐ Vector Offset (20 bytes abaixo)
+vbug2-0.lst:02:000010C8 4CDF7FFF        	   178:         MOVEM.L (SP)+,D0-D7/A0-A6
+vbug2-0.lst:02:000011EA 48E7C000        	   293:         MOVEM.L  D0/D1,-(SP)          ; Salva D0
+vbug2-0.lst:02:000011FE 4CDF0003        	   298:         MOVEM.L  (SP)+,D0/D1          ; Restaura D0
+vbug2-0.lst:02:0000121E 4FF9000FFFF0    	   319:         LEA     $FFFF0,SP ; Garante o Stack Pointer (se o hardware não carregou)
+vbug2-0.lst:                            	   330:         ;Set USP( user stack pointer)
+vbug2-0.lst:                            	   331: ;        LEA     USER_SP,A0
+vbug2-0.lst:                            	   332: ;        MOVE.L  A0,USP        ; 🔥 Define User Stack Pointe
+vbug2-0.lst:02:0000132A 204F            	   410:         MOVE.L  SP,A0
+vbug2-0.lst:02:00001350 2F01            	   424:         MOVE.L  D1,-(SP)
+vbug2-0.lst:02:00001352 2F02            	   425:         MOVE.L  D2,-(SP)
+vbug2-0.lst:02:00001392 241F            	   453:         MOVE.L  (SP)+,D2
+vbug2-0.lst:02:00001394 221F            	   454:         MOVE.L  (SP)+,D1
+vbug2-0.lst:                            	    16: SPR         equ     $0F   ; scratchpad register (reserved for system use)
+vbug2-0.lst:                            	    22: SCR         equ     SPR ; scratch register
+vbug2-0.lst:02:000013FE 2F09            	    83:         MOVE.L A1,-(SP)
+vbug2-0.lst:02:00001412 225F            	    89:         MOVE.L (SP)+,A1
+vbug2-0.lst:02:00001416 2F09            	    98:         MOVE.L A1,-(SP)
+vbug2-0.lst:02:0000142A 225F            	   105:         MOVE.L (SP)+,A1
+vbug2-0.lst:02:0000142E 2F09            	   114:         MOVE.L A1,-(SP)
+vbug2-0.lst:02:0000144E 225F            	   125:         MOVE.L (SP)+,A1
+vbug2-0.lst:02:00001452 2F08            	   134:         MOVE.L  A0,-(SP)      ; Preserva D0
+vbug2-0.lst:02:00001454 2F00            	   135:         MOVE.L  D0,-(SP)      ; Preserva D0
+vbug2-0.lst:02:00001460 201F            	   142:         MOVE.L  (SP)+,D0
+vbug2-0.lst:02:00001462 205F            	   143:         MOVE.L  (SP)+,A0
+vbug2-0.lst:02:00001466 2F01            	   148:         MOVE.L  D1,-(SP)
+vbug2-0.lst:02:00001468 2F02            	   149:         MOVE.L  D2,-(SP)
+vbug2-0.lst:02:000014DC 241F            	   198:         MOVE.L  (SP)+,D2
+vbug2-0.lst:02:000014DE 221F            	   199:         MOVE.L  (SP)+,D1
+vbug2-0.lst:02:000014F8 2F09            	    74:         MOVE.L A1,-(SP)
+vbug2-0.lst:02:00001554 225F            	   109:         MOVE.L (SP)+,A1
+vbug2-0.lst:02:00001558 2F09            	   117:         MOVE.L A1,-(SP)
+vbug2-0.lst:02:00001566 225F            	   121:         MOVE.L (SP)+,A1
+vbug2-0.lst:02:0000156A 2F09            	   128:         MOVE.L A1,-(SP)
+vbug2-0.lst:02:0000157A 225F            	   135:         MOVE.L (SP)+,A1
+vbug2-0.lst:02:00001598 1F00            	   163:         MOVE.B  D0,-(SP)          ; Salva byte original
+vbug2-0.lst:02:0000159E 101F            	   166:         MOVE.B  (SP)+,D0          ; Recupera byte
+vbug2-0.lst:02:0000168A 2F08            	   100:         MOVE.L  A0,-(SP)          ; Salva endereço atual
+vbug2-0.lst:02:000016B0 205F            	   112:         MOVE.L  (SP)+,A0          ; Recupera endereço atual
+vbug2-0.lst:02:0000179C 1F00            	    26:         MOVE.B  D0,-(SP)          ; Salva byte original
+vbug2-0.lst:02:000017A2 101F            	    29:         MOVE.B  (SP)+,D0          ; Recupera byte
+vbug2-0.lst:SPR                              E:0000000F
+vbug2-0.lst:0000000F SPR

@@ -390,13 +390,13 @@ Source: "vbug2-0.asm"
 02:000012C0 4EB8156A        	   374:         JSR     PicoWriteChar
                             	   375: 
 02:000012C4 B03C0034        	   376:         CMP.B   #'4',D0
-02:000012C8 6720            	   377:         BEQ     RunTrap1
+02:000012C8 6720            	   377:         BEQ.S     RunTrap1
 02:000012CA B03C0035        	   378:         CMP.B   #'5',D0
-02:000012CE 6736            	   379:         BEQ     RunProgram
+02:000012CE 6736            	   379:         BEQ.S     RunProgram
 02:000012D0 B03C0037        	   380:         CMP.B   #'7',D0
-02:000012D4 670002E0        	   381:         BEQ     MemDump
+02:000012D4 670002DE        	   381:         BEQ     MemDump
 02:000012D8 B03C0038        	   382:         CMP.B   #'8',D0
-02:000012DC 6760            	   383:         BEQ     ReadInHexa
+02:000012DC 6760            	   383:         BEQ.S     ReadInHexa
 02:000012DE B03C0039        	   384:         CMP.B   #'9',D0
 02:000012E2 67000182        	   385:         BEQ     UartReadHex
                             	   386: 
@@ -865,140 +865,126 @@ Source: "vbug2-0.asm"
 
 Source: "cmd_mem_dump.asm"
                             	     1: 
-                            	     2: VerificaEndereco:
+                            	     2: 
                             	     3: 
-                            	     4: .DentroDaFaixa:
-                            	     5:         ; Se o código chegar aqui, significa que:
-                            	     6:         ; $80000 <= A0 <= $FFFFF (O endereço é válido!)
-                            	     7:         ; ... seu código para endereço válido aqui ...
-                            	     8:         BRA     .Fim
-                            	     9: 
-                            	    10: .OutOfRange:
-                            	    11:         ; Se desviou para cá, o endereço é inválido (Menor que $80000 OU Maior que $FFFFF)
-                            	    12:         ; ... seu tratamento de erro aqui ...
-                            	    13: 
-                            	    14: 
-                            	    15: 
-                            	    16: .Fim:
-02:000015B4 4E75            	    17:         RTS
-                            	    18: 
-                            	    19: 
-                            	    20: ; ----------------------------------------------------------------------
-                            	    21: ; MemDump - Imprime dump de memória formatado
-                            	    22: ; Entrada:
-                            	    23: ;   A0 = Endereço inicial (ex: $80000)
-                            	    24: ;   D0 = Quantidade de bytes (ex: 256)
-                            	    25: ; ----------------------------------------------------------------------
-                            	    26: MemDump:
-02:000015B6 41F900000000    	    27:         LEA     MsgDumpHeader,A0
-02:000015BC 4EB811D2        	    28:         JSR     WriteString
-02:000015C0 207900080424    	    29:         MOVE.L  (addressInHex),A0
-02:000015C6 B1FC000FFFFF    	    30:         CMPA.L  #$FFFFF,A0        ; Compara A0 com o limite superior
-02:000015CC 620000EE        	    31:         BHI     OutOfRange       ; BHI (Branch if Higher): Desvia se A0 > $FFFFF
-                            	    32: 
-02:000015D0 2008            	    33:         MOVE.L  A0,D0
-02:000015D2 4EB81588        	    34:         JSR     PicoPrintHexAddress
-02:000015D6 4EB811EA        	    35:         JSR     NewLine
-                            	    36: 
-02:000015DA 41F900000016    	    37:         LEA     MsgDumpHeader1,A0
-02:000015E0 4EB811D2        	    38:         JSR     WriteString
+                            	     4: 
+                            	     5: ; ----------------------------------------------------------------------
+                            	     6: ; MemDump - Imprime dump de memória formatado
+                            	     7: ; Entrada:
+                            	     8: ;   A0 = Endereço inicial (ex: $80000)
+                            	     9: ;   D0 = Quantidade de bytes (ex: 256)
+                            	    10: ; ----------------------------------------------------------------------
+                            	    11: MemDump:
+02:000015B4 41F900000000    	    12:         LEA     MsgDumpHeader,A0
+02:000015BA 4EB811D2        	    13:         JSR     WriteString
+02:000015BE 207900080424    	    14:         MOVE.L  (addressInHex),A0
+02:000015C4 B1FC000FFFFF    	    15:         CMPA.L  #$FFFFF,A0        ; Compara A0 com o limite superior
+02:000015CA 620000F0        	    16:         BHI     OutOfRange       ; BHI (Branch if Higher): Desvia se A0 > $FFFFF
+                            	    17: 
+02:000015CE 2008            	    18:         MOVE.L  A0,D0
+02:000015D0 4EB81588        	    19:         JSR     PicoPrintHexAddress
+02:000015D4 4EB811EA        	    20:         JSR     NewLine
+                            	    21: 
+02:000015D8 41F900000016    	    22:         LEA     MsgDumpHeader1,A0
+02:000015DE 4EB811D2        	    23:         JSR     WriteString
+                            	    24: 
+02:000015E2 207900080424    	    25:         MOVE.L  (addressInHex),A0
+                            	    26:         ; Calcula endereço final
+                            	    27: DumpLoopMaster:
+02:000015E8 303C0000        	    28:         MOVE.W  #$0000,D0
+02:000015EC 323C0008        	    29:         MOVE.W  #$0008,D1
+02:000015F0 4EB814F8        	    30:         JSR     PicoSetCursor
+02:000015F4 7600            	    31:         CLR.L   D3
+02:000015F6 2608            	    32:         MOVE.L  A0,D3
+02:000015F8 0683000000FF    	    33:         ADDI.L  #$000000FF,D3             ; D3 = endereço final    
+                            	    34: DumpLoop:
+                            	    35:         ; Nova linha a cada 16 bytes
+02:000015FE 2008            	    36:         MOVE.L  A0,D0
+02:00001600 02800000000F    	    37:         ANDI.L  #$0000000F,D0     ; Verifica se é início de linha
+02:00001606 6616            	    38:         BNE     NoNewLine
                             	    39: 
-02:000015E4 207900080424    	    40:         MOVE.L  (addressInHex),A0
-                            	    41:         ; Calcula endereço final
-                            	    42: DumpLoopMaster:
-02:000015EA 303C0000        	    43:         MOVE.W  #$0000,D0
-02:000015EE 323C0008        	    44:         MOVE.W  #$0008,D1
-02:000015F2 4EB814F8        	    45:         JSR     PicoSetCursor
-02:000015F6 7600            	    46:         CLR.L   D3
-02:000015F8 2608            	    47:         MOVE.L  A0,D3
-02:000015FA 0683000000FF    	    48:         ADDI.L  #$000000FF,D3             ; D3 = endereço final    
-                            	    49: DumpLoop:
-                            	    50:         ; Nova linha a cada 16 bytes
-02:00001600 2008            	    51:         MOVE.L  A0,D0
-02:00001602 02800000000F    	    52:         ANDI.L  #$0000000F,D0     ; Verifica se é início de linha
-02:00001608 6616            	    53:         BNE     NoNewLine
-                            	    54: 
-                            	    55:         ; Imprime endereço
-02:0000160A 2008            	    56:         MOVE.L  A0,D0
-02:0000160C 4EB81588        	    57:         JSR     PicoPrintHexAddress    ; Imprime 8 dígitos hex
-                            	    58: 
-02:00001610 103C003A        	    59:         MOVE.B  #':',D0
-02:00001614 4EB811C2        	    60:         JSR     WriteChar
-02:00001618 103C0020        	    61:         MOVE.B  #' ',D0
-02:0000161C 4EB811C2        	    62:         JSR     WriteChar
-                            	    63: 
-                            	    64: NoNewLine:
-                            	    65:         ; Imprime byte em hex
-02:00001620 1018            	    66:         MOVE.B  (A0)+,D0
-02:00001622 4EB81598        	    67:         JSR     PicoPrintByteHex
-                            	    68: 
-02:00001626 103C0020        	    69:         MOVE.B  #' ',D0
-02:0000162A 4EB811C2        	    70:         JSR     WriteChar
-                            	    71: 
-                            	    72:         ; Verifica fim da linha (16 bytes)
-02:0000162E 2008            	    73:         MOVE.L  A0,D0
-02:00001630 02800000000F    	    74:         ANDI.L  #$0000000F,D0
-02:00001636 66E8            	    75:         BNE     NoNewLine
-                            	    76: 
-                            	    77:         ; Imprime caracteres ASCII
-02:00001638 103C0020        	    78:         MOVE.B  #' ',D0
-02:0000163C 4EB811C2        	    79:         JSR     WriteChar
-02:00001640 103C007C        	    80:         MOVE.B  #'|',D0
-02:00001644 4EB811C2        	    81:         JSR     WriteChar
-                            	    82: 
-02:00001648 43E8FFF0        	    83:         LEA     -16(A0),A1        ; Volta ao início da linha
-02:0000164C 740F            	    84:         MOVEQ   #15,D2            ; 16 caracteres
-                            	    85: 
-                            	    86: AsciiLoop:
-02:0000164E 1019            	    87:         MOVE.B  (A1)+,D0
-02:00001650 B03C0020        	    88:         CMP.B   #$20,D0            ; Verifica se é imprimível
-02:00001654 650C            	    89:         BLO     NonPrintable
-02:00001656 B03C007E        	    90:         CMP.B   #$7E,D0
-02:0000165A 6206            	    91:         BHI     NonPrintable
-                            	    92: 
-02:0000165C 4EB811C2        	    93:         JSR     WriteChar
-02:00001660 6008            	    94:         BRA     NextAscii
-                            	    95: 
-                            	    96: NonPrintable:
-02:00001662 103C002E        	    97:         MOVE.B  #'.',D0           ; Substitui não imprimíveis
-02:00001666 4EB811C2        	    98:         JSR     WriteChar
+                            	    40:         ; Imprime endereço
+02:00001608 2008            	    41:         MOVE.L  A0,D0
+02:0000160A 4EB81588        	    42:         JSR     PicoPrintHexAddress    ; Imprime 8 dígitos hex
+                            	    43: 
+02:0000160E 103C003A        	    44:         MOVE.B  #':',D0
+02:00001612 4EB811C2        	    45:         JSR     WriteChar
+02:00001616 103C0020        	    46:         MOVE.B  #' ',D0
+02:0000161A 4EB811C2        	    47:         JSR     WriteChar
+                            	    48: 
+                            	    49: NoNewLine:
+                            	    50:         ; Imprime byte em hex
+02:0000161E 1018            	    51:         MOVE.B  (A0)+,D0
+02:00001620 4EB81598        	    52:         JSR     PicoPrintByteHex
+                            	    53: 
+02:00001624 103C0020        	    54:         MOVE.B  #' ',D0
+02:00001628 4EB811C2        	    55:         JSR     WriteChar
+                            	    56: 
+                            	    57:         ; Verifica fim da linha (16 bytes)
+02:0000162C 2008            	    58:         MOVE.L  A0,D0
+02:0000162E 02800000000F    	    59:         ANDI.L  #$0000000F,D0
+02:00001634 66E8            	    60:         BNE     NoNewLine
+                            	    61: 
+                            	    62:         ; Imprime caracteres ASCII
+02:00001636 103C0020        	    63:         MOVE.B  #' ',D0
+02:0000163A 4EB811C2        	    64:         JSR     WriteChar
+02:0000163E 103C007C        	    65:         MOVE.B  #'|',D0
+02:00001642 4EB811C2        	    66:         JSR     WriteChar
+                            	    67: 
+02:00001646 43E8FFF0        	    68:         LEA     -16(A0),A1        ; Volta ao início da linha
+02:0000164A 740F            	    69:         MOVEQ   #15,D2            ; 16 caracteres
+                            	    70: 
+                            	    71: AsciiLoop:
+02:0000164C 1019            	    72:         MOVE.B  (A1)+,D0
+02:0000164E B03C0020        	    73:         CMP.B   #$20,D0            ; Verifica se é imprimível
+02:00001652 650C            	    74:         BLO     NonPrintable
+02:00001654 B03C007E        	    75:         CMP.B   #$7E,D0
+02:00001658 6206            	    76:         BHI     NonPrintable
+                            	    77: 
+02:0000165A 4EB811C2        	    78:         JSR     WriteChar
+02:0000165E 6008            	    79:         BRA     NextAscii
+                            	    80: 
+                            	    81: NonPrintable:
+02:00001660 103C002E        	    82:         MOVE.B  #'.',D0           ; Substitui não imprimíveis
+02:00001664 4EB811C2        	    83:         JSR     WriteChar
+                            	    84: 
+                            	    85: NextAscii:
+02:00001668 51CAFFE2        	    86:         DBRA    D2,AsciiLoop
+                            	    87: 
+02:0000166C 103C007C        	    88:         MOVE.B  #'|',D0
+02:00001670 4EB811C2        	    89:         JSR     WriteChar
+02:00001674 103C000D        	    90:         MOVE.B  #13,D0            ; CR
+02:00001678 4EB811C2        	    91:         JSR     WriteChar
+02:0000167C 103C000A        	    92:         MOVE.B  #10,D0            ; LF
+02:00001680 4EB811C2        	    93:         JSR     WriteChar
+                            	    94: 
+                            	    95: NoEndLine:
+                            	    96:         ; Verifica fim do dump
+02:00001684 B1C3            	    97:         CMP.L   D3,A0
+02:00001686 6300FF76        	    98:         BLS     DumpLoop
                             	    99: 
-                            	   100: NextAscii:
-02:0000166A 51CAFFE2        	   101:         DBRA    D2,AsciiLoop
-                            	   102: 
-02:0000166E 103C007C        	   103:         MOVE.B  #'|',D0
-02:00001672 4EB811C2        	   104:         JSR     WriteChar
-02:00001676 103C000D        	   105:         MOVE.B  #13,D0            ; CR
-02:0000167A 4EB811C2        	   106:         JSR     WriteChar
-02:0000167E 103C000A        	   107:         MOVE.B  #10,D0            ; LF
-02:00001682 4EB811C2        	   108:         JSR     WriteChar
-                            	   109: 
-                            	   110: NoEndLine:
-                            	   111:         ; Verifica fim do dump
-02:00001686 B1C3            	   112:         CMP.L   D3,A0
-02:00001688 6300FF76        	   113:         BLS     DumpLoop
-                            	   114: 
-02:0000168C 2F08            	   115:         MOVE.L  A0,-(SP)          ; Salva endereço atual
-02:0000168E 41F90000035B    	   116:         LEA     MsgHitAnyKey,A0
-02:00001694 4EB811D2        	   117:         JSR     WriteString
-02:00001698 4EB81416        	   118:         JSR     UartReadChar
-02:0000169C B03C001B        	   119:         CMP.B   #$1B,D0
-02:000016A0 6716            	   120:         BEQ     .fim
-                            	   121: 
-02:000016A2 103C000D        	   122:         MOVE.B  #13,D0            ; CR
-02:000016A6 4EB811C2        	   123:         JSR     WriteChar
-02:000016AA 103C000A        	   124:         MOVE.B  #10,D0            ; LF
-02:000016AE 4EB811C2        	   125:         JSR     WriteChar
-                            	   126: 
-02:000016B2 205F            	   127:         MOVE.L  (SP)+,A0          ; Recupera endereço atual
-02:000016B4 6000FF34        	   128:         BRA     DumpLoopMaster
-                            	   129: .fim
-02:000016B8 4EF812AE        	   130:         JMP     subLoop
-                            	   131: OutOfRange:
-02:000016BC 41F900000232    	   132:         LEA     MsgOutOfRange,A0
-02:000016C2 4EB811D2        	   133:         JSR     WriteString        
-02:000016C6 4EF812AE        	   134:         JMP     subLoop
-                            	   135:      
+02:0000168A 2F08            	   100:         MOVE.L  A0,-(SP)          ; Salva endereço atual
+02:0000168C 41F90000035B    	   101:         LEA     MsgHitAnyKey,A0
+02:00001692 4EB811D2        	   102:         JSR     WriteString
+02:00001696 4EB81416        	   103:         JSR     UartReadChar
+02:0000169A B03C001B        	   104:         CMP.B   #$1B,D0
+02:0000169E 6716            	   105:         BEQ     .fim
+                            	   106: 
+02:000016A0 103C000D        	   107:         MOVE.B  #13,D0            ; CR
+02:000016A4 4EB811C2        	   108:         JSR     WriteChar
+02:000016A8 103C000A        	   109:         MOVE.B  #10,D0            ; LF
+02:000016AC 4EB811C2        	   110:         JSR     WriteChar
+                            	   111: 
+02:000016B0 205F            	   112:         MOVE.L  (SP)+,A0          ; Recupera endereço atual
+02:000016B2 6000FF34        	   113:         BRA     DumpLoopMaster
+                            	   114: .fim
+02:000016B6 205F            	   115:         MOVE.L  (SP)+,A0          ; Recupera endereço atual
+02:000016B8 4EF812AE        	   116:         JMP     subLoop
+                            	   117: OutOfRange:
+02:000016BC 41F900000232    	   118:         LEA     MsgOutOfRange,A0
+02:000016C2 4EB811D2        	   119:         JSR     WriteString        
+02:000016C6 4EF812AE        	   120:         JMP     subLoop
+                            	   121:      
 
 Source: "vbug2-0.asm"
                             	   465:         INCLUDE "trap1.asm"
@@ -1520,7 +1506,7 @@ Source: "vbug2-0.asm"
 
 
 Symbols by name:
-AsciiLoop                        A:0000164E
+AsciiLoop                        A:0000164C
 B115200                          E:00000008
 BUILD_DATE                      04:000000F2
 CMD_CCONIN                       E:00000001
@@ -1534,8 +1520,8 @@ ClearRam                         A:00001204
 DLL                              E:00000001
 DLM                              E:00000003
 DefaultHandler                   A:00001014
-DumpLoop                         A:00001600
-DumpLoopMaster                   A:000015EA
+DumpLoop                         A:000015FE
+DumpLoopMaster                   A:000015E8
 FCR                              E:00000005
 ISR                              E:00000005
 InitPicoVga                      A:000014E2
@@ -1552,7 +1538,7 @@ Int7Handler                      A:000011B0
 LCR                              E:00000007
 LSR                              E:0000000B
 MERDA                            A:000016CA
-MemDump                          A:000015B6
+MemDump                          A:000015B4
 MsgAddrError                    04:00000475
 MsgBufferEmpty                  04:000002DD
 MsgBusError                     04:0000046A
@@ -1583,10 +1569,10 @@ MsgWritePrompt                  04:0000026C
 MsgXmodemInit                   04:0000038E
 MsgXmodemWaitingSoh             04:000003AC
 NewLine                          A:000011EA
-NextAscii                        A:0000166A
-NoEndLine                        A:00001686
-NoNewLine                        A:00001620
-NonPrintable                     A:00001662
+NextAscii                        A:00001668
+NoEndLine                        A:00001684
+NoNewLine                        A:0000161E
+NonPrintable                     A:00001660
 OutOfRange                       A:000016BC
 PicoClearScreen                  A:00001558
 PicoGoHome                       A:000014EC
@@ -1655,7 +1641,6 @@ UartWriteChar                    A:000013FE
 UartWriteString                  A:00001452
 Universal_Trampoline             A:000011C0
 Vbug2Start                       A:0000121A
-VerificaEndereco                 A:000015B4
 WRITE_SCREEN                     E:00FF8001
 WriteChar                        A:000011C2
 WriteString                      A:000011D2
@@ -1799,15 +1784,14 @@ Symbols by value:
 0000157E PicoPrintString
 00001588 PicoPrintHexAddress
 00001598 PicoPrintByteHex
-000015B4 VerificaEndereco
-000015B6 MemDump
-000015EA DumpLoopMaster
-00001600 DumpLoop
-00001620 NoNewLine
-0000164E AsciiLoop
-00001662 NonPrintable
-0000166A NextAscii
-00001686 NoEndLine
+000015B4 MemDump
+000015E8 DumpLoopMaster
+000015FE DumpLoop
+0000161E NoNewLine
+0000164C AsciiLoop
+00001660 NonPrintable
+00001668 NextAscii
+00001684 NoEndLine
 000016BC OutOfRange
 000016CA MERDA
 00001730 vbug2_trap1

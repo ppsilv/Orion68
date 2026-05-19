@@ -40,7 +40,7 @@ volatile uint8_t active_irq = NOT_ACTIVE;
 
 // Configuração dos ports
 void setup_ports() {
-    // Configurar PB0-PB2 como saídas (IPL0-IPL2) + VPA_PIN
+    // Configurar PC0-PC2 como saídas (IPL0-IPL2)
     DDRC |= (1 << IPL0) | (1 << IPL1) | (1 << IPL2) ;
     // VPA inicialmente inativo    
     PORTC |=  (1 << IPL0) | (1 << IPL1) | (1 << IPL2) ;  
@@ -54,13 +54,13 @@ void setup_ports() {
 }
 
 /*
-  Gerando o sinal de 1KHZ no pino PB1
+  Gerando o sinal de 100HZ no pino PB1
   Usado para gerar interrupção 7 no 68000
 */
 void setup_timer1() {
     TCCR1A = (1 << COM1A0);    // Toggle OC1A on compare match
-    TCCR1B = (1 << WGM12) | (1 << CS11);  // CTC mode, prescaler 8
-    OCR1A = 500;              // 1ms period
+    TCCR1B = (1 << WGM12) | (1 << CS11)  | (1 << CS10);  // CTC mode, prescaler 8
+    OCR1A = 1249;              // 1ms period
     TIMSK |= (1 << OCIE1A);    // Habilitar interrupção
 }
 //Dummy counter, not used

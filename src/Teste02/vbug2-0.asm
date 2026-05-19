@@ -374,13 +374,13 @@ subLoop:
         JSR     PicoWriteChar
 
         CMP.B   #'4',D0
-        BEQ     RunTrap1
+        BEQ.S     RunTrap1
         CMP.B   #'5',D0
-        BEQ     RunProgram
+        BEQ.S     RunProgram
         CMP.B   #'7',D0
         BEQ     MemDump
         CMP.B   #'8',D0
-        BEQ     ReadInHexa
+        BEQ.S     ReadInHexa
         CMP.B   #'9',D0
         BEQ     UartReadHex
 
