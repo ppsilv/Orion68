@@ -14798,6 +14798,16 @@
 			"Uoz+ez+hl0ql0v+nvwI46Oqnng7LAwAAAABJRU5ErkJggg=="
 		)
 	)
+	(label "IRQ6"
+		(at 361.95 142.24 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "00103f82-eee4-43b0-9937-5b9be4ea80ab")
+	)
 	(label "{slash}M1"
 		(at 595.63 175.26 0)
 		(effects
@@ -15222,7 +15232,7 @@
 		)
 		(uuid "34da3b22-b18d-4418-bf94-4058d74e296c")
 	)
-	(label "IRQ3"
+	(label "IRQ6"
 		(at 151.13 134.62 180)
 		(effects
 			(font

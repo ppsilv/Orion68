@@ -256,7 +256,9 @@ Int5Handler:
         RTE
 Int6Handler:        
         MOVEM.L D0-D7/A0-A6,-(A7)
-        MOVE.L  (RAM_VECTOR_BASE+84),A0
+        ;MOVE.L  (RAM_VECTOR_BASE+84),A0
+        move.b  #$41,D0
+        jsr     PicoWriteChar
         MOVEM.L (A7)+,D0-D7/A0-A6
         RTE
 Int7Handler:        
@@ -355,8 +357,9 @@ Vbug2Start:
 
         ;Initialize picoVga
         JSR  InitPicoVga
-        ;Initialize UART
+        ;Initialize UARTs
         JSR  InitUart1   
+        JSR  InitUartb1
         ;Initialize TRAP1
         JSR  InitTrap1
 
@@ -373,17 +376,29 @@ subLoop:
         JSR     UartReadChar
         JSR     PicoWriteChar
 
+        CMP.B   #'2',D0
+        BEQ.S   TmpDumpPayloadHex
+        CMP.B   #'3',D0
+        BEQ.S   TmpReadPacketKbd
         CMP.B   #'4',D0
-        BEQ.S     RunTrap1
+        BEQ.S   RunTrap1
         CMP.B   #'5',D0
-        BEQ.S     RunProgram
+        BEQ.S   RunProgram
         CMP.B   #'7',D0
         BEQ     MemDump
         CMP.B   #'8',D0
-        BEQ.S     ReadInHexa
+        BEQ.S   ReadInHexa
         CMP.B   #'9',D0
         BEQ     UartReadHex
 
+        JMP     subLoop
+;2
+TmpDumpPayloadHex:
+        JSR     DumpPayloadHex
+        JMP     subLoop
+;3
+TmpReadPacketKbd:
+        JSR     ReadPacketKbd
         JMP     subLoop
 ;4 Testa trap 1
 RunTrap1:
@@ -458,9 +473,11 @@ UART_ReadHex1:
 
 
 ;Includes
-
+        INCLUDE "drv_uart.inc"
         INCLUDE "drv_uart.asm"
+        INCLUDE "drv_uartb.asm"
         INCLUDE "drv_pico_vga.asm"
+        INCLUDE "drv_keyboard.asm"
         INCLUDE "cmd_mem_dump.asm"
         INCLUDE "trap1.asm"
         INCLUDE "rot_print_hex_num.asm"
