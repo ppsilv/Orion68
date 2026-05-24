@@ -4,7 +4,7 @@ OBJCOPY = m68k-elf-objcopy
 
 CFLAGS = -Wall -Os -I../../include -ffreestanding -nostdlib
 #CFLAGS = -Wall -Os -I../include -ffreestanding -nostdlib -Dmain=main_with_exit
-LDFLAGS = -T ./linker.ld -L../../lib -nostdlib -Map=keyboard.map
+LDFLAGS = -T ../../linker.ld -L../../lib -nostdlib
 
 SRCS = $(wildcard *.c)
 OBJS = $(SRCS:.c=.o)

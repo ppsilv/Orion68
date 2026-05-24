@@ -1,0 +1,123 @@
+Archive member included to satisfy reference by file (symbol)
+
+../../lib/libmc68000.a(memcpy.o)
+                              keyboard.o (memcpy)
+
+Discarded input sections
+
+ .comment       0x00000000       0x13 ../../obj/startup.o
+ .comment       0x00000000       0x13 xmodem.o
+ .comment       0x00000000       0x13 crc16.o
+ .comment       0x00000000       0x13 keyboard.o
+ .comment       0x00000000       0x13 ../../lib/libmc68000.a(memcpy.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+RAM              0x00008000         0x000fe000         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+                0x00000000                        . = ALIGN (0x2)
+
+.text           0x00008000      0x50e
+                0x00008000                        . = ALIGN (0x2)
+ *(.text*)
+ .text          0x00008000       0x2a ../../obj/crt0.o
+                0x00008000                _start
+ *fill*         0x0000802a        0x2 
+ .text          0x0000802c        0x6 ../../obj/startup.o
+                0x0000802c                _main_wrapper
+ *fill*         0x00008032        0x2 
+ .text          0x00008034        0x4 xmodem.o
+                0x00008034                xmodemReceive
+                0x00008036                xmodemTransmit
+ .text          0x00008038       0x3c crc16.o
+                0x00008038                crc16_ccitt
+ .text          0x00008074      0x47c keyboard.o
+                0x00008074                delay
+                0x0000808c                mymemset
+                0x000080a4                init_uart
+                0x000080d0                read_kbd
+                0x000080e0                uart_read
+                0x000080e2                write_kbd
+                0x000080f6                get_0x81
+                0x00008162                get_0x87
+                0x00008188                set_keyboard_leds
+                0x000081f6                get_0x88
+                0x00008296                get_packet
+                0x00008302                reset_por_software
+                0x0000830a                set_transparent_mode
+                0x00008348                get_kbd_key
+                0x0000847e                get_key
+ .text          0x000084f0       0x1e ../../lib/libmc68000.a(memcpy.o)
+                0x000084f0                memcpy
+ *(.init)
+                0x0000850e                        . = ALIGN (0x2)
+
+.rodata         0x0000850e      0x486
+                0x0000850e                        . = ALIGN (0x2)
+ *(.rodata*)
+ .rodata        0x0000850e      0x200 crc16.o
+ .rodata        0x0000870e      0x285 keyboard.o
+                0x00008994                        . = ALIGN (0x2)
+ *fill*         0x00008993        0x1 
+
+.data           0x00008994        0x0
+                0x00008994                        . = ALIGN (0x2)
+ *(.data*)
+ .data          0x00008994        0x0 ../../obj/crt0.o
+ .data          0x00008994        0x0 ../../obj/startup.o
+ .data          0x00008994        0x0 xmodem.o
+ .data          0x00008994        0x0 crc16.o
+ .data          0x00008994        0x0 keyboard.o
+ .data          0x00008994        0x0 ../../lib/libmc68000.a(memcpy.o)
+                0x00008994                        . = ALIGN (0x2)
+
+.bss            0x00008994       0x30
+                0x00008994                        . = ALIGN (0x2)
+                0x00008994                        __bss_start = .
+ *(.bss*)
+ .bss           0x00008994        0x0 ../../obj/crt0.o
+ .bss           0x00008994        0x0 ../../obj/startup.o
+ .bss           0x00008994        0x0 xmodem.o
+ .bss           0x00008994        0x0 crc16.o
+ .bss           0x00008994       0x2d keyboard.o
+                0x00008994                new_packet
+                0x00008995                type
+                0x00008996                length
+                0x00008997                cmd
+                0x00008998                key_bufferB
+                0x000089a4                key_bufferA
+                0x000089b0                key_buffer
+                0x000089bc                _CapsFlag
+                0x000089bd                modifier
+                0x000089be                alt_status
+                0x000089bf                ctrl_status
+                0x000089c0                shift_status
+ *fill*         0x000089c1        0x3 
+ .bss           0x000089c4        0x0 ../../lib/libmc68000.a(memcpy.o)
+ *(COMMON)
+                0x000089c4                        . = ALIGN (0x2)
+                0x000089c4                        __bss_end = .
+
+.stack          0x000089c4     0x1000
+                0x000089c4                        . = ALIGN (0x2)
+                0x000089c4                        _stack_start = .
+                0x000099c4                        . = (. + 0x1000)
+ *fill*         0x000089c4     0x1000 
+                0x000099c4                        . = ALIGN (0x2)
+                0x000099c4                        _stack_end = .
+
+/DISCARD/
+ *(.comment)
+ *(.note*)
+ *(.align*)
+LOAD ../../obj/crt0.o
+LOAD ../../obj/startup.o
+LOAD xmodem.o
+LOAD crc16.o
+LOAD keyboard.o
+LOAD ../../lib/libmc68000.a
+OUTPUT(rom_ext.elf elf32-m68k)

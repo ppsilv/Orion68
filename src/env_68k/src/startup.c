@@ -1,9 +1,8 @@
 #include <stdlib.h>
 
 /* Declarar a função main ORIGINAL */
-extern int main(void);
+extern int get_key(void);
 
 void _main_wrapper(void) {
-    int result = main();  // ✅ Agora com nome correto
-    exit(result);
+    get_key();  // ✅ Agora com nome correto
 }

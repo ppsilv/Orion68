@@ -1,3 +1,7 @@
+Nomes para variaveis
+    Sem underscore entre palavras e sim maiuscula
+    Inicia com minusculas
+    Ex. currentUart
 Nomes para rotinas ordinárias
     Sem underscore entre palavras
     Inicia com maiuscula cada palavra

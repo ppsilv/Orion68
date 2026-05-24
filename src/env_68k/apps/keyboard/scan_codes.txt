@@ -1,0 +1,45 @@
+
+
+ESC = 29
+TAB = 2B
+CAPSLOCK = 39
+SHIFT = ???
+CTRL  = ???
+SPACE = 2C
+ENTER = 28
+BACKSPACE = 2A
+INSERT = 49
+DELETE = 4C
+HOME   = 4A
+END    = 4D
+PGUP   = 4B
+PGDOWN = 4E
+SETA_UP= 52
+SETA_DOWN = 51
+SETA_LEFT = 50
+SETA_RIGHT= 4F
+PRINTSCREEN=46
+SCROLL=47
+PAUSE=48
+F1=3A
+F2=3B
+F3=3C
+F4=3D
+F5=3E
+F6=3F
+F7=40
+F8=41
+F9=42
+F10=43
+F11=44
+F12=45
+
+Modifiers
+left_shift  = 02
+right_shift = 20
+left_ctrl   = 01
+right_ctrl  = 10
+left_alt    = 04
+right_alt   = 40
+
+

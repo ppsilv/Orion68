@@ -4,6 +4,7 @@
 // #include <mc68000.h>
 
 // 🛠️🇧🇷
+//🚀🛠️
 
 #define UART_KEYBOARD 0x4300
 
@@ -47,12 +48,36 @@ void delay(unsigned int time)
 #define BAUD_DIV_L 0x08 //(BAUD_DIV&$FF)
 #define BAUD_DIV_U 0x00 //((BAUD_DIV>>8)&$FF)
 
+/* -----------------------------------------------------------------
+    * Exemplo: Preencher um buffer na RAM com o caractere 'A' (0x41)
+    * Buffer localizado em $00002000, tamanho de 512 bytes
+    * -----------------------------------------------------------------
+
+    * 1. Empilha o 3º argumento: count (unsigned int = 32 bits)
+    move.l  #512, -(sp)          * Empilha o tamanho (512 bytes)
+
+    * 2. Empilha o 2º argumento: ch (int). 
+    * Nota: O GCC espera 32 bits aqui para manter o alinhamento da pilha!
+    move.l  #$41, -(sp)          * Empilha o caractere 'A' (expandido para long)
+
+    * 3. Empilha o 1º argumento: dest (ponteiro = 32 bits)
+    move.l  #$00002000, -(sp)    * Empilha o endereço inicial do buffer
+
+    * 4. Salta para a função na ROM do PDS317
+    jsr     mymemset             * O processador executa o memset
+
+    * 5. Limpa a pilha (Stack Cleanup)
+    * Empilhamos 3 longs (4 + 4 + 4 = 12 bytes). Precisamos devolver o SP ao normal.
+    add.l   #12, sp              * Desaloca os argumentos da pilha
+
+    * A partir daqui, o buffer em $2000 está limpo e o registrador D0 
+    * contém o ponteiro de retorno (o próprio endereço $00002000).
+*/
 void *mymemset(void *dest, int ch, unsigned int count)
 {
     unsigned char *ptr = (unsigned char *)dest;
 
-    while (count--)
-    {
+    while (count--) {
         *ptr++ = (unsigned char)ch;
     }
 
