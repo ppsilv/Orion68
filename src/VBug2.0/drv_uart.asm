@@ -118,7 +118,7 @@ DelUartReadHex:
         MOVEQ   #0,D2            ; Resultado em D2
 .Loop:
         CLR.L   D0
-        JSR     ReadChar
+        JSR     ReadConin
         CMP.B   #13,D0
         BEQ     .Done
         CMP.B   #10,D0

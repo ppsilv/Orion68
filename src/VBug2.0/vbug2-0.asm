@@ -55,18 +55,18 @@
         ORG     $0400
 ROM_JUMPTABLE:
         ; BRA     UART_Init          ;        0x400
-        ; BRA     UART_WriteChar     ;        0x404
-        ; BRA     UART_ReadChar      ;        0x408
+        ; BRA     UART_WriteConout     ;        0x404
+        ; BRA     UART_ReadConin      ;        0x408
         ; BRA     UART_Select        ;        0x40C
         ; BRA     UART_Setbaudrate   ;        0x410
         ; BRA     DELAY_MS           ;        0x414
         ; BRA     MEMDUMP            ;        0x418
-        ; BRA     UART_ReadCharNonEcho;       0x41C
+        ; BRA     UART_ReadConinNonEcho;       0x41C
         ; BRA     vbug2_start         ;       0x420
         ; BRA     warm_start          ;       0x424
         ; BRA     MenuLoop            ;       0x428
         ; BRA     NewLine            ;       0x42C
-        ; BRA     UART_WriteString    ;       0x430
+        ; BRA     UART_WriteStringConout    ;       0x430
         ; BRA     UART_INIT1          ;       0x434
 ; =============================================================================
 ; FIM DA TABELA DE VETORES (Endereço $000400 alcançado de forma contínua!)
@@ -123,27 +123,27 @@ DefaultHandler:
         MOVE.W  (20,SP),D2      ; ⭐⭐ Vector Offset (20 bytes abaixo)
         ; Mostra informações detalhadas
         LEA     MsgDebug,A0
-        JSR     WriteString
+        JSR     WriteStringConout
         MOVE.L  D0,D0           ; PC
-        JSR     PrintAddrHex
+        JSR     PrintHexAddressConout
         JSR     NewLine
         LEA     MsgSr,A0
-        JSR     WriteString
+        JSR     WriteStringConout
         MOVE.W  D1,D0           ; SR
-        JSR     PrintAddrHex
+        JSR     PrintHexAddressConout
         JSR     NewLine
         LEA     MsgVector,A0
-        JSR     WriteString
+        JSR     WriteStringConout
         MOVE.W  D2,D0           ; Vector offset
-        JSR     PrintAddrHex
+        JSR     PrintHexAddressConout
         JSR     NewLine
         ; --- ANALISA O VETOR ---
         LSR.W   #2,D2           ; Divide por 4 para get vector number
         ANDI.W  #$FF,D2         ; Vector number em D2
         LEA     MsgVectorNum,A0
-        JSR     WriteString
+        JSR     WriteStringConout
         MOVE.W  D2,D0
-        JSR     PrintAddrHex
+        JSR     PrintHexAddressConout
         JSR     NewLine
         ; --- MOSTRA QUAL EXCEÇÃO É ---
         CMP.W   #8,D2
@@ -168,7 +168,7 @@ DefaultHandler:
 .other_exception:
         LEA     MsgUnknown,A0
 .show_msg:
-        JSR     WriteString
+        JSR     WriteStringConout
         JSR     NewLine
         ; Pequeno delay para visualização
         MOVE.L  #$50000,D3
@@ -259,7 +259,7 @@ Int6Handler:
         MOVEM.L D0-D7/A0-A6,-(A7)
         ;MOVE.L  (RAM_VECTOR_BASE+84),A0
         move.b  #$41,D0
-        jsr     PicoWriteChar
+        jsr     WriteConout
         MOVEM.L (A7)+,D0-D7/A0-A6
         RTE
 Int7Handler:        
@@ -271,49 +271,15 @@ Int7Handler:
 ; Tratador para todos os outros vetores que você não mapeou individualmente ainda
 Universal_Trampoline:
         RTE
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; TODO USAR TRAP1 PARA ISSO AQUI        
-WriteChar:
-        JSR     PicoWriteChar
-        RTS
-        MOVE.B  D0,D1
-        CLR.L   D0
-        MOVE.B  #$2,D0
-;;        MOVE.B  #CMD_CCONOUT,D0
-        TRAP    #1
-        RTS
-WriteString:
-        ;JSR     PicoPrintString
-        ;RTS
-        MOVE.L  A0,A1
-        MOVE.B  #CMD_CCONOUTSTR,D0
-        TRAP    #1
-        RTS    
-ReadChar:
-        MOVE.B  #CMD_CCONIN,D0
-        TRAP    #1
-        RTS            
-PrintAddrHex:
-        RTS
 NewLine:
         MOVEM.L  D0/D1,-(SP)          ; Salva D0
         MOVE.B  #10,D0
-        JSR     WriteChar
+        JSR     WriteConout
         MOVE.B  #13,D0
-        JSR     WriteChar
+        JSR     WriteConout
         MOVEM.L  (SP)+,D0/D1          ; Restaura D0
         RTS
-;Essa rotina não pode limpar toda a RAM senão ela sobreescreve o StackPointer
-;Acho que um limite seguro 512 bytes abaixo de $FFFFF.        
-ClearRam:
-        LEA     $080000,A0
-        LEA     $0FFE00,A1
-        MOVEQ   #0,D0
-.ClearLoop:
-        MOVE.L  D0,(A0)+
-        CMPA.L  A0,A1
-        BHI     .ClearLoop
-        RTS
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;END OF BASIC CODE
 ;
@@ -371,12 +337,12 @@ mainLoop:
 subLoop:    
         JSR     PicoClearScreen
         LEA     MsgOrionInit,A0
-        JSR     WriteString
+        JSR     WriteStringConout
 
         ;JSR     PicoClearScreen
 
         LEA     MsgMenuText,A0
-        JSR     WriteString
+        JSR     WriteStringConout
         JSR     ReadConin
         JSR     WriteConout
 
@@ -412,12 +378,12 @@ TmpReadPacketKbd:
 ;4 Testa trap 1
 RunTrap1:
         LEA     MsgWritePrompt,A0
-        JSR     WriteString
-        JSR     ReadChar
+        JSR     WriteStringConout
+        JSR     ReadConin
         MOVE.B  D0,D1
         MOVE.L  #$2,D0
         TRAP    #1
-        JSR     ReadChar
+        JSR     ReadConin
         JMP     subLoop
 ; 5. Executa programa na RAM
 RunProgram:
@@ -426,11 +392,11 @@ RunProgram:
         CMP.B   #1,D0
         BEQ     .run_program
         LEA     MsgNoProgramToRUN,A0
-        JSR     WriteString
+        JSR     WriteStringConout
         BRA     subLoop
 .run_program
         LEA     MsgRunPrompt,A0
-        JSR     WriteString
+        JSR     WriteStringConout
         MOVE.L  SP,A0
         MOVE.L  A0,monitorStack
         LEA     buf_pgm,A0   ; A0 aponta para o endereço buffer onde esta o progama
@@ -439,10 +405,10 @@ RunProgram:
 
 ReadInHexa:
         LEA     MsgTestHexInput,A0
-        JSR     WriteString
+        JSR     WriteStringConout
         JSR     ReadHexAddressConin
         LEA     MsgTestHexInput,A0
-        JSR     WriteString
+        JSR     WriteStringConout
         JMP     subLoop
 
 ; Lê número hexadecimal (retorna em D0)
@@ -451,7 +417,7 @@ UART_ReadHex1:
         MOVE.L  D2,-(SP)
 
         LEA     MsgWritePrompt,A0
-        JSR     WriteString
+        JSR     WriteStringConout
 
         JSR     NewLine
 
@@ -460,7 +426,7 @@ UART_ReadHex1:
         MOVEQ   #0,D2            ; Resultado em D2
 
 .Loop:
-        JSR     ReadChar
+        JSR     ReadConin
         CMP.B   #13,D0
         BEQ     .Done
         CMP.B   #10,D0
@@ -473,7 +439,7 @@ UART_ReadHex1:
         JSR     buf_get
         CMP.B   #-1,D0          ; Buffer vazio?
         BEQ     .fim            ; Se sim, ignora
-        JSR     WriteChar
+        JSR     WriteConout
         BRA     .loop1
 .fim:
         MOVE.L  (SP)+,D2
