@@ -185,6 +185,7 @@ Trap0Handler:
         JMP     (A0)
 Trap1Handler:
         MOVE.L  (RAM_VECTOR_BASE+4),A0   ; Trap 1 mapeada em $80004
+        LEA     vbug2_trap1,A0
         JMP     (A0)
 Trap2Handler:
         MOVE.L  (RAM_VECTOR_BASE+8),A0   ; Trap 2 mapeada em $80008
@@ -276,12 +277,15 @@ WriteChar:
         JSR     PicoWriteChar
         RTS
         MOVE.B  D0,D1
-        MOVE.B  #2,D0
+        CLR.L   D0
+        MOVE.B  #$2,D0
+;;        MOVE.B  #CMD_CCONOUT,D0
         TRAP    #1
         RTS
 WriteString:
-        JSR     PicoPrintString
-        RTS
+        ;JSR     PicoPrintString
+        ;RTS
+        MOVE.L  A0,A1
         MOVE.B  #CMD_CCONOUTSTR,D0
         TRAP    #1
         RTS    
@@ -348,7 +352,7 @@ Vbug2Start:
         ;Initialize variables
         MOVE.L  #PicoWriteChar,A1    ; Initialize cconout console char out
         MOVE.L  A1,cconout
-        MOVE.L  #UartReadCharEcho,A1         ; Initialize cconin console char in
+        MOVE.L  #UartReadChar,A1         ; Initialize cconin console char in
         MOVE.L  A1,cconin
         MOVE.L  #UART_BASE,A1    ; Initialize uart output,INPUT and baud
         MOVE.L  A1,currentUart
@@ -364,17 +368,17 @@ Vbug2Start:
         JSR  InitTrap1
 
 mainLoop:
-        JSR     PicoClearScreen
-        LEA     MsgOrionInit,A0
-        JSR     PicoPrintString
-
 subLoop:    
         JSR     PicoClearScreen
+        LEA     MsgOrionInit,A0
+        JSR     WriteString
+
+        ;JSR     PicoClearScreen
 
         LEA     MsgMenuText,A0
-        JSR     PicoPrintString
-        JSR     UartReadChar
-        JSR     PicoWriteChar
+        JSR     WriteString
+        JSR     ReadConin
+        JSR     WriteConout
 
         CMP.B   #'2',D0
         BEQ.S   TmpDumpPayloadHex
@@ -385,13 +389,18 @@ subLoop:
         CMP.B   #'5',D0
         BEQ.S   RunProgram
         CMP.B   #'7',D0
-        BEQ     MemDump
+        BEQ     MemDump0
         CMP.B   #'8',D0
-        BEQ.S   ReadInHexa
+        BEQ     ReadInHexa
         CMP.B   #'9',D0
-        BEQ     UartReadHex
+        BEQ     ReadHexAddressConin
 
         JMP     subLoop
+MemDump0:
+        MOVE.L  #$00080000,D0
+        MOVE.L  D0,(addressInHex)
+        JSR     MemDump
+        JMP     subLoop        
 ;2
 TmpDumpPayloadHex:
         JSR     DumpPayloadHex
@@ -404,11 +413,11 @@ TmpReadPacketKbd:
 RunTrap1:
         LEA     MsgWritePrompt,A0
         JSR     WriteString
-        JSR     UartReadChar
+        JSR     ReadChar
         MOVE.B  D0,D1
-        MOVE.L  #$00000002,D0
+        MOVE.L  #$2,D0
         TRAP    #1
-        JSR     UartReadChar
+        JSR     ReadChar
         JMP     subLoop
 ; 5. Executa programa na RAM
 RunProgram:
@@ -431,8 +440,10 @@ RunProgram:
 ReadInHexa:
         LEA     MsgTestHexInput,A0
         JSR     WriteString
-        JSR     UartReadHex
-        bra     subLoop
+        JSR     ReadHexAddressConin
+        LEA     MsgTestHexInput,A0
+        JSR     WriteString
+        JMP     subLoop
 
 ; Lê número hexadecimal (retorna em D0)
 UART_ReadHex1:
@@ -449,7 +460,7 @@ UART_ReadHex1:
         MOVEQ   #0,D2            ; Resultado em D2
 
 .Loop:
-        JSR     UartReadChar
+        JSR     ReadChar
         CMP.B   #13,D0
         BEQ     .Done
         CMP.B   #10,D0
@@ -461,18 +472,19 @@ UART_ReadHex1:
 .loop1:
         JSR     buf_get
         CMP.B   #-1,D0          ; Buffer vazio?
-        BEQ     .fim      ; Se sim, ignora
+        BEQ     .fim            ; Se sim, ignora
         JSR     WriteChar
         BRA     .loop1
 .fim:
         MOVE.L  (SP)+,D2
         MOVE.L  (SP)+,D1
         JSR     NewLine
-        bra     subLoop ;provisoriamente
+        ;bra     subLoop ;provisoriamente
         RTS
 
 
 ;Includes
+        INCLUDE "pds_std_io.asm"
         INCLUDE "drv_uart.inc"
         INCLUDE "drv_uart.asm"
         INCLUDE "drv_uartb.asm"

@@ -56,7 +56,7 @@ UartbReadChar:
 
         move.b  RHR(A1),D0
         MOVE.L (SP)+,A1
-        JSR     UartPrintByteHex
+        JSR     PrintByteHexConout
         RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

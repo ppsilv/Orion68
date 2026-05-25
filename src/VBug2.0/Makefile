@@ -62,6 +62,7 @@ compile:
 # Compilação segura que detecta TODOS os erros
 compile_linker:
 	@echo "Compiler compile_linker..."
+	@./build_date.sh
 	$(ASSEMBLER) $(ELF_FLAGS) -L $(TARGET).lst -o $(TARGET_OBJ) $(SOURCE)
 	@echo "Linker..."
 	$(LINKER) -T $(LAYOUT_FILE) --print-memory-usage -Map=$(TARGET).map $(TARGET_OBJ) -o $(TARGET_ELF)

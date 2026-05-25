@@ -62,7 +62,7 @@ UartReadChar:
 ; Change A1
 ;
 ; Return char in D0)
-UartReadCharEcho:
+DelUartReadCharEcho:
         MOVE.L A1,-(SP)
         move.l  currentUart,A1
 .WaitRx:
@@ -77,18 +77,31 @@ UartReadCharEcho:
         MOVE.L (SP)+,A1
         RTS
 
+DelUartReadCharEcho2:
+        MOVE.L A1,-(SP)
+        move.l  currentUart,A1
+.WaitRx:
+        btst    #0,LSR(A1)        ; RX ready?
+        beq     .WaitRx
+        move.b  RHR(A1),D0
+
+        JSR     PrintByteHex
+
+        MOVE.L (SP)+,A1
+        RTS
+
 ; ----------------------------------------------------------------------
 ; UART_WriteString - Envia string terminada em null para UART
 ; Entrada:
 ;   A0 = Ponteiro para a string (endereço da string)
 ; ----------------------------------------------------------------------
-UartWriteString:
+DelUartWriteString:
         MOVE.L  A0,-(SP)      ; Preserva D0
         MOVE.L  D0,-(SP)      ; Preserva D0
 .WriteLoop:
         MOVE.B  (A0)+,D0      ; Pega caractere
         BEQ     .Done
-        JSR     UartWriteChar ; Use sua rotine existente
+        JSR     WriteConout ; Use sua rotine existente
         BRA     .WriteLoop
 .Done:
         MOVE.L  (SP)+,D0
@@ -96,7 +109,7 @@ UartWriteString:
         RTS
 
 ; Lê número hexadecimal (retorna em D0)
-UartReadHex:
+DelUartReadHex:
         MOVE.L  D1,-(SP)
         MOVE.L  D2,-(SP)
 
@@ -105,7 +118,7 @@ UartReadHex:
         MOVEQ   #0,D2            ; Resultado em D2
 .Loop:
         CLR.L   D0
-        JSR     UartReadChar
+        JSR     ReadChar
         CMP.B   #13,D0
         BEQ     .Done
         CMP.B   #10,D0
@@ -145,7 +158,7 @@ UartReadHex:
         JSR     NewLine
         LEA     addressInHex,A0
         MOVE.L  (A0),D0
-        JSR     PrintHexAddress
+        JSR     PicoPrintHexAddress
         JSR     NewLine
         MOVE.L  (SP)+,D2
         MOVE.L  (SP)+,D1
@@ -155,7 +168,7 @@ UartReadHex:
 ; UartPrintHexAddress - Imprime endereço de 32 bits
 ; Entrada: D0 = endereço
 ;
-UartPrintHexAddress:
+DelUartPrintHexAddress:
         SWAP    D0                ; Imprime parte alta primeiro
         JSR     .PrintWordHex
         SWAP    D0                ; Parte baixa
@@ -163,7 +176,7 @@ UartPrintHexAddress:
         ROL.W   #8,D0             ; Byte mais significativo primeiro
         JSR     PicoPrintByteHex
         ROR.W   #8,D0             ; Byte menos significativo
-UartPrintByteHex:
+DelUartPrintByteHex:
         MOVE.B  D0,-(SP)          ; Salva byte original
         LSR.B   #4,D0             ; Nibble alto
         BSR     .PrintNibble
@@ -175,4 +188,5 @@ UartPrintByteHex:
         ADD.B   #7,D0             ; Ajuste para A-F
 .Decimal:
         ADD.B   #'0',D0
-        JMP     UartWriteChar    ; Usa JMP para tail call optimization
+        JMP     WriteConout    ; Usa JMP para tail call optimization
+

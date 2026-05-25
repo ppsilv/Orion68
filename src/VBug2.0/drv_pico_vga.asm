@@ -68,9 +68,11 @@ PicoGoHome:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Set cursor position
 ; Detroy:
-; Receive X in D0
-; Receive Y in D1
+; Receive X in D0 high
+; Receive Y in D0 low
 PicoSetCursor:
+        MOVE.W D0,D1
+        SWAP    D0
         MOVE.L A1,-(SP)
         MOVE.B  D0,REG_X_LOW
         NOP
@@ -125,25 +127,27 @@ PicoClearScreen:
 ; Write char in picoVGA
 ; Destroy: A1,D1
 PicoWriteChar:
-        MOVE.L A1,-(SP)
-            LEA     WRITE_SCREEN,A1
-            MOVE.B  D0,(A1)     ; Escreve no endereço do PicoVGA (LDS ativo)
-            MOVE.L  #$3F,D1    ; Contador para o delay (ajuste se precisar de mais)
+        MOVE.L  A1,-(SP)
+        MOVE.L  D1,-(SP)
+        LEA     WRITE_SCREEN,A1
+        MOVE.B  D0,(A1)     ; Escreve no endereço do PicoVGA (LDS ativo)
+        MOVE.L  #$3F,D1    ; Contador para o delay (ajuste se precisar de mais)
 .DELAY00:
-            SUBQ.L  #1,D1       ; Subtrai 1 de D1 (4 ciclos)
-            BNE.S   .DELAY00    ; Pula se não for zero (10 ciclos se pular, 8 se não)
+        SUBQ.L  #1,D1       ; Subtrai 1 de D1 (4 ciclos)
+        BNE.S   .DELAY00    ; Pula se não for zero (10 ciclos se pular, 8 se não)
+        MOVE.L (SP)+,D1
         MOVE.L (SP)+,A1
-            RTS
+        RTS
 ;last change
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Imprime string terminada em ZERO
 ; Destroy: A0 = String's address
 ;
 PicoPrintString:
-        MOVE.B  (A0)+,D0      ; Pega caractere e avança ponteiro
-        BEQ.S   .Done         ; Se for zero, termina
-        BSR.S   PicoWriteChar ; Chama sua função gloriosa!
-        BRA.S   PicoPrintString   ; Loop para o próximo
+        MOVE.B  (A0)+,D0                ; Pega caractere e avança ponteiro
+        BEQ.S   .Done                   ; Se for zero, termina
+        JSR     WriteConout           ; Chama sua função gloriosa!
+        BRA.S   PicoPrintString         ; Loop para o próximo
 .Done:
         RTS
 
@@ -172,3 +176,4 @@ PicoPrintByteHex:
 .Decimal:
         ADD.B   #'0',D0
         JMP     PicoWriteChar    ; Usa JMP para tail call optimization
+

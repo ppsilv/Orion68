@@ -7,13 +7,13 @@ MERDA:
 ; O SEU CÓDIGO DO TCPBOX68K (Agora rodando na RAM)
 ; -----------------------------------------------------------------------------
 vbug2_trap1:
-    CMP.W   #CMD_CCONIN,D0      ; Compara com CCONIN (ler caractere)
+    CMP.B   #CMD_CCONIN,D0      ; Compara com CCONIN (ler caractere)
     BEQ     trap_cconin         ; Se for 1, vai para leitura
-    CMP.W   #CMD_CCONOUT,D0     ; Compara com CCONOUT (escrever caractere)
+    CMP.B   #CMD_CCONOUT,D0     ; Compara com CCONOUT (escrever caractere)
     BEQ     trap_cconout        ; Se for 2, vai para escrita
-    CMP.W   #CMD_CCONOUTSTR,D0  ; Compara com CCONOUT (escrever string)
+    CMP.B   #CMD_CCONOUTSTR,D0  ; Compara com CCONOUT (escrever string)
     BEQ     trap_strout         ; Se for 3, vai para escrita
-    CMP.W   #CMD_PTERM0,D0      ; Compara com PTERM0 (terminar)
+    CMP.B   #CMD_PTERM0,D0      ; Compara com PTERM0 (terminar)
     BEQ     trap_pterm0         ; Se for 0, vai para terminar
     MOVE.L  #-1,D0              ; Retorna erro se função não reconhecida
     RTE
@@ -23,9 +23,9 @@ vbug2_trap1:
 ; Saída: D0.L - Caractere lido
 ; --------------------------------
 trap_cconin:
-    MOVE.L  (cconin),A0
-    JSR     (A0)
-    ANDI.L      #$FF,D0       ; Mantém apenas o byte inferior
+    MOVE.L  (cconin),A2
+    JSR     (A2)
+    ANDI.L  #$FF,D0       ; Mantém apenas o byte inferior
     RTE                   ; Retorna da exceção
 
 ; --------------------------------
@@ -34,21 +34,16 @@ trap_cconin:
 ; --------------------------------
 trap_cconout:
     MOVE.B  D1,D0
-    MOVE.L  (cconout),A0        ; Busca o endereço da rotina física da UART
-    JSR     (A0)
+    MOVE.L  (cconout),A2        ; Busca o endereço da rotina física da UART
+    JSR     (A2)
     RTE      
                 
 
 trap_strout:
-    MOVE.L  (cconout),A1
-.strout:
-    MOVE.B  (A0)+,D0
-    CMP.B   #0,D0
-    BEQ     .fim
-    JSR     (A1)
-    BRA     .strout
-.fim:
+    MOVE.L  A1,A0
+    JSR     WriteStringConout
     RTE
+
 
 ; --------------------------------
 ; TRAP_PTERM0 - Terminar programa

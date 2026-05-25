@@ -179,5 +179,5 @@ DumpPayloadHex:
             dbra    d1,.LoopDump      ; Decrementa D1. Se não for -1, pula para .LoopDump
 
             movem.l (sp)+,d0-d1/a0    ; Restaura os registradores originais
-            JSR     UartReadChar
+            JSR     ReadConin
             rts            

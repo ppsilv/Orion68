@@ -8,16 +8,16 @@
 ; Strings do Sistema
 ; ----------------------------------------------------------------------
 MsgDumpHeader:
-    DC.B    " - Memory Dump from :",0
+    DC.B    13,10," - Memory Dump from :",0
 MsgDumpHeader1:
-    DC.B    "Address   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F  ASCII",13,10
-    DC.B    "--------  -----------------------------------------------  ----------------",13,10,0
+    DC.B    13,10,"Address   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F  ASCII",13,10
+    DC.B    "--------  -----------------------------------------------  ------------------",13,10,0
 MsgOrionInit:
-    DC.B    13,10,"Orion68 - copyright (C) pdsilva(pgordao).VBug2.0",13,10
+    DC.B    13,10,"PDS317 - copyright (C) pdsilva(pgordao).VBug2.0",13,10
     DC.B    "MC68000 System Monitor",13,10
     INCLUDE "build_date.inc"
     INCLUDE "build_counter.inc"
-    DC.B    "-------------------------------------------",13,10,13,10,0
+    DC.B          "-----------------------------------------------",13,10,13,10,0
 MsgMenuText:
     DC.B    "Menu choose an option: ",13,10,13,10
     DC.B    "2. Dump keyboard buffer",13,10
@@ -31,9 +31,9 @@ MsgMenuText:
 MsgOutOfRange:
     DC.B    13,10,"Invalid address range!",13,10,0
 MsgLoadDoneMsg:
-    DC.B    "Program loaded successfully!",13,10,0
+    DC.B    13,10,"Program loaded successfully!",13,10,0
 MsgWritePrompt:
-    DC.B    "Write Address: ",0
+    DC.B    13,10,"Write Address: ",0
 MsgWriteDoneMsg:
     DC.B    13,10,"Data written to memory!",13,10,0
 MsgRunPrompt:
@@ -46,7 +46,7 @@ MsgBufferEmpty:
     DC.B    "Ooops Buffer Empty!",13,10,0
 MsgTestHexInput:
     DC.B    13,10,"Digite um endereco de no maximo 4bytes 8 caracteres!",13,10
-    DC.B    "mais que isso sera descatado os excedentes...",13,10,0
+    DC.B    "mais que isso serao descatados os excedentes...",13,10,0
 MsgHitAnyKey:
     DC.B    13,10,"Hit any <ENTER> to continue <ESC> to terminate: ",0
 MsgXmodemInit:
@@ -61,6 +61,29 @@ MsgDefaultHandler:
     DC.B    " Default handler wrote UART ",13,10,0
 MsgViaTrap1:
     DC.B    "Mensagem via trap #1",13,10,0
+MsgNewLine:
+    DC.B    13,10,0
+MsgA0:
+    DC.B    13,10,"A0: ",0
+MsgA1:
+    DC.B    " - A1: ",0
+MsgA2:
+    DC.B    " - A2: ",0
+MsgA3:
+    DC.B    " - A3: ",0
+MsgA4:
+    DC.B    " - A4: ",0
+MsgD0:
+    DC.B    13,10,"D0: ",0
+MsgD1:
+    DC.B    " - D1: ",0
+MsgD2:
+    DC.B    " - D2: ",0
+MsgD3:
+    DC.B    " - D2: ",0
+MsgD4:
+    DC.B    " - D4: ",0
+
 MsgDebug:     DC.B "Exception - PC: ",0
 MsgSr:        DC.B "Status Reg: ",0
 ;MsgSp:        DC.B "Stack Reg: ",0
