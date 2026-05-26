@@ -23,9 +23,9 @@ addressInHex        DS.L   1
 buf_xmodem          DS.B   512        ; Buffer de dados
 buf_put             DS.B   512    
 buf_get             DS.B   512    
-currentBaudRate     DS.W 1
-chPayloadBuffer     DS.B   16                ; Buffer temporário para acomodar os dados HID
-flg_pgm_loaded      DS.B   1
+currentBaudRate     DS.W     1
+chPayloadBuffer     DS.B    16        ; Buffer temporário para acomodar os dados HID
+flg_system          DS.W     1        ; Flags do sistema PROGRAM_LOADED  
 ;blockNumber         DS.B   1          ; Número do bloco atual
 ;expectedBlock       DS.B   1          ; Próximo bloco esperado
 

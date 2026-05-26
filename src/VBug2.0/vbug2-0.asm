@@ -370,8 +370,6 @@ Xmodem:
         JMP     subLoop        
 
 MemDump0:
-        MOVE.L  #$00080000,D0
-        MOVE.L  D0,(addressInHex)
         JSR     MemDump
         JMP     subLoop        
 ;2
@@ -394,10 +392,8 @@ RunTrap1:
         JMP     subLoop
 ; 5. Executa programa na RAM
 RunProgram:
-        LEA     flg_pgm_loaded,A0   ; Get flag program loaded
-        MOVE.B  (A0),D0              ; Program  loaded
-        CMP.B   #1,D0
-        BEQ     .run_program
+        BTST    #PROGRAM_LOADED,flg_system
+        BNE     .run_program
         LEA     MsgNoProgramToRUN,A0
         JSR     WriteStringConout
         BRA     subLoop

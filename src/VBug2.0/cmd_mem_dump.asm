@@ -146,8 +146,8 @@ PrintAx:
         JSR     PrintHexAddress    ; Imprime 8 dígitos hex
 
 
-        LEA     MsgNewLine,A0
-        JSR     WriteStringConout
+        ;LEA     MsgNewLine,A0
+        ;JSR     WriteStringConout
 
         MOVE.L  (SP)+,A0          ; Recupera endereço atual
 
@@ -180,8 +180,8 @@ PrintDx:
         MOVE.L  D4,D0
         JSR     PrintHexAddress    ; Imprime 8 dígitos hex
 
-        LEA     MsgNewLine,A0
-        JSR     WriteStringConout
+        ;LEA     MsgNewLine,A0
+        ;JSR     WriteStringConout
         
         MOVE.L  (SP)+,A0          ; Recupera endereço atual
 

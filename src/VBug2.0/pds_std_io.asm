@@ -2,8 +2,8 @@
 FlushConin:
 
 ReadConin:
-    MOVE.L  (cconin),A2
-    JSR     (A2)
+    MOVE.L  (cconin),A5
+    JSR     (A5)
 ;    ANDI.L  #$FF,D0       ; Mantém apenas o byte inferior
     
 ;    MOVE.B  D0,-(SP)          ; Salva byte original
@@ -13,8 +13,8 @@ ReadConin:
     RTS
 
 WriteConout:
-    MOVE.L  (cconout),A2        ; Busca o endereço da rotina física da UART
-    JSR     (A2)
+    MOVE.L  (cconout),A5        ; Busca o endereço da rotina física da UART
+    JSR     (A5)
     RTS     
 
 WriteStringConout:
