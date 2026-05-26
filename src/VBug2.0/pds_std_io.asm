@@ -4,12 +4,13 @@ FlushConin:
 ReadConin:
     MOVE.L  (cconin),A5
     JSR     (A5)
-;    ANDI.L  #$FF,D0       ; Mantém apenas o byte inferior
-    
-;    MOVE.B  D0,-(SP)          ; Salva byte original
-;    JSR     PrintByteHex    
-;    MOVE.B  (SP)+,D0          ; Recupera byte
-
+    ANDI.L  #$FF,D0       ; Mantém apenas o byte inferior
+    BTST    #ECHO_ON,flg_system
+    BEQ     .fim        
+    MOVE.B  D0,-(SP)          ; Salva byte original
+    JSR     WriteConout    
+    MOVE.B  (SP)+,D0          ; Recupera byte
+.fim
     RTS
 
 WriteConout:
@@ -33,7 +34,7 @@ ReadHexAddressConin:
         MOVEQ   #0,D2            ; Resultado em D2
 .Loop:
         CLR.L   D0
-        JSR.S   ReadConin
+        JSR     ReadConin
         CMP.B   #13,D0
         BEQ     .Done
         CMP.B   #10,D0

@@ -201,7 +201,7 @@ void show_menu(){
 
     choice = 'A';
     while (choice != 1000){
-        printf("\n--- TCPBOX68K VIDEO TEST ---\n");
+        //printf("\n--- TCPBOX68K VIDEO TEST ---\n");
         printf("1 - Clear Screen\n");
         printf("2 - Set X Position\n");
         printf("3 - Set text and bg color \n");
@@ -214,7 +214,7 @@ void show_menu(){
         printf("0 - sai do programa\n");
         printf("\nEscolha: ");
         choice = getchar();
-        printf("choice [%x04]\n",choice);
+        printf("choice [%02x]\n",choice);
         switch(choice){
             case '1':
                 printf("Limpando a tela\n");
@@ -277,7 +277,7 @@ void show_menu(){
 
 int main() {
     //char str[10]={0};
-    check_stack();  // ✅ Verificar stack no início
+ //   check_stack();  // ✅ Verificar stack no início
 /* Criando ponteiros de 8 bits (unsigned char) para os endereços */
     unsigned char *screen_reg = (unsigned char *)WRITE_SCREEN;
     unsigned char *config_reg = (unsigned char *)CONFIG_REG;

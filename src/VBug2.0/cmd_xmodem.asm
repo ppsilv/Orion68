@@ -13,34 +13,36 @@ XmodemRec:
         JSR     UartFlush
         MOVE.B  #NACK,D0
         JSR     UartWriteChar
-        MOVE.B  #13,D0
-        JSR     WriteConout      
-        MOVE.B  #10,D0
-        JSR     WriteConout      
+        ;MOVE.B  #13,D0
+        ;JSR     WriteConout      
+        ;MOVE.B  #10,D0
+        ;JSR     WriteConout      
 .receivePacote:
         JSR     ReadConin
         CMP.B   #EOT,D0
         BEQ     .Transfer_Complete   ; Fim da transmissão          
-        JSR     PrintByteHexConout      
+        ;JSR     PrintByteHexConout      
         JSR     ReadConin
-        JSR     PrintByteHexConout      
+        ;JSR     PrintByteHexConout      
         JSR     ReadConin
-        JSR     PrintByteHexConout         
+        ;JSR     PrintByteHexConout         
         MOVE.W  #$7F,D1
         LEA     buf_xmodem,A1
 .centoEvinteOito:
         JSR     ReadConin
         add     D0,D5
         MOVE.B  D0,(A1)+                
-        JSR     PrintByteHexConout      
+        ;JSR     PrintByteHexConout      
         dbra    d1,.centoEvinteOito
         ;Aguardando check sum
         JSR     ReadConin
-        MOVE.B  D0,-(SP)   
-        JSR     PrintByteHexConout              
-        MOVE.B  D5,D0
-        JSR     PrintByteHexConout 
-        MOVE.B  (SP)+,D0 
+
+        ;MOVE.B  D0,-(SP)   
+        ;JSR     PrintByteHexConout              
+        ;MOVE.B  D5,D0
+        ;JSR     PrintByteHexConout 
+        ;MOVE.B  (SP)+,D0 
+
         CMP.B   D0,D5
         BNE     .XMIT_NACK    
         MOVE.W  #32-1,D0          ; Contador para 32 Longs (128 bytes)Subtraímos 1 porque o DBRA para no -1
@@ -50,16 +52,15 @@ XmodemRec:
         DBRA    D0,.CopyLoop      ; Decrementa D0 e pula para .CopyLoop se D0 >= 0
         MOVE.B  #ACK,D0
         JSR     UartWriteChar 
-        JSR     NewLine  
+        ;JSR     NewLine  
         clr.l     D5
         jmp     .receivePacote
 .XMIT_NACK
         MOVE.B  #NACK,D0
         JSR     UartWriteChar 
-        JSR     NewLine                
+        ;JSR     NewLine                
         clr.l     D5
         jmp     .receivePacote
 .Transfer_Complete:
-        ;JSR     ReadConin
         BSET    #PROGRAM_LOADED,flg_system
         RTS ;

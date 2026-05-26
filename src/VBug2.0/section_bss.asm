@@ -15,7 +15,7 @@ cconin              DS.L 1
 ;currentTimer        DS.L 1
 ;flg_orion           DS.L   1         ;minhas_flags   
 ;checksumCalc       DS.L   1
-monitorStack       DS.L   1
+monitorStack        DS.L   1
 systemTick          DS.L   1
 addressInHex        DS.L   1
 

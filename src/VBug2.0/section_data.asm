@@ -97,6 +97,7 @@ MsgTrap:      DC.B "TRAP Instruction!",0
 MsgUnknown:   DC.B "Unknown Exception!",0
 
 PROGRAM_LOADED  equ     0
+ECHO_ON         equ     1 
 ;    ALIGN   2
 ;    ;Isso preenche 762 com 00
 ;    ;DS.B    $00000762 - *, $00

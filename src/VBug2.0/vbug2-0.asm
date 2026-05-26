@@ -181,12 +181,25 @@ DefaultHandler:
 SpuriousHandler:
         RTE
 Trap0Handler:
-        MOVE.L  (RAM_VECTOR_BASE),A0     ; Trap 0 mapeada em $80000
-        JMP     (A0)
+        ; Manipula o endereço de retorno na pilha
+        MOVE.L  monitorStack,A0
+        MOVE.L  A0,SP
+        JSR     PrintHexAddress
+        BRA     MenuLoop ; Substitui na pilha
+        RTE
+;        MOVE.L  (RAM_VECTOR_BASE),A0     ; Trap 0 mapeada em $80000
+;        JMP     (A0)
 Trap1Handler:
-        MOVE.L  (RAM_VECTOR_BASE+4),A0   ; Trap 1 mapeada em $80004
-        LEA     vbug2_trap1,A0
-        JMP     (A0)
+    cmp.w   #1,d0         ; Compara com CCONIN (ler caractere)
+    BEQ     trap_cconin    ; Se for 1, vai para leitura
+    cmp.w   #2,d0         ; Compara com CCONOUT (escrever caractere)
+    BEQ     trap_cconout   ; Se for 2, vai para escrita
+    cmp.w   #3,d0         ; Compara com CCONOUT (escrever string)
+    BEQ     trap_strout   ; Se for 2, vai para escrita
+    cmp.w   #0,d0         ; Compara com PTERM0 (terminar)
+    BEQ     trap_pterm0    ; Se for 0, vai para terminar
+    move.l  #-1,d0        ; Retorna erro se função não reconhecida
+    RTE                   ; Retorna da exceção
 Trap2Handler:
         MOVE.L  (RAM_VECTOR_BASE+8),A0   ; Trap 2 mapeada em $80008
         JMP     (A0)
@@ -333,7 +346,7 @@ Vbug2Start:
         ;Initialize TRAP1
         JSR  InitTrap1
 
-mainLoop:
+MenuLoop:
 subLoop:    
         JSR     PicoClearScreen
         LEA     MsgOrionInit,A0
@@ -402,8 +415,8 @@ RunProgram:
         JSR     WriteStringConout
         MOVE.L  SP,A0
         MOVE.L  A0,monitorStack
-        LEA     buf_pgm,A0   ; A0 aponta para o endereço buffer onde esta o progama
-        JSR     (A0)        ; Chama o código como uma sub-rotina (salva o endereço de retorno)
+        LEA     buf_pgm,A0   ; A0 aponta para o endereço buffer onde esta o programa
+        JSR     (A0)         ; Chama o código como uma sub-rotina (salva o endereço de retorno)
         BRA     subLoop
 
 ReadInHexa:
