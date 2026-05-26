@@ -57,6 +57,17 @@ UartReadChar:
         MOVE.L (SP)+,A1
         RTS
 
+UartFlush:
+        MOVE.L A1,-(SP)
+        MOVE.L  currentUart,A1
+.WaitRx:
+        btst    #0,LSR(A1)        ; RX ready?
+        BNE     .read
+        MOVE.L (SP)+,A1
+        RTS
+.read:
+        BRA     .WaitRx
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Read char block with echo
 ; Change A1

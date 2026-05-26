@@ -346,10 +346,12 @@ subLoop:
         JSR     ReadConin
         JSR     WriteConout
 
+        CMP.B   #'1',D0
+        BEQ.S   TmpReadPacketKbd
         CMP.B   #'2',D0
         BEQ.S   TmpDumpPayloadHex
         CMP.B   #'3',D0
-        BEQ.S   TmpReadPacketKbd
+        BEQ     Xmodem
         CMP.B   #'4',D0
         BEQ.S   RunTrap1
         CMP.B   #'5',D0
@@ -362,6 +364,11 @@ subLoop:
         BEQ     ReadHexAddressConin
 
         JMP     subLoop
+
+Xmodem:
+        JSR     XmodemRec
+        JMP     subLoop        
+
 MemDump0:
         MOVE.L  #$00080000,D0
         MOVE.L  D0,(addressInHex)
@@ -457,6 +464,7 @@ UART_ReadHex1:
         INCLUDE "drv_pico_vga.asm"
         INCLUDE "drv_keyboard.asm"
         INCLUDE "cmd_mem_dump.asm"
+        INCLUDE "cmd_xmodem.asm"
         INCLUDE "trap1.asm"
         INCLUDE "rot_print_hex_num.asm"
 

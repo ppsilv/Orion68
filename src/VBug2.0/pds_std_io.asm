@@ -1,11 +1,15 @@
 
+FlushConin:
+
 ReadConin:
     MOVE.L  (cconin),A2
     JSR     (A2)
-    ANDI.L  #$FF,D0       ; Mantém apenas o byte inferior
-    MOVE.B  D0,-(SP)          ; Salva byte original
-    JSR     PrintByteHex    
-    MOVE.B  (SP)+,D0          ; Recupera byte
+;    ANDI.L  #$FF,D0       ; Mantém apenas o byte inferior
+    
+;    MOVE.B  D0,-(SP)          ; Salva byte original
+;    JSR     PrintByteHex    
+;    MOVE.B  (SP)+,D0          ; Recupera byte
+
     RTS
 
 WriteConout:

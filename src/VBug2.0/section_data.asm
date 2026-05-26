@@ -20,8 +20,8 @@ MsgOrionInit:
     DC.B          "-----------------------------------------------",13,10,13,10,0
 MsgMenuText:
     DC.B    "Menu choose an option: ",13,10,13,10
+    DC.B    "1. Read keyboard",13,10
     DC.B    "2. Dump keyboard buffer",13,10
-    DC.B    "3. Read keyboard",13,10
     DC.B    "4. Testa trap #1",13,10
     DC.B    "5. Run Program",13,10
     DC.B    "7. Memory dump from address buffer",13,10
