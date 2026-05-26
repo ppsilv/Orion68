@@ -53,38 +53,38 @@ void led_effects() {
 
 
 //Register address
-#define WRITE_SCREEN   0xB8001        //Endereço real  3 0x03  o pico enxerga 0x00
-#define REG_02         0xB8003        //Endereço real  3 0x03  o pico enxerga 0x01
-#define REG_03         0xB8005        //Endereço real  5 0x05  o pico enxerga 0x02
-#define REG_04         0xB8007        //Endereço real  7 0x07  o pico enxerga 0x03
-#define CONFIG_REG     0xB8009        //Endereço real  9 0x09  o pico enxerga 0x04
-#define REG_06         0xB800b        //Endereço real 11 0x0b  o pico enxerga 0x05
-#define REG_07         0xB800d        //Endereço real 13 0x0d  o pico enxerga 0x06
-#define REG_08         0xB800f        //Endereço real 15 0x0f  o pico enxerga 0x07
-#define REG_09         0xB8011        //Endereço real 17 0x11  o pico enxerga 0x08
-#define REG_0A         0xB8013        //Endereço real 19 0x13  o pico enxerga 0x09
-#define REG_0B         0xB8015        //Endereço real 21 0x15  o pico enxerga 0x0A
-#define REG_0C         0xB8017        //Endereço real 23 0x17  o pico enxerga 0x0B
-#define REG_0D         0xB8019        //Endereço real 25 0x19  o pico enxerga 0x0C
-#define REG_0E         0xB801b        //Endereço real 27 0x1b  o pico enxerga 0x0D
-#define REG_0F         0xB801d        //Endereço real 29 0x1d  o pico enxerga 0x0E
-#define REG_10         0xB801f        //Endereço real 31 0x1f  o pico enxerga 0x0F
-#define REG_11         0xB8021        //Endereço real 33 0x21  o pico enxerga 0x10
-#define REG_12         0xB8023        //Endereço real 35 0x23  o pico enxerga 0x11
-#define REG_13         0xB8025        //Endereço real 37 0x25  o pico enxerga 0x12
-#define SET_MODE       0xB8027        //Endereço real 39 0x27  o pico enxerga 0x13 (0=Texto+Scroll, 1=Texto Fixo, 2=320x200, 3=640x200)
-#define SET_TXT_COLOR  0xB8029        //Endereço real 41 0x29  o pico enxerga 0x14
-#define CHANGE_CUR_POS 0xB802b        //Endereço real 43 0x2b  o pico enxerga 0x15
-#define REG_X_HIGH     0xB802d        //Endereço real 45 0x2d  o pico enxerga 0x16
-#define REG_X_LOW      0xB802f        //Endereço real 47 0x2f  o pico enxerga 0x17
-#define REG_Y_HIGH     0xB8031        //Endereço real 49 0x31  o pico enxerga 0x18
-#define REG_Y_LOW      0xB8033        //Endereço real 51 0x33  o pico enxerga 0x19
-#define CHANGE_BUFFER  0xB8035        //Endereço real 53 0x35  o pico enxerga 0x1A
-#define SELECT_SCREEN  0xB8037        //Endereço real 55 0x37  o pico enxerga 0x1B
-#define SET_HORIZONTAL 0xB8039        //Endereço real 57 0x39  o pico enxerga 0x1C
-#define SET_VERTICAL   0xB803b        //Endereço real 59 0x3b  o pico enxerga 0x1D
-#define RUN_CMD        0xB803d        //Endereço real 61 0x3d  o pico enxerga 0x1E
-#define CORINGA        0xB803f        //Endereço real 63 0x3f  o pico enxerga 0x1F
+#define WRITE_SCREEN   0xFF8001        //Endereço real  3 0x03  o pico enxerga 0x00
+#define REG_02         0xFF8003        //Endereço real  3 0x03  o pico enxerga 0x01
+#define REG_03         0xFF8005        //Endereço real  5 0x05  o pico enxerga 0x02
+#define REG_04         0xFF8007        //Endereço real  7 0x07  o pico enxerga 0x03
+#define CONFIG_REG     0xFF8009        //Endereço real  9 0x09  o pico enxerga 0x04
+#define REG_06         0xFF800B        //Endereço real 11 0x0b  o pico enxerga 0x05
+#define REG_07         0xFF800D        //Endereço real 13 0x0d  o pico enxerga 0x06
+#define REG_08         0xFF800F        //Endereço real 15 0x0f  o pico enxerga 0x07
+#define REG_09         0xFF8011        //Endereço real 17 0x11  o pico enxerga 0x08
+#define REG_0A         0xFF8013        //Endereço real 19 0x13  o pico enxerga 0x09
+#define REG_0B         0xFF8015        //Endereço real 21 0x15  o pico enxerga 0x0A
+#define REG_0C         0xFF8017        //Endereço real 23 0x17  o pico enxerga 0x0B
+#define REG_0D         0xFF8019        //Endereço real 25 0x19  o pico enxerga 0x0C
+#define REG_0E         0xFF801B        //Endereço real 27 0x1b  o pico enxerga 0x0D
+#define REG_0F         0xFF801D        //Endereço real 29 0x1d  o pico enxerga 0x0E
+#define REG_10         0xFF801F        //Endereço real 31 0x1f  o pico enxerga 0x0F
+#define REG_11         0xFF8021        //Endereço real 33 0x21  o pico enxerga 0x10
+#define REG_12         0xFF8023        //Endereço real 35 0x23  o pico enxerga 0x11
+#define REG_13         0xFF8025        //Endereço real 37 0x25  o pico enxerga 0x12
+#define SET_MODE       0xFF8027        //Endereço real 39 0x27  o pico enxerga 0x13 (0=Texto+Scroll, 1=Texto Fixo, 2=320x200, 3=640x200)
+#define SET_TXT_COLOR  0xFF8029        //Endereço real 41 0x29  o pico enxerga 0x14
+#define CHANGE_CUR_POS 0xFF802B        //Endereço real 43 0x2b  o pico enxerga 0x15
+#define REG_X_HIGH     0xFF802D        //Endereço real 45 0x2d  o pico enxerga 0x16
+#define REG_X_LOW      0xFF802F        //Endereço real 47 0x2f  o pico enxerga 0x17
+#define REG_Y_HIGH     0xFF8031        //Endereço real 49 0x31  o pico enxerga 0x18
+#define REG_Y_LOW      0xFF8033        //Endereço real 51 0x33  o pico enxerga 0x19
+#define CHANGE_BUFFER  0xFF8035        //Endereço real 53 0x35  o pico enxerga 0x1A
+#define SELECT_SCREEN  0xFF8037        //Endereço real 55 0x37  o pico enxerga 0x1B
+#define SET_HORIZONTAL 0xFF8039        //Endereço real 57 0x39  o pico enxerga 0x1C
+#define SET_VERTICAL   0xFF803B        //Endereço real 59 0x3b  o pico enxerga 0x1D
+#define RUN_CMD        0xFF803D        //Endereço real 61 0x3d  o pico enxerga 0x1E
+#define CORINGA        0xFF803F        //Endereço real 63 0x3f  o pico enxerga 0x1F
 
 
 
