@@ -190,11 +190,10 @@ void video_welcome_screen(){
     if ( video_mode < MODE_TEXT_80_S){
         vga->printString("Copyright (C) 2026 pdsilva(aka pgordao).\nV1.0 Vpico2vga312k\n");
     }else{
-        vga->printString("Copyright (C) 2026 pdsilva(aka pgordao).V1.0 Vpico2vga312k\n");
+        vga->printString("Copyright (C) 2026 pdsilva(aka pgordao).V1.0 Vpico2vga312k -2620\n");
     }
-    vga->setTextCursorPos(0,5);
+    vga->setTextCursorPos(0,4);
     vga->setTextColor(GREEN, BLACK);
-    vga->printString("Loading Operating system loader...\n");
 }
 
 int verify_start() {
@@ -212,26 +211,28 @@ int main(){
     // set the clock
     set_sys_clock_khz(300000, true);
 
+    // start bus read
+    initReadBus_Pio();
+
     // start the serial i/o
     stdio_init_all() ;
     //verify what start type is
-    verify_start();
+//    verify_start();
     // Start i2c bus
-    pico_i2c_init();
-    // start bus read
-    initReadBus_Pio();
+//    pico_i2c_init();
   
     // Verify if memory exists in the bus
-    eeprom_ping();
+//    eeprom_ping();
     // load configuration
-    eeprom_load_config(&vga_nvc_config);  set_sys_clock_khz(150000, true);
-    if( is_coldstart ){
+//    eeprom_load_config(&vga_nvc_config);  
+    set_sys_clock_khz(150000, true);
+//    if( is_coldstart ){
       vga = create_screen( MODE_TEXT_80_S ); //, 0, 0, font );
       video_mode = MODE_TEXT_80_S;
-    }else{
-        vga = create_screen(vga_nvc_config.video_mode ); //, 0, 0, font );
-        video_mode = vga_nvc_config.video_mode;
-    }      
+//    }else{
+//        vga = create_screen(vga_nvc_config.video_mode ); //, 0, 0, font );
+//        video_mode = vga_nvc_config.video_mode;
+//    }      
       
 
     drawHLine(0,48,640,YELLOW);
@@ -240,24 +241,6 @@ int main(){
     drawHLine(0,51,640,YELLOW);
 
     video_welcome_screen();
-    // Show eeprom status
-//    print_mem_status();
-    //void i2c_scanner();
-/*
-    uint8_t byte = eeprom_read_byte(0);
-    vga->printString1("byte_0 = ",byte);
-    byte = eeprom_read_byte(1);
-    vga->printString1("byte_1 = ",byte);
-    byte = eeprom_read_byte(2);
-    vga->printString1("byte_2 = ",byte);
-    byte = eeprom_read_byte(3);
-    vga->printString1("byte_3 = ",byte);
-    byte = eeprom_read_byte(4);
-    vga->printString1("byte_4 = ",byte);
-    byte = eeprom_read_byte(5);
-    vga->printString1("byte_5 = ",byte);
-*/
-//    dump(0,64);
 
   // === config threads ========================
   // for core 0

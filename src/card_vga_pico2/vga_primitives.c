@@ -258,8 +258,33 @@ void drawChar(uint8_t c, color_t color, color_t bg, uint8_t size) {
 void tft_write(uint8_t c){
   vga_text_private_t* priv = (vga_text_private_t*)vga->_private;
 
+  switch(c){
+    case 0x0A:  // \n
+              priv->cursor->y += priv->font.height;
+    case 0x0D:  // \r
+              priv->cursor->x  = 0;
+              break;
+    case 0x09:  // \t
+              int new_x = priv->cursor->x + priv->tabspace;
+              if (new_x < priv->width){
+                  priv->cursor->x = new_x;
+              }
+              break;
+    default:
+              drawChar( c, priv->textcolor, priv->textbgcolor, priv->font.size);
+              //priv->cursor->x += priv->font.size*priv->font.width;
+              priv->cursor->x += priv->font.width;  //multiply last so much time
+
+              if(priv->cursor->x >= priv->width ) {
+                priv->cursor->y += priv->font.height;
+                priv->cursor->x = 0;
+              }
+  }
+  if( priv->cursor->y >= priv->height ){
+    clrscr();
+  }
+/*
   if (c == '\n') {
-//    priv->cursor->y += priv->font.size*8;
     priv->cursor->y += priv->font.height;
     priv->cursor->x  = 0;
   } else if (c == '\r') {
@@ -280,6 +305,10 @@ void tft_write(uint8_t c){
     }
  
   }
+  if( priv->cursor->y >= 480 ){
+    clrscr();
+  }
+  */
 }
 
 void put_cursor(uint8_t c){

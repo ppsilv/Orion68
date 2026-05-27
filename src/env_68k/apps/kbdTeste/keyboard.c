@@ -28,8 +28,8 @@
 unsigned char shift_status = 0;
 unsigned char ctrl_status = 0;
 unsigned char alt_status = 0;
-unsigned char modifier = 0;
-unsigned char _CapsFlag = 0;
+static volatile unsigned char modifier = 0;
+static volatile unsigned char _CapsFlag = 0;
 
 unsigned char key_buffer[12];
 unsigned char key_bufferA[12];
@@ -82,10 +82,11 @@ static void init_uart()
 unsigned char read_kbd()
 {
     volatile unsigned char *uart_reg = (volatile unsigned char *)UART_KEYBOARD;
-
-    while (!(*(uart_reg + LSR) & 0x01))
-        ;
-    return (unsigned char)*(uart_reg + RHR);
+    unsigned char ch;
+    while (!(*(uart_reg + LSR) & 0x01)) ;
+    ch = (unsigned char)*(uart_reg + RHR);
+   // printf("%02x ",ch);
+    return ch;
 }
 unsigned char uart_read()
 {
@@ -198,8 +199,8 @@ unsigned char get_packet()
 
         // 3. Lê o Comando (Pelo seu dump, pode vir 0x88, 0x87 ou 0x81)
         cmd = read_kbd(); // *(uart_reg + RHR);
-         if ( cmd != 0x82)
-             printf("cmd %02x\n",cmd);
+        // if ( cmd != 0x82)
+        //     printf("cmd %02x\n",cmd);
 
         if (cmd == 0x81)        {
             get_0x81();
@@ -276,20 +277,28 @@ void init_kbd(){
 
 unsigned char get_key(){
     unsigned char ch;
-    printf("Lendo pacotes\n");
-    return 0;
-    get_packet();
-    // if (key_bufferA[4] >= 0x20){
-    ch = get_kbd_key(modifier, key_bufferA[4]);
-    if (ch == 0x1b)
-        reset_por_software();
-    if (ch >= 0x20)    {
-        // printf("%c",ch);
-        mymemset((void *)key_bufferA, 0, sizeof(key_bufferA));
-        mymemset((void *)key_bufferB, 0, sizeof(key_bufferB));
-    }
-    if (_CapsFlag == 0)    {
-        modifier = 0;
+    while (1)    {
+        get_packet();
+        ch = get_kbd_key(modifier, key_bufferA[4]);
+        if ( ch >= 0x20 ){
+            return ch;
+        }else if( (ch == 0x0A) || (ch == 0x0D)){ 
+            ch = 0x0A;
+            printf("%c",ch);
+            ch = 0x0D;
+            printf("%c",ch);
+        }
+        else{
+            //printf("[%02X] ",ch);
+        }
+        if (ch == 0x1b)
+            //reset_por_software();
+            return 0;
+        if (ch >= 0x20)        {
+            // printf("%c",ch);
+            mymemset((void *)key_bufferA, 0, sizeof(key_bufferA));
+            mymemset((void *)key_bufferB, 0, sizeof(key_bufferB));
+        }
     }
     return ch;
 }
@@ -306,17 +315,25 @@ void main1()
 
     while (1)    {
         get_packet();
-        // if (key_bufferA[4] >= 0x20){
         ch = get_kbd_key(modifier, key_bufferA[4]);
+        if ( ch >= 0x20 ){
+            printf("%c",ch);
+        }else if( (ch == 0x0A) || (ch == 0x0D)){ 
+            ch = 0x0A;
+            printf("%c",ch);
+            ch = 0x0D;
+            printf("%c",ch);
+        }
+        else{
+            //printf("[%02X] ",ch);
+        }
         if (ch == 0x1b)
-            reset_por_software();
+            //reset_por_software();
+            return;
         if (ch >= 0x20)        {
             // printf("%c",ch);
             mymemset((void *)key_bufferA, 0, sizeof(key_bufferA));
             mymemset((void *)key_bufferB, 0, sizeof(key_bufferB));
-        }
-        if (_CapsFlag == 0)        {
-            modifier = 0;
         }
     }
 }

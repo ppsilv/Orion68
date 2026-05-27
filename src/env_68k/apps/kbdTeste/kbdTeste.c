@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <mc68000.h>
 
-
+unsigned char kled=0;
 
 void delay(unsigned int time) {
     for (volatile unsigned int i = 0; i < time; i++);
@@ -17,16 +17,22 @@ void check_stack(void) {
     );
     printf("Stack pointer: 0x%08X\n", stack_val);
 }
-
+void aguarda(){
+    printf("Pressione q/q tecla para sair.\n");
+    getchar();
+}
 unsigned char get_key();
 void init_kbd();
 void main1();
+void set_keyboard_leds(unsigned char led_status);
 void show_menu(){
     int choice;
     unsigned char ch;
     choice = 'A';
     while (choice != 1000){
         printf("\n1 - getkey from keyboard\n");
+        printf("2 - chama main e trava na main\n");
+        printf("3 - Setando leds do teclado\n");
         printf("0 - sai do programa\n");
         printf("\nEscolha: ");
         choice = getchar();
@@ -36,10 +42,22 @@ void show_menu(){
                 printf("Getting a keyboard key\n");
                 ch = get_key();
                 printf("Key [%c] ",ch);
+                aguarda();
                 break;
             case '2':
                 main1();
                 break;
+            case '3':
+                printf("Setando leds do teclado\n");
+                if( kled == 0 ){
+                    set_keyboard_leds(2);
+                    kled = 1;
+                }else if( kled == 1 ){
+                    set_keyboard_leds(0);
+                    kled = 0;
+                }
+                aguarda();
+                break;    
             case '0':
                 return;
 
