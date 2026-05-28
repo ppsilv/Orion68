@@ -2,33 +2,22 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mc68000.h>
+#include "keyboard.h"
 
 // 🛠️🇧🇷
 
-#define UART_KEYBOARD 0xFF4100
-
-#define RHR 1  // receive holding register (read)
-#define THR 1  // transmit holding register (write)
-#define IER 3  // interrupt enable register
-#define ISR 5  // interrupt status register (read)
-#define FCR 5  // FIFO control register (write)
-#define LCR 7  // line control register
-#define MCR 8  // modem control register
-#define LSR 11 // line status register
-#define MSR 13 // modem status register
-#define SPR 15 // scratchpad register (reserved for system use)
-#define DLL 1  // divisor latch LSB
-#define DLM 3  // divisor latch MSB
-// aliases for register names (used by different manufacturers)cd ..
-#define RBR RHR // receive buffer register
-#define IIR ISR // interrupt identification register
-#define SCR SPR // scratch register
 
 
 unsigned char shift_status = 0;
 unsigned char ctrl_status = 0;
 unsigned char alt_status = 0;
-static volatile unsigned char modifier = 0;
+
+
+static volatile unsigned char mod_ctrl = 0;
+static volatile unsigned char mod_shift = 0;
+static volatile unsigned char mod_caps = 0;
+static volatile unsigned char mod_alt = 0;
+static volatile unsigned char mod_altgr = 0;
 static volatile unsigned char _CapsFlag = 0;
 
 unsigned char key_buffer[12];
@@ -45,8 +34,7 @@ void set_keyboard_leds(unsigned char led_status);
 //        ;
 //}
 
-#define BAUD_DIV_L 0x08 //(BAUD_DIV&$FF)
-#define BAUD_DIV_U 0x00 //((BAUD_DIV>>8)&$FF)
+
 
 void *mymemset(void *dest, int ch, unsigned int count)
 {
@@ -147,40 +135,57 @@ void get_0x87()
         read_kbd();
     }
 }
-void get_0x88()
+unsigned char get_0x88()
 {
     unsigned char size = read_kbd();
     // Não se esqueça eu lia hardcoded de 0 a 12
     // agora com size já sendo lido tenho que começar da posição 1
     // pois o codigo espera os comandos nas posições A=4 e B=2
     for (int i = 1; i < size; i++)    {
-        if (new_packet == 0)        {
-            key_bufferA[i] = read_kbd(); //*(uart_reg + RHR);
-        }
-        else        {
-            key_bufferB[i] = read_kbd(); //*(uart_reg + RHR);
-        }
+        key_bufferA[i] = read_kbd(); //*(uart_reg + RHR);
     }
-    if (new_packet == 0)    {
-        new_packet = 1;
-        if (key_bufferA[2] == 0x02)        {
-            modifier = 2;
-        }
-        if (key_bufferA[4] == 0x39)        {
-            if (_CapsFlag == 0)            {
-                modifier = 2;
-                set_keyboard_leds(modifier);
-                _CapsFlag = 1;
-            }
-            else            {
-                modifier = 0;
-                set_keyboard_leds(modifier);
-                _CapsFlag = 0;
-            }
-        }
-        // printf("key_bufferA[4] [%02x] - ",key_bufferA[4]);
-        // printf("key_bufferA[2] [%02x]\n",key_bufferA[2]);
+    if (key_bufferA[2] == 0x0 && key_bufferA[4] == 0x0) /*normal*/       {
+        //Esse if é executado em todo key up
+        mod_ctrl = 0;
+        mod_shift = 0;
+        mod_alt = 0;
+        mod_altgr = 0;
+        //printf("1-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_bufferA[2],key_bufferA[4]);
+        return NO_KEY;
     }
+    if (key_bufferA[2] == 0x01 || key_bufferA[2] == 0x10) /*control*/       {
+        mod_ctrl = 1;
+        //printf("2-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_bufferA[2],key_bufferA[4]);
+        return KEY_CTRL;
+    }
+    if (key_bufferA[2] == 0x02 || key_bufferA[2] == 0x20) /*shift*/       {
+        mod_shift = 2;
+        //printf("3-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_bufferA[2],key_bufferA[4]);
+        return KEY_SHIFT;
+    }
+    if (key_bufferA[2] == 0x04 ) /*Alt*/       {
+        mod_alt = 1;
+        //printf("4-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_bufferA[2],key_bufferA[4]);
+        return KEY_ALT;
+    }        
+    if (key_bufferA[2] == 0x40) /*Altgr*/       {
+        mod_altgr = 1;
+        //printf("5-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_bufferA[2],key_bufferA[4]);
+        return KEY_ALTGR;
+    }        
+    if (key_bufferA[4] == 0x39) /*capslock*/       {
+        if (mod_caps == 0)            {
+            mod_caps = 2;
+            set_keyboard_leds(mod_caps);
+        }
+        else            {
+            mod_caps = 0;
+            set_keyboard_leds(mod_caps);
+        }
+        //printf("6-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_bufferA[2],key_bufferA[4]);
+        return KEY_CAPS;
+    }
+    return VALID_KEY;
 }
 unsigned char get_packet()
 {
@@ -204,14 +209,16 @@ unsigned char get_packet()
 
         if (cmd == 0x81)        {
             get_0x81();
+            continue;
         }
         if (cmd == 0x82)
             continue;
         if (cmd == 0x87)        {
             get_0x87();
+            continue;
         }
         if (cmd == 0x88)        {
-            get_0x88();
+            return get_0x88();
         }
         if (new_packet == 1)        {
             /*
@@ -228,9 +235,10 @@ unsigned char get_packet()
                 printf("\n");
             }
             */
-            return 0;
+            return NO_KEY;
         }
     }
+    return NO_KEY;
 }
 void set_keyboard_leds(unsigned char led_status)
 {
@@ -262,7 +270,7 @@ void set_keyboard_leds(unsigned char led_status)
         *(uart_reg + THR) = buf[i];
     }
 }
-unsigned char get_kbd_key(char mod, unsigned char code);
+unsigned char get_kbd_key(unsigned char code);
 
 void reset_por_software(){
     __asm__ __volatile__(
@@ -275,33 +283,6 @@ void init_kbd(){
     init_uart();
 }
 
-unsigned char get_key(){
-    unsigned char ch;
-    while (1)    {
-        get_packet();
-        ch = get_kbd_key(modifier, key_bufferA[4]);
-        if ( ch >= 0x20 ){
-            return ch;
-        }else if( (ch == 0x0A) || (ch == 0x0D)){ 
-            ch = 0x0A;
-            printf("%c",ch);
-            ch = 0x0D;
-            printf("%c",ch);
-        }
-        else{
-            //printf("[%02X] ",ch);
-        }
-        if (ch == 0x1b)
-            //reset_por_software();
-            return 0;
-        if (ch >= 0x20)        {
-            // printf("%c",ch);
-            mymemset((void *)key_bufferA, 0, sizeof(key_bufferA));
-            mymemset((void *)key_bufferB, 0, sizeof(key_bufferB));
-        }
-    }
-    return ch;
-}
 
 void main1()
 {
@@ -314,8 +295,10 @@ void main1()
     // set_keyboard_leds(0x02);
 
     while (1)    {
-        get_packet();
-        ch = get_kbd_key(modifier, key_bufferA[4]);
+        if ( get_packet() == NO_KEY )
+            continue;
+        ch = get_kbd_key(key_bufferA[4]);
+        mymemset((void *)key_bufferA, 0, sizeof(key_bufferA));
         if ( ch >= 0x20 ){
             printf("%c",ch);
         }else if( (ch == 0x0A) || (ch == 0x0D)){ 
@@ -324,136 +307,65 @@ void main1()
             ch = 0x0D;
             printf("%c",ch);
         }
-        else{
-            //printf("[%02X] ",ch);
-        }
         if (ch == 0x1b)
-            //reset_por_software();
             return;
-        if (ch >= 0x20)        {
-            // printf("%c",ch);
-            mymemset((void *)key_bufferA, 0, sizeof(key_bufferA));
-            mymemset((void *)key_bufferB, 0, sizeof(key_bufferB));
-        }
     }
 }
 
-/*
-Esse código está enviando um comando de inicialização
-crucial para mudar o comportamento interno do CH9350:
-ele está tirando o chip do modo padrão e forçando-o a
-entrar no Modo Transparente (ou Modo de Transmissão
-Direta).Analisando a estrutura do array cmd[] =
-{0x57, 0xAB, 0x01, 0x00, 0x01}, o que cada byte faz
-de acordo com o protocolo do CH9350 é o seguinte:0x57
-0xAB $\rightarrow$ É o cabeçalho de sincronismo
-obrigatório que você já conhece.0x01 $\rightarrow$ É
-o código do comando para "Definir Modo de Trabalho"
-(Set Work Mode).0x00 $\rightarrow$ É o parâmetro do
-modo. O valor 0x00 configura o chip para o Modo
-Transparente USB HID.0x01 $\rightarrow$ É o Checksum
-desse pacote (pulando o cabeçalho, a soma de 0x01 +
-0x00 é igual a 0x01).O que esse modo muda no seu
-Orion68K?Por padrão de fábrica, o CH9350 tenta ser
-"esperto": ele tenta decodificar os relatórios USB
-HID do teclado internamente e enviar apenas dados
-mastigados na serial.Quando você envia esse comando e
-ativa o Modo Transparente (0x00):Desativa o Filtro
-Interno: Você está dizendo para o chip: "Não tente
-processar ou filtrar nada por conta própria. Tudo o
-que o teclado USB mandar, repasse bruto para a minha
-serial".Explica o tamanho dos pacotes: É exatamente
-por causa desse comando que o comportamento do chip
-mudou e ele começou a te enviar aqueles pacotes longos
-de 12 bytes em vez de apenas o scancode puro! No modo
-transparente, ele encapsula o relatório USB HID inteiro
-do teclado (que tem 8 bytes) dentro do frame serial
-dele (adicionando os bytes de status, tamanho,
-sequenciador e o checksum de rodapé que você descobriu).
-*/
-void set_transparent_mode()
-{
-    volatile unsigned char *uart_reg = (volatile unsigned char *)UART_KEYBOARD;
-    // Array com o comando completo: Header(57 AB), Cmd(01), Param(00), Checksum(01)
-    unsigned char cmd[] = {0x57, 0xAB, 0x01, 0x00, 0x01};
-    for (int i = 0; i < 5; i++)    {
-        while (!(uart_reg[LSR] & 0x20))            ;
-        uart_reg[THR] = cmd[i];
-    }
-}
 
-unsigned char get_kbd_key(char mod, unsigned char code)
+unsigned char get_kbd_key(unsigned char code)
 {
     unsigned char RetKey = 0; // default is 0 (No key pressed)
 
-//                                      0     1    2    3    4    5    6    7    8    9   10   11  12   13   14   15
-    unsigned char OE_BASE_KEYMAP[] = {0x00, 0x00, 0x00, 0x00, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',              // 0x
-                                      'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1', '2',                  // 1x
-                                      '3', '4', '5', '6', '7', '8', '9', '0', 0x0D, 0x1B, 0x08, 0x09, ' ', '-', '=', '[',              // 2x  ENTER, ESC, BACKSPACE, TAB
-                                      ']', '\\', 0xFF, ';', '\'', '`', ',', '.', '/', 0x02, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6,        // 3x  CAPS = 2, F0-F6
-                                      0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0x1F, 0xF0, 0xFE, 0x18, 0x14, 0x15, 0x7F, 0x17, 0x16, 0x13,  // 4x F7-F12, PrintScreen, ScrollLock, Pause, Insert, Home, PageUp, DelFwd,End, PageDown, Rightarrow
-                                      0x12, 0x11, 0x10, 0x05, '/', '*', '-', '+', 0x0D, '1', '2', '3', '4', '5', '6', '7',             // 5x Left, Down, Up, NumLock, Keypad Symbols
-                                      '8', '9', '0', '.', 0xFF, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,      // 6x Unknown, Application, Not used symbols
-                                      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; // 7x Not used symbols
-
-    unsigned char OE_SHIFT_KEYMAP[] = {0x00, 0x00, 0x00, 0x00, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',              // 0x
-                                       'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '!', '@',                  // 1x
-                                       '#', '$', '%', '^', '&', '*', '(', ')', 0x0D, 0x1B, 0x08, 0x09, ' ', '_', '+', '{',              // 2x  Shift-ENTER, ESC, BACKSPACE, TAB, Shift-Space
-                                       '}', '|', 0xFF, ':', '"', '~', '<', '>', '?', 0x02, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6,          // 3x  CAPS = 2, F0-F6
-                                       0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0x1F, 0xF0, 0xFE, 0x18, 0x14, 0x15, 0x7F, 0x17, 0x16, 0x13,  // 4x  F7-F12, PrintScreen, ScrollLock, Pause, Insert, Home, PageUp, DelFwd,End, PageDown, Rightarrow
-                                       0x12, 0x11, 0x10, 0x05, '/', '*', '-', '+', 0x0D, '1', '2', '3', '4', '5', '6', '7',             // 5x  Left, Down, Up, NumLock, Keypad Symbols
-                                       '8', '9', '0', '.', 0xFF, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,      // 6x  Unknown, Application, Not used symbols
-                                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; // 7x  Not used symbols
-
-    unsigned char OE_CTRL_KEYMAP[] = {0x00, 0x00, 0x00, 0x00, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xAB, 0xAC,  // 0x
-                                      0xAD, 0xAE, 0xAF, 0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xE1, 0xE2,  // 1x
-                                      0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xE0, 0x0F, 0x00, 0x08, 0x00, ' ', 0x00, 0x00, 0x00,   // 2x  CTRL-ENTER, --, BACKSPACE, Space
-                                      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6,  // 3x  F0-F6
-                                      0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13,  // 4x  F7-F12 / Rightarrow
-                                      0x12, 0x11, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 5x  Left, Down, Up, NumLock, Keypad Symbols
-                                      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 6x
-                                      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; // 7x
-
-    unsigned char OE_ALT_KEYMAP[] = {0x00, 0x00, 0x00, 0x00, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC,  // 0x
-                                     0xCD, 0xCE, 0xCF, 0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xBC, 0xBD,  // 1x
-                                     0xBE, 0xBF, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF, 0xBB, 0x0D, 0x00, 0x08, 0x00, ' ', 0x00, 0x00, 0x00,   // 2x  ENTER, --, BACKSPACE, Space
-                                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6,  // 3x  F0-F6
-                                     0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13,  // 4x  F7-F12 / Rightarrow
-                                     0x12, 0x11, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 5x  Left, Down, Up, NumLock, Keypad Symbols
-                                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 6x
-                                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; // 7x
-
-    unsigned char OE_ALTGR_KEYMAP[] = {0x00, 0x00, 0x00, 0x00, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C,  // 0x
-                                       0x8D, 0x8E, 0x8F, 0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0x9C, 0x9D,  // 1x
-                                       0x9E, 0x9F, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0x9B, 0x0D, 0x00, 0x08, 0x00, ' ', 0x00, 0x00, 0x00,   // 2x  ENTER, --, BACKSPACE, Space
-                                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6,  // 3x  F0-F6
-                                       0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x13,  // 4x  F7-F12 / Rightarrow
-                                       0x12, 0x11, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 5x  Left, Down, Up, NumLock, Keypad Symbols
-                                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  // 6x
-                                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; // 7x
-
-    if (mod == 0x00)    { // No modifier
+    if (mod_shift == 0x00 && mod_caps == 0x00)    { // No modifier
         RetKey = OE_BASE_KEYMAP[code];
-        if (_CapsFlag == 2)        {
-            if ((RetKey >= 'a') && (RetKey <= 'z'))
-                RetKey = RetKey - 32;
-        }
     }
-    if ((mod == 0x02) || (mod == 0x20))    { // Left & Right Shift modifier
-        RetKey = OE_SHIFT_KEYMAP[code];
-        if (_CapsFlag == 2)       {
-            if ((RetKey >= 'A') && (RetKey <= 'Z'))
-                RetKey = RetKey + 32;
-        }
+    if (mod_shift == 0x02) { // Left & Right Shift modifier
+        if (mod_caps == 2)
+            RetKey = OE_BASE_KEYMAP[code];
+        else    
+            RetKey = OE_SHIFT_KEYMAP[code];
+        return RetKey;    
     }
-    if ((mod == 0x01) || (mod == 0x10))    { // Left & Right CTRL modifier
+    if ((mod_ctrl == 0x01) || (mod_ctrl == 0x10))    { // CTRL modifier
         RetKey = OE_CTRL_KEYMAP[code];
     }
-    if (mod == 0x04)    { // Left ALT modifier
+    if (mod_alt == 0x04)    { // Left ALT modifier
         RetKey = OE_ALT_KEYMAP[code];
     }
-    if (mod == 0x40)    { // Right ALT (ALT GR) modifier
+    if (mod_altgr == 0x40)    { // Right ALT (ALT GR) modifier
         RetKey = OE_ALTGR_KEYMAP[code];
     }
+    if (mod_caps) { // Left & Right Shift modifier
+        RetKey = OE_SHIFT_KEYMAP[code];
+    }
     return RetKey;
+}
+
+
+
+
+unsigned char get_key(){
+    unsigned char ch;
+    return 'Z';
+    while (1)    {
+        if ( get_packet() == NO_KEY )
+            continue;
+        ch = get_kbd_key(key_bufferA[4]);
+        mymemset((void *)key_bufferA, 0, sizeof(key_bufferA));
+        mymemset((void *)key_bufferB, 0, sizeof(key_bufferB));
+        if ( ch >= 0x20 ){
+            return ch;
+        }else if( (ch == 0x0A) || (ch == 0x0D)){ 
+            ch = 0x0A;
+            printf("%c",ch);
+            ch = 0x0D;
+            printf("%c",ch);
+        }
+        else if (ch == 0x1b){
+            //reset_por_software();
+            return 0;
+        }
+    }
+    return ch;
 }
