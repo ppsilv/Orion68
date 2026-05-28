@@ -21,20 +21,10 @@ static volatile unsigned char mod_altgr = 0;
 static volatile unsigned char _CapsFlag = 0;
 
 unsigned char key_buffer[12];
-unsigned char key_bufferA[12];
-unsigned char key_bufferB[12];
 unsigned char cmd, length, type, new_packet = 0;
 
 unsigned char get_keypress();
 void set_keyboard_leds(unsigned char led_status);
-
-//void delay(unsigned int time)
-//{
-//    for (volatile unsigned int i = 0; i < time; i++)
-//        ;
-//}
-
-
 
 void *mymemset(void *dest, int ch, unsigned int count)
 {
@@ -142,9 +132,9 @@ unsigned char get_0x88()
     // agora com size já sendo lido tenho que começar da posição 1
     // pois o codigo espera os comandos nas posições A=4 e B=2
     for (int i = 1; i < size; i++)    {
-        key_bufferA[i] = read_kbd(); //*(uart_reg + RHR);
+        key_buffer[i] = read_kbd(); //*(uart_reg + RHR);
     }
-    if (key_bufferA[2] == 0x0 && key_bufferA[4] == 0x0) /*normal*/       {
+    if (key_buffer[2] == 0x0 && key_buffer[4] == 0x0) /*normal*/       {
         //Esse if é executado em todo key up
         mod_ctrl = 0;
         mod_shift = 0;
@@ -153,27 +143,27 @@ unsigned char get_0x88()
         //printf("1-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_bufferA[2],key_bufferA[4]);
         return NO_KEY;
     }
-    if (key_bufferA[2] == 0x01 || key_bufferA[2] == 0x10) /*control*/       {
+    if (key_buffer[2] == 0x01 || key_buffer[2] == 0x10) /*control*/       {
         mod_ctrl = 1;
         //printf("2-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_bufferA[2],key_bufferA[4]);
         return KEY_CTRL;
     }
-    if (key_bufferA[2] == 0x02 || key_bufferA[2] == 0x20) /*shift*/       {
+    if (key_buffer[2] == 0x02 || key_buffer[2] == 0x20) /*shift*/       {
         mod_shift = 2;
         //printf("3-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_bufferA[2],key_bufferA[4]);
         return KEY_SHIFT;
     }
-    if (key_bufferA[2] == 0x04 ) /*Alt*/       {
+    if (key_buffer[2] == 0x04 ) /*Alt*/       {
         mod_alt = 1;
         //printf("4-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_bufferA[2],key_bufferA[4]);
         return KEY_ALT;
     }        
-    if (key_bufferA[2] == 0x40) /*Altgr*/       {
+    if (key_buffer[2] == 0x40) /*Altgr*/       {
         mod_altgr = 1;
         //printf("5-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_bufferA[2],key_bufferA[4]);
         return KEY_ALTGR;
     }        
-    if (key_bufferA[4] == 0x39) /*capslock*/       {
+    if (key_buffer[4] == 0x39) /*capslock*/       {
         if (mod_caps == 0)            {
             mod_caps = 2;
             set_keyboard_leds(mod_caps);
@@ -287,18 +277,12 @@ void init_kbd(){
 void main1()
 {
     unsigned char ch;
-    init_uart();
-    // set_transparent_mode();
-    // printf("Desligando led...");
-    delay(0x8FF);
-    // printf("\nOrion68K Online. Digite algo:\n");
-    // set_keyboard_leds(0x02);
 
     while (1)    {
         if ( get_packet() == NO_KEY )
             continue;
-        ch = get_kbd_key(key_bufferA[4]);
-        mymemset((void *)key_bufferA, 0, sizeof(key_bufferA));
+        ch = get_kbd_key(key_buffer[4]);
+        mymemset((void *)key_buffer, 0, sizeof(key_buffer));
         if ( ch >= 0x20 ){
             printf("%c",ch);
         }else if( (ch == 0x0A) || (ch == 0x0D)){ 
@@ -347,25 +331,19 @@ unsigned char get_kbd_key(unsigned char code)
 
 unsigned char get_key(){
     unsigned char ch;
-    return 'Z';
-    while (1)    {
-        if ( get_packet() == NO_KEY )
-            continue;
-        ch = get_kbd_key(key_bufferA[4]);
-        mymemset((void *)key_bufferA, 0, sizeof(key_bufferA));
-        mymemset((void *)key_bufferB, 0, sizeof(key_bufferB));
-        if ( ch >= 0x20 ){
-            return ch;
-        }else if( (ch == 0x0A) || (ch == 0x0D)){ 
-            ch = 0x0A;
-            printf("%c",ch);
-            ch = 0x0D;
-            printf("%c",ch);
-        }
-        else if (ch == 0x1b){
-            //reset_por_software();
-            return 0;
-        }
+
+
+    if ( get_packet() == NO_KEY )
+        return 0;
+    ch = get_kbd_key(key_buffer[4]);
+    mymemset((void *)key_buffer, 0, sizeof(key_buffer));
+    if( (ch == 0x0A) || (ch == 0x0D)){ 
+        ch = 0x0A;
+        printf("%c",ch);
+        ch = 0x0D;
+        printf("%c",ch);
+        return 0;
     }
+
     return ch;
 }

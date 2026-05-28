@@ -40,8 +40,13 @@ void show_menu(){
         switch(choice){
             case '1':
                 printf("Getting a keyboard key\n");
-                ch = get_key();
-                printf("Key [%c] ",ch);
+                while(1){
+                    ch = get_key();
+                    if( ch == 0x1B )
+                        break;
+                    if( ch >= 0x20)    
+                        printf("%c",ch);
+                }
                 aguarda();
                 break;
             case '2':
@@ -58,6 +63,9 @@ void show_menu(){
                 }
                 aguarda();
                 break;    
+            case '4':
+                init_kbd();
+                break    ;            
             case '0':
                 return;
 
