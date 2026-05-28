@@ -27,9 +27,9 @@
 #define VALID_KEY   0xFE
 #define KEY_CTRL    0x01
 #define KEY_SHIFT   0x02
-#define KEY_ALT     0x03
-#define KEY_ALTGR   0x04
-#define KEY_CAPS    0x05
+#define KEY_ALT     0x04
+#define KEY_ALTGR   0x08
+#define KEY_CAPS    0x10
 
 unsigned char OE_BASE_KEYMAP[] = {0x00, 0x00, 0x00, 0x00, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',              // 0x
                                     'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1', '2',                  // 1x

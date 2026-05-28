@@ -21,13 +21,13 @@ void aguarda(){
     printf("Pressione q/q tecla para sair.\n");
     getchar();
 }
-unsigned char get_key();
+unsigned int get_key();
 void init_kbd();
 void main1();
 void set_keyboard_leds(unsigned char led_status);
 void show_menu(){
     int choice;
-    unsigned char ch;
+    unsigned int ch;
     choice = 'A';
     while (choice != 1000){
         printf("\n1 - getkey from keyboard\n");
@@ -43,14 +43,18 @@ void show_menu(){
                 while(1){
                     ch = get_key();
                     if( ch == 0x1B )
-                        break;
-                    if( ch >= 0x20)    
+                        break;                            
+                    if( ch > 0xFF){
+                        printf("[%02X]",ch);
+                    }else{  
+                        if( ch > 0x20 )  
                         printf("%c",ch);
+                    }
                 }
                 aguarda();
                 break;
             case '2':
-                main1();
+                //main1();
                 break;
             case '3':
                 printf("Setando leds do teclado\n");
