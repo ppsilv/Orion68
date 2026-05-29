@@ -360,9 +360,9 @@ subLoop:
         JSR     WriteConout
 
         CMP.B   #'1',D0
-        BEQ.S   TmpReadPacketKbd
+        BEQ.S   TmpReadKbd
         CMP.B   #'2',D0
-        BEQ.S   TmpDumpPayloadHex
+        BEQ.S   PgmKbd
         CMP.B   #'3',D0
         BEQ     Xmodem
         CMP.B   #'4',D0
@@ -386,12 +386,15 @@ MemDump0:
         JSR     MemDump
         JMP     subLoop        
 ;2
-TmpDumpPayloadHex:
-        JSR     DumpPayloadHex
-        JMP     subLoop
+PgmKbd:
+        JMP     $8000.L
+        JMP     subLoop        
 ;3
-TmpReadPacketKbd:
-        JSR     ReadPacketKbd
+TmpReadKbd:
+        JSR     $83E8.L
+        JSR     WriteConout
+        CMP.B   #$42,D0
+        BNE     TmpReadKbd
         JMP     subLoop
 ;4 Testa trap 1
 RunTrap1:

@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <mc68000.h>
 
-unsigned char kled=0;
-
+//unsigned int get_key();
+//void init_kbd();
+/*
 void delay(unsigned int time) {
     for (volatile unsigned int i = 0; i < time; i++);
 }
@@ -17,12 +18,13 @@ void check_stack(void) {
     );
     printf("Stack pointer: 0x%08X\n", stack_val);
 }
+*/
+/*
 void aguarda(){
     printf("Pressione q/q tecla para sair.\n");
     getchar();
 }
-unsigned int get_key();
-void init_kbd();
+
 void main1();
 void set_keyboard_leds(unsigned char led_status);
 void show_menu(){
@@ -71,21 +73,27 @@ void show_menu(){
                 init_kbd();
                 break    ;            
             case '0':
-                return;
+                jmp_subloop();
 
                 break;
         }
     }
 }
-
-
+*/
+/*
+void jmp_subloop(){
+    __asm__ __volatile__(
+        "jmp 0x0000128C.l\n\t" // JMP absoluto longo para 0x000000
+    );
+}
+*/
 int main() {
-    check_stack();  // ✅ Verificar stack no início
-    init_kbd();
+    //check_stack();  // ✅ Verificar stack no início
+    //init_kbd();
+    //jmp_subloop();
 
-    printf("Vou testar a leitura de teclado com ch9350 \n");
-    show_menu();
-
+//    printf("Vou testar a leitura de teclado com ch9350 \n");
+//    show_menu();
     return 0;
 }
 

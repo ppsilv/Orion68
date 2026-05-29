@@ -6,21 +6,23 @@
 
 // 🛠️🇧🇷
 
-static volatile unsigned char special_key_up=0;
-static volatile unsigned char special_key_down=0;
-static volatile unsigned char key_up=0;
-static volatile unsigned char key_down=0;
-static volatile unsigned char special_key_status=0;
+volatile unsigned char key_buffer[12];
+volatile unsigned char cmd, length, type;
 
+volatile unsigned char special_key_up=0;
+volatile unsigned char special_key_down=0;
+volatile unsigned char key_up=0;
+volatile unsigned char key_down=0;
+volatile unsigned char special_key_status=0;
 
-static volatile unsigned char _CapsFlag = 0;
-static volatile unsigned char mod_caps = 0;
+volatile unsigned char _CapsFlag = 0;
+volatile unsigned char mod_caps = 0;
 
-unsigned char key_buffer[12];
-unsigned char cmd, length, type;
 
 unsigned char get_keypress();
 void set_keyboard_leds(unsigned char led_status);
+unsigned char get_packet();
+unsigned char get_kbd_key(unsigned char code);
 
 static void *mymemset(void *dest, int ch, unsigned int count)
 {
@@ -33,13 +35,14 @@ static void *mymemset(void *dest, int ch, unsigned int count)
 
     return dest;
 }
-
+/*
 static void printBuffer(){
     for(int i = 0; i < 12; i++) {
         printf("%02x|",key_buffer[i]);
     }
     printf("\n");
 }
+*/
 
 static void init_uart()
 {
@@ -69,10 +72,12 @@ static unsigned char read_kbd()
    // printf("%02x ",ch);
     return ch;
 }
+/*
 static unsigned char uart_read()
 {
     return read_kbd();
 }
+
 static void write_kbd(unsigned char data)
 {
     volatile unsigned char *uart_reg = (volatile unsigned char *)UART_KEYBOARD;
@@ -82,7 +87,7 @@ static void write_kbd(unsigned char data)
     };
     *(uart_reg + THR) = data;
 }
-
+*/
 static unsigned char get_0x81()
 {
     int i;
@@ -261,24 +266,12 @@ void set_keyboard_leds(unsigned char led_status)
 }
 unsigned char get_kbd_key(unsigned char code);
 
-void reset_por_software(){
-    __asm__ __volatile__(
-        "jmp 0x000.l\n\t" // JMP absoluto longo para 0x000000
-    );
-}
-
+/*
 void init_kbd(){
     printf("iniciando uart\n");
     init_uart();
 }
-
-
-void main1()
-{
-    
-}
-
-
+*/
 unsigned char get_kbd_key(unsigned char code)
 {
     unsigned char RetKey = 0; // default is 0 (No key pressed)
@@ -324,16 +317,17 @@ unsigned int get_key(){
         //printf("key_flag[%02X]\n",key_flag);
         if ( key_flag == NO_KEY || key_buffer[4] == 0x39 )
             return 0;
-        if( key_flag != KEY_SHIFT & key_flag < VALID_KEY)
+        if( (key_flag != KEY_SHIFT) & (key_flag < VALID_KEY) )
             ch = (key_flag << 8) ;
         key_flag = 0;
         ch2 = (unsigned char)get_kbd_key(key_buffer[4]);
         ch |= ch2;
         //printf("key_buffer[4] [%02x] - ch2[%02X] ch[%02X]\n",key_buffer[4],ch2,ch);
         if( ch > 0x00 ){
+          //  printf("%02X",ch);
             return ch;
         }
-        if( (ch == 0x0A) || (ch == 0x0D)){ 
+        if( (ch == 0x0A) || (ch == 0x0D)){
             ch = 0x0A;
             printf("%c",ch);
             ch = 0x0D;
@@ -341,5 +335,11 @@ unsigned int get_key(){
             return 0;
         }
     }
+    return 0;
+}
+
+
+int main()
+{
     return 0;
 }

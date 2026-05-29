@@ -1,0 +1,108 @@
+Archive member included to satisfy reference by file (symbol)
+
+../../lib/libmc68000.a(exit.o)
+                              ../../obj/startup.o (exit)
+
+Discarded input sections
+
+ .comment       0x00000000       0x13 ../../obj/startup.o
+ .comment       0x00000000       0x13 keyboard.o
+ .comment       0x00000000       0x13 ../../lib/libmc68000.a(exit.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+ROM              0x00008000         0x00008000         xr
+RAM              0x00080400         0x00002000         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+                0x00000000                        . = ALIGN (0x2)
+
+.text           0x00008000      0x45a
+                0x00008000                        . = ALIGN (0x2)
+ *(.text*)
+ .text          0x00008000       0x2a ../../obj/crt0.o
+                0x00008000                _start
+ *fill*         0x0000802a        0x2 
+ .text          0x0000802c       0x12 ../../obj/startup.o
+                0x0000802c                _main_wrapper
+ *fill*         0x0000803e        0x2 
+ .text          0x00008040      0x40a keyboard.o
+                0x00008054                set_keyboard_leds
+                0x000080c6                get_packet
+                0x00008348                get_kbd_key
+                0x000083e8                get_key
+ .text.startup  0x0000844a        0x4 keyboard.o
+                0x0000844a                main
+ *fill*         0x0000844e        0x2 
+ .text          0x00008450        0xa ../../lib/libmc68000.a(exit.o)
+                0x00008450                exit
+ *(.init)
+                0x0000845a                        . = ALIGN (0x2)
+
+.rodata         0x0000845a      0x280
+                0x0000845a                        . = ALIGN (0x2)
+ *(.rodata*)
+ .rodata        0x0000845a      0x280 keyboard.o
+                0x0000845a                OE_ALTGR_KEYMAP
+                0x000084da                OE_ALT_KEYMAP
+                0x0000855a                OE_CTRL_KEYMAP
+                0x000085da                OE_SHIFT_KEYMAP
+                0x0000865a                OE_BASE_KEYMAP
+                0x000086da                        . = ALIGN (0x2)
+
+.data           0x00080400        0x0 load address 0x000086da
+                0x00080400                        . = ALIGN (0x2)
+                0x00080400                        __data_start = .
+ *(.data*)
+ .data          0x00080400        0x0 ../../obj/crt0.o
+ .data          0x00080400        0x0 ../../obj/startup.o
+ .data          0x00080400        0x0 keyboard.o
+ .data          0x00080400        0x0 ../../lib/libmc68000.a(exit.o)
+                0x00080400                        . = ALIGN (0x2)
+                0x00080400                        __data_end = .
+                0x000086da                        __data_load_start = LOADADDR (.data)
+
+.bss            0x00080400       0x18 load address 0x000086da
+                0x00080400                        . = ALIGN (0x2)
+                0x00080400                        __bss_start = .
+ *(.bss*)
+ .bss           0x00080400        0x0 ../../obj/crt0.o
+ .bss           0x00080400        0x0 ../../obj/startup.o
+ .bss           0x00080400       0x16 keyboard.o
+                0x00080400                mod_caps
+                0x00080401                _CapsFlag
+                0x00080402                special_key_status
+                0x00080403                key_down
+                0x00080404                key_up
+                0x00080405                special_key_down
+                0x00080406                special_key_up
+                0x00080407                type
+                0x00080408                length
+                0x00080409                cmd
+                0x0008040a                key_buffer
+ *fill*         0x00080416        0x2 
+ .bss           0x00080418        0x0 ../../lib/libmc68000.a(exit.o)
+ *(COMMON)
+                0x00080418                        . = ALIGN (0x2)
+                0x00080418                        __bss_end = .
+
+.stack          0x00080418     0x1000 load address 0x000086da
+                0x00080418                        . = ALIGN (0x2)
+                0x00080418                        _stack_start = .
+                0x00081418                        . = (. + 0x1000)
+ *fill*         0x00080418     0x1000 
+                0x00081418                        . = ALIGN (0x2)
+                0x00081418                        _stack_end = .
+
+/DISCARD/
+ *(.comment)
+ *(.note*)
+ *(.align*)
+LOAD ../../obj/crt0.o
+LOAD ../../obj/startup.o
+LOAD keyboard.o
+LOAD ../../lib/libmc68000.a
+OUTPUT(keyboard.elf elf32-m68k)

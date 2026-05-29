@@ -110,20 +110,25 @@ programH: split
 	@$(PROGRAMMER) -p $(CHIP_TYPE) -w $(TARGET_HIGH) -s
 	@echo "Gravação concluída HIGH! GRAVE A MEMORIA LOW"
 
+criaRom:
+	python3 montaArq.py vbug2-0.bin keyboard.bin 0x8000
+	python3 fill.py rom_final.bin 66560
+	python3 split68k.py rom_final.bin 
+
 pgmL:
 	@echo "Gravando parte LOW na Flash..."
-	@$(PROGRAMMER) -p $(CHIP_TYPE) -w $(TARGET_LOW) -s
+	@$(PROGRAMMER) -p $(CHIP_TYPE) -w rom_final_low.bin -s
 	@echo "Gravação concluída LOW! BOA SORTE"
 
 pgmH:
 	@echo "Gravando parte HIGH na Flash..."
-	@$(PROGRAMMER) -p $(CHIP_TYPE) -w $(TARGET_HIGH) -s
+	@$(PROGRAMMER) -p $(CHIP_TYPE) -w rom_final_high.bin -s
 	@echo "Gravação concluída HIGH! GRAVE A MEMORIA LOW"
 
 program: programL programH
 
 clean:
-	@rm -f *.bin *.o *.txt *.lst *.elf *.map
+	@rm -f vbug2-0.bin rom_final.bin rom_final_high.bin rom_final_low.bin *.o *.txt *.lst *.elf *.map
 	@echo "Arquivos temporários removidos."
 
 help:
