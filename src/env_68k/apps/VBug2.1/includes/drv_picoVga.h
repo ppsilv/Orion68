@@ -1,5 +1,6 @@
 #ifndef __PICOVGA_H__
 #define __PICOVGA_H__
+#include "color.h"
 
 #define PICO_VGA_BASE 0x00FF8000
 #define WRITE_SCREEN   (*((volatile unsigned char *)(PICO_VGA_BASE + 0x01)))
@@ -35,6 +36,16 @@
 #define RUN_CMD        (*((volatile unsigned char *)(PICO_VGA_BASE + 0x3D)))
 #define CORINGA        (*((volatile unsigned char *)(PICO_VGA_BASE + 0x3F)))
 
+#define CMD_SYSTEM_ENABLE   0xA5
+#define CMD_CLEAR_SCREEN    0xA4
+#define CMD_SET_CUR_POS     0xA3
+#define CMD_SET_TXT_COLOR   0xA2
+#define CMD_GO_HOME         0xA1
 
 void picovga_putchar(unsigned char ch);
+
+void picovga_set_color(color_t color);
+void picovga_gotoxy(int col,int row);
+
+
 #endif

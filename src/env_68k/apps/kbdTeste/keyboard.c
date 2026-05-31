@@ -6,7 +6,7 @@
 
 // 🛠️🇧🇷
 
-volatile unsigned char key_buffer[12];
+volatile unsigned char key_buffer[48];
 volatile unsigned char cmd, length, type;
 
 volatile unsigned char special_key_up=0;
@@ -43,7 +43,7 @@ static void printBuffer(){
 }
 */
 
-static void init_uart()
+void init_kbd()
 {
     volatile unsigned char *uart_reg = (volatile unsigned char *)UART_KEYBOARD;
 
@@ -68,7 +68,7 @@ static unsigned char read_kbd()
     unsigned char ch;
     while (!(*(uart_reg + LSR) & 0x01)) ;
     ch = (unsigned char)*(uart_reg + RHR);
-   // printf("%02x ",ch);
+    //printf("%02x",ch);
     return ch;
 }
 /*
@@ -197,7 +197,7 @@ static unsigned char get_0x88()
             mod_caps = 0;
             set_keyboard_leds(mod_caps);
         }
-        //printf("6-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_bufferA[2],key_bufferA[4]);
+        //printf("6-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_buffer[2],key_buffer[4]);
         special_key_down = 1;
         return KEY_CAPS;
     }
@@ -223,19 +223,23 @@ unsigned char get_packet()
         cmd = read_kbd(); // *(uart_reg + RHR);
         // if ( cmd != 0x82)
         //     printf("cmd %02x\n",cmd);
-
+        if (cmd == 0x88)        {
+           // printf("88 ");
+            return get_0x88();
+        }
         if (cmd == 0x81)        {
             get_0x81();
             continue;
         }
-        if (cmd == 0x82)
-            continue;
-        if (cmd == 0x87)        {
-            get_0x87();
+        if (cmd == 0x82){
+            cmd = read_kbd();
+           // printf("82 ");
             continue;
         }
-        if (cmd == 0x88)        {
-            return get_0x88();
+        if (cmd == 0x87)        {
+            get_0x87();
+            printf("|");
+            continue;
         }
     }
     return NO_KEY;
@@ -305,7 +309,7 @@ unsigned char get_kbd_key(unsigned char code)
     return RetKey;
 }
 
-unsigned int get_key(){
+unsigned int get_char(){
     unsigned int ch,ch2;
     unsigned char key_flag=0;
 
@@ -347,7 +351,7 @@ int main()
 {
     unsigned int ch;
     while(1){
-        ch = get_key();
+        ch = get_char();
         if( ch > 0x20){
             //printf("\nspecial_key_down [%02X] key_down[%02x]\n",special_key_down,key_down);
             //printf("special_key_up   [%02X] key_up    [%02x]\n",special_key_up,key_up);
@@ -362,8 +366,4 @@ int main()
     }    
     return 0;
 }
-        //printf("key_buffer[4] [%02x] - ch2[%02X] ch[%02X]\n",key_buffer[4],ch2,ch);
-//        if( ch > 0x00 ){
-          //  printf("%02X",ch);
-//            return ch;
-//        }
+

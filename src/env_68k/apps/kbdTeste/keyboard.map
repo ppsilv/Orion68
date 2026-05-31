@@ -35,7 +35,7 @@ Linker script and memory map
 
                 0x00000000                        . = ALIGN (0x2)
 
-.text           0x00008000      0x8ee
+.text           0x00008000      0x942
                 0x00008000                        . = ALIGN (0x2)
  *(.text*)
  .text          0x00008000       0x2a ../../obj/crt0.o
@@ -44,57 +44,58 @@ Linker script and memory map
  .text          0x0000802c       0x12 ../../obj/startup.o
                 0x0000802c                _main_wrapper
  *fill*         0x0000803e        0x2 
- .text          0x00008040      0x442 keyboard.o
-                0x00008054                set_keyboard_leds
-                0x000080c6                get_packet
-                0x00008370                get_kbd_key
-                0x00008426                get_key
- .text.startup  0x00008482       0x48 keyboard.o
-                0x00008482                main
- *fill*         0x000084ca        0x2 
- .text          0x000084cc      0x3a6 ../../lib/libmc68000.a(printf.o)
-                0x000084cc                itox
-                0x00008516                itodec
-                0x00008574                itooct
-                0x000085ba                itoudec
-                0x0000860c                pad_zeros
-                0x00008650                printf
- *fill*         0x00008872        0x2 
- .text          0x00008874        0xa ../../lib/libmc68000.a(exit.o)
-                0x00008874                exit
- *fill*         0x0000887e        0x2 
- .text          0x00008880       0x12 ../../lib/libmc68000.a(strlen.o)
-                0x00008880                strlen
- *fill*         0x00008892        0x2 
- .text          0x00008894       0x16 ../../lib/libmc68000.a(memset.o)
-                0x00008894                memset
- *fill*         0x000088aa        0x2 
- .text          0x000088ac       0x1a ../../lib/libmc68000.a(putchar.o)
-                0x000088ac                putchar
+ .text          0x00008040      0x496 keyboard.o
+                0x00008054                init_kbd
+                0x0000808a                set_keyboard_leds
+                0x000080fc                get_packet
+                0x000083c4                get_kbd_key
+                0x0000847a                get_char
+ .text.startup  0x000084d6       0x48 keyboard.o
+                0x000084d6                main
+ *fill*         0x0000851e        0x2 
+ .text          0x00008520      0x3a6 ../../lib/libmc68000.a(printf.o)
+                0x00008520                itox
+                0x0000856a                itodec
+                0x000085c8                itooct
+                0x0000860e                itoudec
+                0x00008660                pad_zeros
+                0x000086a4                printf
  *fill*         0x000088c6        0x2 
- .text          0x000088c8       0x26 ../../lib/libmc68000.a(puts.o)
-                0x000088c8                puts
+ .text          0x000088c8        0xa ../../lib/libmc68000.a(exit.o)
+                0x000088c8                exit
+ *fill*         0x000088d2        0x2 
+ .text          0x000088d4       0x12 ../../lib/libmc68000.a(strlen.o)
+                0x000088d4                strlen
+ *fill*         0x000088e6        0x2 
+ .text          0x000088e8       0x16 ../../lib/libmc68000.a(memset.o)
+                0x000088e8                memset
+ *fill*         0x000088fe        0x2 
+ .text          0x00008900       0x1a ../../lib/libmc68000.a(putchar.o)
+                0x00008900                putchar
+ *fill*         0x0000891a        0x2 
+ .text          0x0000891c       0x26 ../../lib/libmc68000.a(puts.o)
+                0x0000891c                puts
  *(.init)
-                0x000088ee                        . = ALIGN (0x2)
+                0x00008942                        . = ALIGN (0x2)
 
-.rodata         0x000088ee      0x2d2
-                0x000088ee                        . = ALIGN (0x2)
+.rodata         0x00008942      0x2d4
+                0x00008942                        . = ALIGN (0x2)
  *(.rodata*)
  .rodata.str1.1
-                0x000088ee       0x2a keyboard.o
-                                  0xa (size before relaxing)
- .rodata        0x00008918      0x280 keyboard.o
-                0x00008918                OE_ALTGR_KEYMAP
-                0x00008998                OE_ALT_KEYMAP
-                0x00008a18                OE_CTRL_KEYMAP
-                0x00008a98                OE_SHIFT_KEYMAP
-                0x00008b18                OE_BASE_KEYMAP
+                0x00008942       0x2c keyboard.o
+                                  0xc (size before relaxing)
+ .rodata        0x0000896e      0x280 keyboard.o
+                0x0000896e                OE_ALTGR_KEYMAP
+                0x000089ee                OE_ALT_KEYMAP
+                0x00008a6e                OE_CTRL_KEYMAP
+                0x00008aee                OE_SHIFT_KEYMAP
+                0x00008b6e                OE_BASE_KEYMAP
  .rodata.str1.1
-                0x00008b98       0x20 ../../lib/libmc68000.a(printf.o)
- .rodata        0x00008b98       0x28 ../../lib/libmc68000.a(printf.o)
-                0x00008bc0                        . = ALIGN (0x2)
+                0x00008bee       0x20 ../../lib/libmc68000.a(printf.o)
+ .rodata        0x00008bee       0x28 ../../lib/libmc68000.a(printf.o)
+                0x00008c16                        . = ALIGN (0x2)
 
-.data           0x00080400        0x0 load address 0x00008bc0
+.data           0x00080400        0x0 load address 0x00008c16
                 0x00080400                        . = ALIGN (0x2)
                 0x00080400                        __data_start = .
  *(.data*)
@@ -109,15 +110,15 @@ Linker script and memory map
  .data          0x00080400        0x0 ../../lib/libmc68000.a(puts.o)
                 0x00080400                        . = ALIGN (0x2)
                 0x00080400                        __data_end = .
-                0x00008bc0                        __data_load_start = LOADADDR (.data)
+                0x00008c16                        __data_load_start = LOADADDR (.data)
 
-.bss            0x00080400       0x18 load address 0x00008bc0
+.bss            0x00080400       0x3c load address 0x00008c16
                 0x00080400                        . = ALIGN (0x2)
                 0x00080400                        __bss_start = .
  *(.bss*)
  .bss           0x00080400        0x0 ../../obj/crt0.o
  .bss           0x00080400        0x0 ../../obj/startup.o
- .bss           0x00080400       0x16 keyboard.o
+ .bss           0x00080400       0x3a keyboard.o
                 0x00080400                mod_caps
                 0x00080401                _CapsFlag
                 0x00080402                special_key_status
@@ -129,24 +130,24 @@ Linker script and memory map
                 0x00080408                length
                 0x00080409                cmd
                 0x0008040a                key_buffer
- *fill*         0x00080416        0x2 
- .bss           0x00080418        0x0 ../../lib/libmc68000.a(printf.o)
- .bss           0x00080418        0x0 ../../lib/libmc68000.a(exit.o)
- .bss           0x00080418        0x0 ../../lib/libmc68000.a(strlen.o)
- .bss           0x00080418        0x0 ../../lib/libmc68000.a(memset.o)
- .bss           0x00080418        0x0 ../../lib/libmc68000.a(putchar.o)
- .bss           0x00080418        0x0 ../../lib/libmc68000.a(puts.o)
+ *fill*         0x0008043a        0x2 
+ .bss           0x0008043c        0x0 ../../lib/libmc68000.a(printf.o)
+ .bss           0x0008043c        0x0 ../../lib/libmc68000.a(exit.o)
+ .bss           0x0008043c        0x0 ../../lib/libmc68000.a(strlen.o)
+ .bss           0x0008043c        0x0 ../../lib/libmc68000.a(memset.o)
+ .bss           0x0008043c        0x0 ../../lib/libmc68000.a(putchar.o)
+ .bss           0x0008043c        0x0 ../../lib/libmc68000.a(puts.o)
  *(COMMON)
-                0x00080418                        . = ALIGN (0x2)
-                0x00080418                        __bss_end = .
+                0x0008043c                        . = ALIGN (0x2)
+                0x0008043c                        __bss_end = .
 
-.stack          0x00080418     0x1000 load address 0x00008bc0
-                0x00080418                        . = ALIGN (0x2)
-                0x00080418                        _stack_start = .
-                0x00081418                        . = (. + 0x1000)
- *fill*         0x00080418     0x1000 
-                0x00081418                        . = ALIGN (0x2)
-                0x00081418                        _stack_end = .
+.stack          0x0008043c     0x1000 load address 0x00008c16
+                0x0008043c                        . = ALIGN (0x2)
+                0x0008043c                        _stack_start = .
+                0x0008143c                        . = (. + 0x1000)
+ *fill*         0x0008043c     0x1000 
+                0x0008143c                        . = ALIGN (0x2)
+                0x0008143c                        _stack_end = .
 
 /DISCARD/
  *(.comment)

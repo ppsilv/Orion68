@@ -40,107 +40,111 @@ Linker script and memory map
  *(.vectors)
                 0x00000000                        . = ALIGN (0x400)
 
-.text           0x00000000     0x12bc
+.text           0x00000000     0x1358
                 0x00000000                        . = ALIGN (0x2)
  *(.text*)
  .text          0x00000000       0xe6 ../../obj/vbu2-1_startup.o
                 0x000000c0                _start
  *fill*         0x000000e6        0x2 
- .text          0x000000e8       0x94 vbug2-1.o
+ .text          0x000000e8       0xc2 vbug2-1.o
                 0x000000e8                main
- .text          0x0000017c       0x86 drv_uart.o
-                0x0000017c                uart_init
-                0x000001cc                uart_putchar
- *fill*         0x00000202        0x2 
- .text          0x00000204      0x708 drv_kbd.o
-                0x0000023c                init_kbd
-                0x00000592                get_packet
-                0x0000061e                set_keyboard_leds
-                0x000006d8                get_kbd_key
-                0x0000080c                get_char
-                0x000008ba                main_kbd
- .text          0x0000090c       0x28 drv_picoVga.o
-                0x0000090c                init_picoVga
-                0x00000916                picovga_putchar
- .text          0x00000934      0x1b8 vectors.o
-                0x00000934                SvcBusError
-                0x0000093e                Svcaddress_err
-                0x00000948                SvcIllegalIns
-                0x00000952                SvcDiv0_handler
-                0x0000095c                SvcChkIns
-                0x00000966                SvcTrapvIns
-                0x00000970                SvcPrivViolation
-                0x0000097a                SvcTrace
-                0x00000984                SvcLineA
-                0x0000098e                SvcLineF
-                0x00000998                bad_exception
-                0x000009a2                SpuriousHandler
-                0x000009ac                Int1Handler
-                0x000009b6                Int2Handler
-                0x000009c0                Int3Handler
-                0x000009ca                Int4Handler
-                0x000009d4                Int5Handler
-                0x000009de                Int6Handler
-                0x000009e8                Int7Handler
-                0x000009f2                Trap0Handler
-                0x000009fc                Trap1Handler
-                0x00000a60                Trap2Handler
-                0x00000a6a                Trap3Handler
-                0x00000a74                Trap4Handler
-                0x00000a7e                Trap5Handler
-                0x00000a88                Trap6Handler
-                0x00000a92                Trap7Handler
-                0x00000a9c                Trap8Handler
-                0x00000aa6                Trap9Handler
-                0x00000ab0                TrapAHandler
-                0x00000aba                TrapBHandler
-                0x00000ac4                TrapCHandler
-                0x00000ace                TrapDHandler
-                0x00000ad8                TrapEHandler
-                0x00000ae2                TrapFHandler
- .text          0x00000aec       0x30 console.o
-                0x00000aec                set_console_output
-                0x00000b04                set_console_input
- .text          0x00000b1c      0x3a6 ../../lib/libmc68000.a(printf.o)
-                0x00000b1c                itox
-                0x00000b66                itodec
-                0x00000bc4                itooct
-                0x00000c0a                itoudec
-                0x00000c5c                pad_zeros
-                0x00000ca0                printf
- *fill*         0x00000ec2        0x2 
- .text          0x00000ec4       0x12 ../../lib/libmc68000.a(strlen.o)
-                0x00000ec4                strlen
- *fill*         0x00000ed6        0x2 
- .text          0x00000ed8       0x16 ../../lib/libmc68000.a(memset.o)
-                0x00000ed8                memset
- *fill*         0x00000eee        0x2 
- .text          0x00000ef0       0x1a ../../lib/libmc68000.a(putchar.o)
-                0x00000ef0                putchar
- *fill*         0x00000f0a        0x2 
- .text          0x00000f0c       0x26 ../../lib/libmc68000.a(puts.o)
-                0x00000f0c                puts
+ *fill*         0x000001aa        0x2 
+ .text          0x000001ac       0x86 drv_uart.o
+                0x000001ac                uart_init
+                0x000001fc                uart_putchar
+ *fill*         0x00000232        0x2 
+ .text          0x00000234      0x708 drv_kbd.o
+                0x0000026c                init_kbd
+                0x000005c2                get_packet
+                0x0000064e                set_keyboard_leds
+                0x00000708                get_kbd_key
+                0x0000083c                get_char
+                0x000008ea                main_kbd
+ .text          0x0000093c       0x8e drv_picoVga.o
+                0x0000093c                init_picoVga
+                0x00000946                picovga_putchar
+                0x00000964                picovga_gotoxy
+                0x000009b4                picovga_set_color
+ *fill*         0x000009ca        0x2 
+ .text          0x000009cc      0x1b8 vectors.o
+                0x000009cc                SvcBusError
+                0x000009d6                Svcaddress_err
+                0x000009e0                SvcIllegalIns
+                0x000009ea                SvcDiv0_handler
+                0x000009f4                SvcChkIns
+                0x000009fe                SvcTrapvIns
+                0x00000a08                SvcPrivViolation
+                0x00000a12                SvcTrace
+                0x00000a1c                SvcLineA
+                0x00000a26                SvcLineF
+                0x00000a30                bad_exception
+                0x00000a3a                SpuriousHandler
+                0x00000a44                Int1Handler
+                0x00000a4e                Int2Handler
+                0x00000a58                Int3Handler
+                0x00000a62                Int4Handler
+                0x00000a6c                Int5Handler
+                0x00000a76                Int6Handler
+                0x00000a80                Int7Handler
+                0x00000a8a                Trap0Handler
+                0x00000a94                Trap1Handler
+                0x00000af8                Trap2Handler
+                0x00000b02                Trap3Handler
+                0x00000b0c                Trap4Handler
+                0x00000b16                Trap5Handler
+                0x00000b20                Trap6Handler
+                0x00000b2a                Trap7Handler
+                0x00000b34                Trap8Handler
+                0x00000b3e                Trap9Handler
+                0x00000b48                TrapAHandler
+                0x00000b52                TrapBHandler
+                0x00000b5c                TrapCHandler
+                0x00000b66                TrapDHandler
+                0x00000b70                TrapEHandler
+                0x00000b7a                TrapFHandler
+ .text          0x00000b84       0x30 console.o
+                0x00000b84                set_console_output
+                0x00000b9c                set_console_input
+ .text          0x00000bb4      0x3a6 ../../lib/libmc68000.a(printf.o)
+                0x00000bb4                itox
+                0x00000bfe                itodec
+                0x00000c5c                itooct
+                0x00000ca2                itoudec
+                0x00000cf4                pad_zeros
+                0x00000d38                printf
+ *fill*         0x00000f5a        0x2 
+ .text          0x00000f5c       0x12 ../../lib/libmc68000.a(strlen.o)
+                0x00000f5c                strlen
+ *fill*         0x00000f6e        0x2 
+ .text          0x00000f70       0x16 ../../lib/libmc68000.a(memset.o)
+                0x00000f70                memset
+ *fill*         0x00000f86        0x2 
+ .text          0x00000f88       0x1a ../../lib/libmc68000.a(putchar.o)
+                0x00000f88                putchar
+ *fill*         0x00000fa2        0x2 
+ .text          0x00000fa4       0x26 ../../lib/libmc68000.a(puts.o)
+                0x00000fa4                puts
  *(.rodata)
- .rodata        0x00000f32       0xd5 vbug2-1.o
-                0x00000f32                MsgOrionInit
- .rodata        0x00001007      0x28c drv_kbd.o
-                0x00001007                OE_BASE_KEYMAP
-                0x00001087                OE_SHIFT_KEYMAP
-                0x00001107                OE_CTRL_KEYMAP
-                0x00001187                OE_ALT_KEYMAP
-                0x00001207                OE_ALTGR_KEYMAP
- *fill*         0x00001293        0x1 
- .rodata        0x00001294       0x28 ../../lib/libmc68000.a(printf.o)
-                0x000012bc                        . = ALIGN (0x2)
+ .rodata        0x00000fca       0xd9 vbug2-1.o
+                0x00000fca                MsgOrionInit
+ .rodata        0x000010a3      0x28c drv_kbd.o
+                0x000010a3                OE_BASE_KEYMAP
+                0x00001123                OE_SHIFT_KEYMAP
+                0x000011a3                OE_CTRL_KEYMAP
+                0x00001223                OE_ALT_KEYMAP
+                0x000012a3                OE_ALTGR_KEYMAP
+ *fill*         0x0000132f        0x1 
+ .rodata        0x00001330       0x28 ../../lib/libmc68000.a(printf.o)
+                0x00001358                        . = ALIGN (0x2)
 
-.rodata         0x000012bc       0x20
-                0x000012bc                        . = ALIGN (0x2)
+.rodata         0x00001358       0x20
+                0x00001358                        . = ALIGN (0x2)
  *(.rodata*)
  .rodata.str1.1
-                0x000012bc       0x20 ../../lib/libmc68000.a(printf.o)
-                0x000012dc                        . = ALIGN (0x2)
+                0x00001358       0x20 ../../lib/libmc68000.a(printf.o)
+                0x00001378                        . = ALIGN (0x2)
 
-.data           0x00080000        0x0 load address 0x000012dc
+.data           0x00080000        0x0 load address 0x00001378
                 0x00080000                        . = ALIGN (0x2)
                 0x00080000                        __data_start = .
  *(.data*)
@@ -159,7 +163,7 @@ Linker script and memory map
                 0x00080000                        . = ALIGN (0x2)
                 0x00080000                        __data_end = .
 
-.minha_ram      0x00080000        0x4 load address 0x000012dc
+.minha_ram      0x00080000        0x4 load address 0x00001378
  .minha_ram     0x00080000        0x4 vbug2-1.o
                 0x00080000                vbug_status_flag
 
@@ -167,7 +171,7 @@ Linker script and memory map
  *(.mram)
  .mram          0x00080000      0x100 vbug2-1.o
                 0x00080000                vbug_buffer
-                0x000012dc                        __data_load_start = LOADADDR (.data)
+                0x00001378                        __data_load_start = LOADADDR (.data)
 
 .bss            0x00080100       0x44
                 0x00080100                        . = ALIGN (0x2)

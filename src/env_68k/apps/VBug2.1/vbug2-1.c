@@ -4,6 +4,7 @@
 #include "drv_kbd.h"
 #include "io.h"
 #include "mc68000.h"
+#include "color.h"
 
 __attribute__((section(".mram"))) char vbug_buffer[256];
 __attribute__((section(".minha_ram"))) int vbug_status_flag;
@@ -34,8 +35,10 @@ void main() {
     set_console_output(picovga_putchar);
     set_console_input(get_char);
 
+    picovga_set_color(RED);
     printf("Iniciando o sistema PDS317\n");
 
+    picovga_set_color(YELLOW);
     printf("%s",MsgOrionInit);
 
     while(1) {
@@ -45,7 +48,8 @@ void main() {
             printf("%c",ch);
         }else{
             if(ch == 0x0A || ch == 0x0D){
-                printf("\n");
+                printf("0x02x",0x0A);
+                printf("0x02x",0x0D);
             }
         }
        // for(delay = 0; delay < 50000; delay++); // Delay tosco em software
