@@ -1,3 +1,5 @@
+#include "io.h"
+
 void __attribute__((interrupt)) SvcBusError     (){
     
 }
@@ -59,7 +61,23 @@ void __attribute__((interrupt)) Trap0Handler(){
     
 }
 void __attribute__((interrupt)) Trap1Handler(){
-    
+// Amarre variáveis locais diretamente aos registradores físicos
+    register unsigned short function_code asm("d0");
+    register unsigned char  character     asm("d1");
+
+    // Agora você pode usar variáveis C normais!
+    switch(function_code) {
+        case 1:
+            if (cconin) {
+                function_code=cconin();
+            }
+            break;
+        case 2:
+            if (cconout) {
+                cconout(character);
+            }
+            break;
+    }    
 }
 void __attribute__((interrupt)) Trap2Handler(){
     

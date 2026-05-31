@@ -59,9 +59,21 @@ _vectors:
 _start:
         /* Se o seu hardware precisa de alguma inicialização crítica, faça aqui. */
         ORI.W   #0x0700,%SR
-        LEA     0x000FFFF0,%A7
-        LEA     0x00FF8001,%A0
-        MOVE.B  #0x41,(%A0)
+        /*LEA     0x000FFFF0,%A7*/
+        /*LEA     0x00FF8001,%A0*/
+        /*MOVE.B  #0x41,(%A0)*/
+
+        /*2. Rotina que CARREGA a seção .data da ROM para a RAM*/
+        lea     __data_load_start, %a0  | A0 aponta para a origem (na ROM)
+        lea     __data_start, %a1       | A1 aponta para o destino (na RAM)
+        lea     __data_end, %a2         | A2 determina o fim do bloco na RAM
+
+copy_data:
+        cmpa.l  %a2, %a1                | Chegou no fim do bloco de RAM?
+        bge.s   go_ahead                | Se sim, vai para a próxima etapa
+        move.b  (%a0)+, (%a1)+          | Copia o byte da ROM para a RAM e avança ambos
+        bra.s   copy_data               | Loop
+go_ahead:
         /* Salta direto para a função principal do seu VBug escrita em C! */
         jsr     main
 

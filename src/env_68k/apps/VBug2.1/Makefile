@@ -6,7 +6,7 @@ CFLAGS = -Wall -O0 -I ./includes -I../../include -ffreestanding -nostdlib
 LDFLAGS = -T ./vbug2-1.ld -L../../lib -nostdlib  -Map=vbug2-1.map
 
 #SRCS = $(wildcard *.c)
-SRCS = vbug2-1.c drv_uart.c drv_kbd.c drv_picoVga.c vectors.c
+SRCS = vbug2-1.c drv_uart.c drv_kbd.c drv_picoVga.c vectors.c console.o
 OBJS = $(SRCS:.c=.o)
 #ELFS = $(SRCS:.c=.elf)
 #BINS = $(SRCS:.c=.bin)
@@ -35,6 +35,7 @@ TARGET_HIGH := $(TARGET)_high.bin
 all: vbug2-1.bin
 
 %.o: %.c
+	@./build_counter.sh
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Regra específica para cada arquivo para evitar problemas com $<
@@ -42,8 +43,8 @@ all: vbug2-1.bin
 #	$(LD) $(LDFLAGS) ../../obj/startup.o   vbug2-1.o -lmc68000 -o $@
 #	@echo "Linked: $@"
 
-vbug2-1.elf: vbug2-1.o ../../obj/vbu2-1_startup.o drv_uart.o drv_kbd.o drv_picoVga.o vectors.o
-	$(LD) $(LDFLAGS) ../../obj/vbu2-1_startup.o vbug2-1.o drv_uart.o drv_kbd.o drv_picoVga.o vectors.o -lmc68000 -o $@
+vbug2-1.elf: build_counter.sh vbug2-1.o ../../obj/vbu2-1_startup.o drv_uart.o drv_kbd.o drv_picoVga.o vectors.o console.o
+	$(LD) $(LDFLAGS) ../../obj/vbu2-1_startup.o vbug2-1.o drv_uart.o drv_kbd.o drv_picoVga.o vectors.o console.o -lmc68000 -o $@
 	@echo "Linked: $@"
 	@echo "╔══════════════════════════╗"
 	@echo "║  COMPILACAO TERMINADA!   ║"
