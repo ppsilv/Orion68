@@ -163,17 +163,27 @@ PicoPrintHexAddress:
         ROL.W   #8,D0             ; Byte mais significativo primeiro
         JSR     PicoPrintByteHex
         ROR.W   #8,D0             ; Byte menos significativo
+        RTS
+
 PicoPrintByteHex:
         MOVE.B  D0,-(SP)          ; Salva byte original
         LSR.B   #4,D0             ; Nibble alto
-        BSR     .PrintNibble
+        BSR     .PrintNibble1
+.PrintNibble2
         MOVE.B  (SP)+,D0          ; Recupera byte
         ANDI.B  #$0F,D0           ; Nibble baixo
-.PrintNibble:
+        CMP.B   #9,D0
+        BLS     .Decimal2
+        ADD.B   #7,D0             ; Ajuste para A-F
+.Decimal2:
+        ADD.B   #'0',D0
+        JSR     PicoWriteChar    ; Usa JMP para tail call optimization
+        RTS
+.PrintNibble1:
         CMP.B   #9,D0
         BLS     .Decimal
         ADD.B   #7,D0             ; Ajuste para A-F
 .Decimal:
         ADD.B   #'0',D0
-        JMP     PicoWriteChar    ; Usa JMP para tail call optimization
-
+        JSR     PicoWriteChar    ; Usa JMP para tail call optimization
+        BRA.S   .PrintNibble2

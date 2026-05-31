@@ -18,7 +18,7 @@ cconin              DS.L 1
 monitorStack        DS.L   1
 systemTick          DS.L   1
 addressInHex        DS.L   1
-
+debug_regs          DS.L   8
         ALIGN 2
 buf_xmodem          DS.B   512        ; Buffer de dados
 buf_put             DS.B   512    

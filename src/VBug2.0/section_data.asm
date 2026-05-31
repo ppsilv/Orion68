@@ -20,8 +20,8 @@ MsgOrionInit:
     DC.B          "-----------------------------------------------",13,10,13,10,0
 MsgMenuText:
     DC.B    "Menu choose an option: ",13,10,13,10
-    DC.B    "1. Read keyboard",13,10
-    DC.B    "2. Pgm keyboard",13,10
+    DC.B    "1. Read keyboard ROM",13,10
+    DC.B    "2. Change conin to ch9350",13,10
     DC.B    "4. Testa trap #1",13,10
     DC.B    "5. Run Program",13,10
     DC.B    "7. Memory dump from address buffer",13,10
@@ -72,7 +72,13 @@ MsgA2:
 MsgA3:
     DC.B    " - A3: ",0
 MsgA4:
-    DC.B    " - A4: ",0
+    DC.B    13,10,"A4: ",0
+MsgA5:
+    DC.B    " - A5: ",0
+MsgA6:
+    DC.B    " - A6: ",0
+MsgA7:
+    DC.B    " - A7: ",0
 MsgD0:
     DC.B    13,10,"D0: ",0
 MsgD1:
@@ -80,9 +86,20 @@ MsgD1:
 MsgD2:
     DC.B    " - D2: ",0
 MsgD3:
-    DC.B    " - D2: ",0
+    DC.B    " - D3: ",0
 MsgD4:
-    DC.B    " - D4: ",0
+    DC.B    13,10,"D4: ",0
+MsgD5:
+    DC.B    " - D5: ",0
+MsgD6:
+    DC.B    " - D6: ",0
+MsgD7:
+    DC.B    " - D7: ",0
+MsgAntes:
+    DC.B    "ANTES:",13,10,0
+MsgDepois:
+    DC.B    "DEPOIS:",13,10,0
+
 
 MsgDebug:     DC.B "Exception - PC: ",0
 MsgSr:        DC.B "Status Reg: ",0

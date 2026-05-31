@@ -28,8 +28,7 @@ static void *mymemset(void *dest, int ch, unsigned int count)
 {
     unsigned char *ptr = (unsigned char *)dest;
 
-    while (count--)
-    {
+    while (count--){
         *ptr++ = (unsigned char)ch;
     }
 
@@ -145,6 +144,13 @@ static unsigned char get_0x88()
     //printBuffer();
     if (key_buffer[2] == 0x0 && key_buffer[4] == 0x0) /*normal*/       {
         //Esse if é executado em todo key up
+        if( special_key_status > 0 ){
+            if(  special_key_down ){
+                special_key_up = 1;
+                special_key_down=0;
+                special_key_status=0;
+            }
+        }
         if(  key_down ){
             key_up = 1;
             key_down=0;
@@ -264,14 +270,7 @@ void set_keyboard_leds(unsigned char led_status)
         *(uart_reg + THR) = buf[i];
     }
 }
-unsigned char get_kbd_key(unsigned char code);
 
-/*
-void init_kbd(){
-    printf("iniciando uart\n");
-    init_uart();
-}
-*/
 unsigned char get_kbd_key(unsigned char code)
 {
     unsigned char RetKey = 0; // default is 0 (No key pressed)
@@ -300,6 +299,7 @@ unsigned char get_kbd_key(unsigned char code)
     if (mod_caps) { // Left & Right Shift modifier
         RetKey = OE_SHIFT_KEYMAP[code];
     }else{
+        printf(".");
         return 0;
     }
     return RetKey;
@@ -315,31 +315,55 @@ unsigned int get_key(){
         mymemset((void *)key_buffer, 0, sizeof(key_buffer));
         key_flag=get_packet();
         //printf("key_flag[%02X]\n",key_flag);
-        if ( key_flag == NO_KEY || key_buffer[4] == 0x39 )
-            return 0;
-        if( (key_flag != KEY_SHIFT) & (key_flag < VALID_KEY) )
+        if ( key_flag == NO_KEY )
+            continue;
+        if(  key_buffer[4] == 0x39 )
+            return 0;    
+        if( (key_flag != KEY_SHIFT) && (key_flag < VALID_KEY) )
             ch = (key_flag << 8) ;
         key_flag = 0;
-        ch2 = (unsigned char)get_kbd_key(key_buffer[4]);
-        ch |= ch2;
-        //printf("key_buffer[4] [%02x] - ch2[%02X] ch[%02X]\n",key_buffer[4],ch2,ch);
-        if( ch > 0x00 ){
-          //  printf("%02X",ch);
+        //printf("key_buffer[4] [%02x] \n",key_buffer[4]);
+        if( key_buffer[4] > 0x0 ){
+            ch2 = (unsigned char)get_kbd_key(key_buffer[4]);
+            ch |= ch2;
+            return ch;
+        }else{
+            ch &= 0xFF00;
             return ch;
         }
         if( (ch == 0x0A) || (ch == 0x0D)){
             ch = 0x0A;
-            printf("%c",ch);
+           // printf("%c",ch);
             ch = 0x0D;
-            printf("%c",ch);
-            return 0;
+           // printf("%c",ch);
+            return 0x0D;
         }
     }
-    return 0;
+    return ch;
 }
 
 
 int main()
 {
+    unsigned int ch;
+    while(1){
+        ch = get_key();
+        if( ch > 0x20){
+            //printf("\nspecial_key_down [%02X] key_down[%02x]\n",special_key_down,key_down);
+            //printf("special_key_up   [%02X] key_up    [%02x]\n",special_key_up,key_up);
+            if( ch <= 255 )
+                printf("%c",ch);
+            else    
+                printf("%02X",ch);
+        }
+        if ( ch == 'B' ){
+            return 0;
+        }
+    }    
     return 0;
 }
+        //printf("key_buffer[4] [%02x] - ch2[%02X] ch[%02X]\n",key_buffer[4],ch2,ch);
+//        if( ch > 0x00 ){
+          //  printf("%02X",ch);
+//            return ch;
+//        }

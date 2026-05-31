@@ -22,16 +22,23 @@ PrintWordHex:
         RTS
 
 PrintByteHex:
-        MOVE.B  D0,-(SP)          ; Salva byte original
-        LSR.B   #4,D0             ; Nibble alto
-        BSR     .PrintNibble
-        MOVE.B  (SP)+,D0          ; Recupera byte
-        ANDI.B  #$0F,D0           ; Nibble baixo
+        MOVE.B  D0,-(SP)          ; 1. Guarda o byte original na pilha
+        ; --- PROCESSA O PRIMEIRO NIBBLE (ALTO) ---
+        LSR.B   #4,D0             ; Isola o nibble alto (ex: $A4 -> $0A)
+        BSR     .PrintNibble      ; Executa a subrotina para o primeiro dígito
+        ; --- PROCESSA O SEGUNDO NIBBLE (BAIXO) ---
+        MOVE.B  (SP)+,D0          ; 2. Recupera o byte original da pilha
+        ANDI.B  #$0F,D0           ; Isola o nibble baixo (ex: $A4 -> $04)
+        BSR     .PrintNibble      ; Executa a subrotina para o segundo dígito
+        RTS
+
 .PrintNibble:
+        MOVE.B  D0,-(SP)          ; Salva D0 para não destruir o valor na conversão        
         CMP.B   #9,D0
-        BLS     .Decimal
-        ADD.B   #7,D0             ; Ajuste para A-F
+        BLS     .Decimal          ; Se for menor ou igual a 9, vai direto
+        ADD.B   #7,D0             ; Ajuste para letras 'A' até 'F'
 .Decimal:
-        ADD.B   #'0',D0
-        JSR     WriteConout    ; Usa JMP para tail call optimization
+        ADD.B   #'0',D0           ; Converte o valor bruto em caractere ASCII
+        JSR     WriteConout       ; Chama a sua rotina de exibição na tela/serial
+        MOVE.B  (SP)+,D0          ; Restaura o D0 original deste nibble
         RTS

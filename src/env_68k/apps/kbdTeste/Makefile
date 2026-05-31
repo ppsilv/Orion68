@@ -28,5 +28,5 @@ keyboard.bin: keyboard.elf
 	@echo "Binary: $@"
 
 clean:
-	rm -f $(OBJS) $(ELFS) $(BINS)
+	rm -f $(OBJS) $(ELFS) $(BINS) *.map
 	@echo "Clean complete"

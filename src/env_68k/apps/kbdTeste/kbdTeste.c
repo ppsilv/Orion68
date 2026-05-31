@@ -92,6 +92,8 @@ int main() {
     //init_kbd();
     //jmp_subloop();
 
+
+
 //    printf("Vou testar a leitura de teclado com ch9350 \n");
 //    show_menu();
     return 0;

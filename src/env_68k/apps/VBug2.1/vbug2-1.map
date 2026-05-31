@@ -1,0 +1,137 @@
+
+Discarded input sections
+
+ .comment       0x00000000       0x13 vbug2-1.o
+ .comment       0x00000000       0x13 drv_uart.o
+ .comment       0x00000000       0x13 drv_kbd.o
+ .comment       0x00000000       0x13 drv_picoVga.o
+ .comment       0x00000000       0x13 vectors.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+ROM              0x00000000         0x00008000         xr
+RAM              0x00080000         0x00100000         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+                0x00000000                        . = 0x0
+
+.vectors        0x00000000        0x0
+ *(.vectors)
+                0x00000000                        . = ALIGN (0x400)
+
+.text           0x00000000      0x346
+                0x00000000                        . = ALIGN (0x2)
+ *(.text*)
+ .text          0x00000000       0xdc ../../obj/vbu2-1_startup.o
+                0x000000c0                _start
+ .text          0x000000dc       0x50 vbug2-1.o
+                0x000000dc                main
+                0x000000f8                main1
+ .text          0x0000012c       0x86 drv_uart.o
+                0x0000012c                uart_init
+                0x0000017c                uart_putchar
+ *fill*         0x000001b2        0x2 
+ .text          0x000001b4        0xa drv_kbd.o
+                0x000001b4                init_kbd
+ *fill*         0x000001be        0x2 
+ .text          0x000001c0       0x28 drv_picoVga.o
+                0x000001c0                init_picoVga
+                0x000001ca                picovga_putchar
+ .text          0x000001e8      0x15e vectors.o
+                0x000001e8                SvcBusError
+                0x000001f2                Svcaddress_err
+                0x000001fc                SvcIllegalIns
+                0x00000206                SvcDiv0_handler
+                0x00000210                SvcChkIns
+                0x0000021a                SvcTrapvIns
+                0x00000224                SvcPrivViolation
+                0x0000022e                SvcTrace
+                0x00000238                SvcLineA
+                0x00000242                SvcLineF
+                0x0000024c                bad_exception
+                0x00000256                SpuriousHandler
+                0x00000260                Int1Handler
+                0x0000026a                Int2Handler
+                0x00000274                Int3Handler
+                0x0000027e                Int4Handler
+                0x00000288                Int5Handler
+                0x00000292                Int6Handler
+                0x0000029c                Int7Handler
+                0x000002a6                Trap0Handler
+                0x000002b0                Trap1Handler
+                0x000002ba                Trap2Handler
+                0x000002c4                Trap3Handler
+                0x000002ce                Trap4Handler
+                0x000002d8                Trap5Handler
+                0x000002e2                Trap6Handler
+                0x000002ec                Trap7Handler
+                0x000002f6                Trap8Handler
+                0x00000300                Trap9Handler
+                0x0000030a                TrapAHandler
+                0x00000314                TrapBHandler
+                0x0000031e                TrapCHandler
+                0x00000328                TrapDHandler
+                0x00000332                TrapEHandler
+                0x0000033c                TrapFHandler
+ *(.rodata)
+                0x00000346                        . = ALIGN (0x2)
+
+.rodata         0x00000346        0x0
+                0x00000346                        . = ALIGN (0x2)
+ *(.rodata*)
+                0x00000346                        . = ALIGN (0x2)
+
+.data           0x00080000        0x0 load address 0x00000346
+                0x00080000                        . = ALIGN (0x2)
+                0x00080000                        __data_start = .
+ *(.data*)
+ .data          0x00080000        0x0 ../../obj/vbu2-1_startup.o
+ .data          0x00080000        0x0 vbug2-1.o
+ .data          0x00080000        0x0 drv_uart.o
+ .data          0x00080000        0x0 drv_kbd.o
+ .data          0x00080000        0x0 drv_picoVga.o
+ .data          0x00080000        0x0 vectors.o
+                0x00080000                        . = ALIGN (0x2)
+                0x00080000                        __data_end = .
+
+.mram
+ *(.mram)
+                0x00000346                        __data_load_start = LOADADDR (.data)
+
+.bss            0x00080000        0x0
+                0x00080000                        . = ALIGN (0x2)
+                0x00080000                        __bss_start = .
+ *(.bss*)
+ .bss           0x00080000        0x0 ../../obj/vbu2-1_startup.o
+ .bss           0x00080000        0x0 vbug2-1.o
+ .bss           0x00080000        0x0 drv_uart.o
+ .bss           0x00080000        0x0 drv_kbd.o
+ .bss           0x00080000        0x0 drv_picoVga.o
+ .bss           0x00080000        0x0 vectors.o
+ *(COMMON)
+                0x00080000                        . = ALIGN (0x2)
+                0x00080000                        __bss_end = .
+
+.stack          0x00080000     0x1000
+                0x00080000                        . = ALIGN (0x2)
+                0x00080000                        _stack_start = .
+                0x00081000                        . = (. + 0x1000)
+ *fill*         0x00080000     0x1000 
+                0x00081000                        . = ALIGN (0x2)
+                0x00081000                        _stack_end = .
+
+/DISCARD/
+ *(.comment)
+ *(.note*)
+ *(.align*)
+LOAD ../../obj/vbu2-1_startup.o
+LOAD vbug2-1.o
+LOAD drv_uart.o
+LOAD drv_kbd.o
+LOAD drv_picoVga.o
+LOAD vectors.o
+LOAD ../../lib/libmc68000.a
+OUTPUT(vbug2-1.elf elf32-m68k)

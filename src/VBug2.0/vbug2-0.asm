@@ -362,13 +362,13 @@ subLoop:
         CMP.B   #'1',D0
         BEQ.S   TmpReadKbd
         CMP.B   #'2',D0
-        BEQ.S   PgmKbd
+        BEQ.S   TmpReadKbd2
         CMP.B   #'3',D0
         BEQ     Xmodem
         CMP.B   #'4',D0
         BEQ.S   RunTrap1
         CMP.B   #'5',D0
-        BEQ.S   RunProgram
+        BEQ     RunProgram
         CMP.B   #'7',D0
         BEQ     MemDump0
         CMP.B   #'8',D0
@@ -385,17 +385,22 @@ Xmodem:
 MemDump0:
         JSR     MemDump
         JMP     subLoop        
-;2
-PgmKbd:
-        JMP     $8000.L
-        JMP     subLoop        
-;3
+       
+;1
 TmpReadKbd:
-        JSR     $83E8.L
+        MOVEM.L D1-D7/A0-A6,-(SP)
+        JSR     $8426.L
+        MOVEM.L (SP)+,D1-D7/A0-A6
         JSR     WriteConout
         CMP.B   #$42,D0
         BNE     TmpReadKbd
         JMP     subLoop
+;2
+TmpReadKbd2:
+        JSR     Configkbd
+        JMP     subLoop
+
+
 ;4 Testa trap 1
 RunTrap1:
         LEA     MsgWritePrompt,A0
