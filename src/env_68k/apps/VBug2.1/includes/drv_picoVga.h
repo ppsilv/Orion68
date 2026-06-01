@@ -42,10 +42,12 @@
 #define CMD_SET_TXT_COLOR   0xA2
 #define CMD_GO_HOME         0xA1
 
+
+void run_cmd(unsigned char cmd);
 void picovga_putchar(unsigned char ch);
-
-void picovga_set_color(color_t color);
+//void picovga_set_color(color_t txtcolor,color_t bgcolor);
+void picovga_set_color(unsigned char txtcolor,unsigned char bgcolor);
 void picovga_gotoxy(int col,int row);
-
+void clrscr();
 
 #endif

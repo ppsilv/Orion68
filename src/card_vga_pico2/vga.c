@@ -123,9 +123,9 @@ static PT_THREAD (protothread_print_bus_read(struct pt *pt))
                     change_mode((screenMode_t)data);
                     break;
                 case D_SET_TXT_COLOR:
-                    text_color = (data>>4) & 0x0F;
                     bg_color = data & 0x0F;
-                    sprintf(buf,"text [%d] bg[%d]\n",text_color);
+                    text_color = (data>>4) & 0x0F;
+                    sprintf(buf,"text [%d] bg[%d]\n",text_color,bg_color);
                     vga->printString(buf);
                     vga->setTextColor(text_color, bg_color);  
                     break;    

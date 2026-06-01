@@ -4,7 +4,7 @@
 // Definições de hardware
 #define UART_BASE 0x10000000
 #define TIMER_BASE 0x10000010
-#define RAM_BASE 0x00100000
+#define RAM_BASE 0x00080000
 #define ROM_BASE 0x00000000
 
 // Registradores de hardware

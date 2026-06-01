@@ -76,5 +76,10 @@
 void uart_init(void);
 void uart_putchar(unsigned char ch);
 
+void uart0_init();
+unsigned char uart0_read();
+void uart0_write(unsigned char ch);
+int _inbyte(int delay);
+void _outbyte(unsigned char ch);
 
 #endif

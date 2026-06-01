@@ -6,17 +6,17 @@
 
 // 🛠️🇧🇷
 
-volatile unsigned char key_buffer[48];
+volatile unsigned char key_buffer[48]={0};
 volatile unsigned char cmd, length, type;
-
 volatile unsigned char special_key_up=0;
 volatile unsigned char special_key_down=0;
 volatile unsigned char key_up=0;
 volatile unsigned char key_down=0;
 volatile unsigned char special_key_status=0;
-
 volatile unsigned char _CapsFlag = 0;
 volatile unsigned char mod_caps = 0;
+volatile unsigned char debug_pkt = 0;
+
 
 
 unsigned char get_keypress();
@@ -34,14 +34,17 @@ static void *mymemset(void *dest, int ch, unsigned int count)
 
     return dest;
 }
-/*
-static void printBuffer(){
-    for(int i = 0; i < 12; i++) {
-        printf("%02x|",key_buffer[i]);
+
+static void printBuffer(char * pkt){
+    if(debug_pkt){
+        printf("%s - ",pkt);
+        for(int i = 0; i < 16; i++) {
+            printf("%02x|",key_buffer[i]);
+        }
+        printf("\n");
     }
-    printf("\n");
 }
-*/
+
 
 void init_kbd()
 {
@@ -60,6 +63,18 @@ void init_kbd()
     // 4. Limpa registradores de controle
     *(uart_reg + MCR) = 0x00;
     *(uart_reg + IER) = 0x00; // Garante que interrupções estão desligadas
+
+    special_key_up=0;
+    special_key_down=0;
+    key_up=0;
+    key_down=0;
+    special_key_status=0;
+    _CapsFlag = 0;
+    mod_caps = 0;
+    cmd=0;
+    length=0;
+    type=0;
+    debug_pkt=0;
 }
 
 static unsigned char read_kbd()
@@ -68,56 +83,20 @@ static unsigned char read_kbd()
     unsigned char ch;
     while (!(*(uart_reg + LSR) & 0x01)) ;
     ch = (unsigned char)*(uart_reg + RHR);
-    //printf("%02x",ch);
     return ch;
 }
-/*
-static unsigned char uart_read()
-{
-    return read_kbd();
-}
 
-static void write_kbd(unsigned char data)
-{
-    volatile unsigned char *uart_reg = (volatile unsigned char *)UART_KEYBOARD;
-    // Tente ler a versão do chip
-    while (!(*(uart_reg + LSR) & 0x20))
-    {
-    };
-    *(uart_reg + THR) = data;
-}
-*/
 static unsigned char get_0x81()
 {
     int i;
  
     type = read_kbd(); //*(uart_reg + RHR);
     length = read_kbd(); //*(uart_reg + RHR);
-    if (length > 8)    {
-        for (i = 0; i < length; i++)        {
-            // while (!(*(uart_reg + LSR) & 0x01)) ;
-            //*(uart_reg + RHR); // descarta
-            read_kbd();
-        }
+
+    for (i = 0; i < length; i++)        {
+        read_kbd();
     }
-    if (length == 8)    {
-        for (i = 0; i < 8; i++)        {
-            //, while (!(*(uart_reg + LSR) & 0x01))            ;
-            key_buffer[i] = read_kbd(); //*(uart_reg + RHR);
-            // printf("[%02x ",key_buffer[i]);
-        }
-        if (key_buffer[2] != 0)        {
-            return key_buffer[2]; // Retorna o ScanCode real!
-        }
-    }
-    else    {
-        // Caso venha um tamanho inesperado, limpa para não desalinhar
-        for (i = 0; i < length; i++)        {
-            //while (!(*(uart_reg + LSR) & 0x01))    ;
-            //*(uart_reg + RHR);
-            read_kbd();
-        }
-    }
+
     return 0;
 }
 static void get_0x87()
@@ -125,22 +104,24 @@ static void get_0x87()
     int i;
     length = read_kbd(); //*(uart_reg + RHR);
 
-    // Esvazia os bytes desse aviso rapidamente
-    for (i = 0; i < length; i++) {
-        // while (!(*(uart_reg + LSR) & 0x01));
-        //*(uart_reg + RHR);
+    for (i = 0; i <= length; i++) {
+
         read_kbd();
     }
 }
 static unsigned char get_0x88()
 {
     unsigned char size = read_kbd();
+   // printf("\nTamanho do pacote[%d]",size);
     // Não se esqueça eu lia hardcoded de 0 a 12
     // agora com size já sendo lido tenho que começar da posição 1
     // pois o codigo espera os comandos nas posições A=4 e B=2
-    for (int i = 1; i < size; i++)    {
+    //ALTERADO ESSA MERDA POR ULTIMO
+    int i=0;
+    for (i = 1; i <= size; i++)    {
         key_buffer[i] = read_kbd(); //*(uart_reg + RHR);
     }
+   // printf("\nTamanho lido[%d]",i);
     //printBuffer();
     if (key_buffer[2] == 0x0 && key_buffer[4] == 0x0) /*normal*/       {
         //Esse if é executado em todo key up
@@ -207,6 +188,8 @@ static unsigned char get_0x88()
 }
 unsigned char get_packet()
 {
+    unsigned char status=0;
+    unsigned char ch;
     while (1)
     {
         // 1. Sincroniza no primeiro byte do cabeçalho (0x57)
@@ -221,24 +204,30 @@ unsigned char get_packet()
 
         // 3. Lê o Comando (Pelo seu dump, pode vir 0x88, 0x87 ou 0x81)
         cmd = read_kbd(); // *(uart_reg + RHR);
-        // if ( cmd != 0x82)
-        //     printf("cmd %02x\n",cmd);
-        if (cmd == 0x88)        {
-           // printf("88 ");
-            return get_0x88();
+        if (cmd == 0x88)        {            
+            ch = get_0x88();
+            printBuffer("\nPKT 88 ");
+            status = 88;
+            continue;
+            return ch;
         }
         if (cmd == 0x81)        {
             get_0x81();
+            printBuffer("\nPKT 81 ");
             continue;
         }
         if (cmd == 0x82){
             cmd = read_kbd();
-           // printf("82 ");
+            // printf("82 ");
+            if( status == 88){
+                status = 82;
+                return ch;
+            }
             continue;
         }
         if (cmd == 0x87)        {
             get_0x87();
-            printf("|");
+            printBuffer("\nPKT 87");
             continue;
         }
     }
@@ -318,6 +307,7 @@ unsigned int get_char(){
     while(1){
         mymemset((void *)key_buffer, 0, sizeof(key_buffer));
         key_flag=get_packet();
+        set_keyboard_leds(mod_caps);
         //printf("key_flag[%02X]\n",key_flag);
         if ( key_flag == NO_KEY )
             continue;
@@ -345,7 +335,9 @@ unsigned int get_char(){
     }
     return ch;
 }
-
+void print_capslock(){
+    printf("Estado tecla capslock[%d02]\n",mod_caps);
+}
 
 int main_kbd()
 {
@@ -367,3 +359,80 @@ int main_kbd()
     return 0;
 }
 
+static unsigned char ___get_0x88()
+{
+    unsigned char size = read_kbd();
+   // printf("\nTamanho do pacote[%d]",size);
+    // Não se esqueça eu lia hardcoded de 0 a 12
+    // agora com size já sendo lido tenho que começar da posição 1
+    // pois o codigo espera os comandos nas posições A=4 e B=2
+    //ALTERADO ESSA MERDA POR ULTIMO
+    int i=0;
+    for (i = 1; i <= size; i++)    {
+        key_buffer[i] = read_kbd(); //*(uart_reg + RHR);
+    }
+   // printf("\nTamanho lido[%d]",i);
+    //printBuffer();
+    if (key_buffer[2] == 0x0 && key_buffer[4] == 0x0) /*normal*/       {
+        //Esse if é executado em todo key up
+        if( special_key_status > 0 ){
+            if(  special_key_down ){
+                special_key_up = 1;
+                special_key_down=0;
+                special_key_status=0;
+            }
+        }
+        if(  key_down ){
+            key_up = 1;
+            key_down=0;
+            return NO_KEY;
+        }
+        if(  special_key_down ){
+            special_key_up = 1;
+            special_key_down=0;
+            special_key_status=0;
+        }
+        //printf("1-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_buffer[2],key_buffer[4]);
+        return NO_KEY;
+    }
+    if (key_buffer[2] == 0x01 || key_buffer[2] == 0x10) /*control*/       {
+        special_key_status = KEY_CTRL;
+        special_key_down = 1;
+        special_key_up = 0;
+        return KEY_CTRL;
+    }
+    if (key_buffer[2] == 0x02 || key_buffer[2] == 0x20) /*shift*/       {
+        special_key_down = 1;
+        special_key_up = 0;
+        special_key_status = KEY_SHIFT;
+        return KEY_SHIFT;
+    }
+    if (key_buffer[2] == 0x04 ) /*Alt*/       {
+        special_key_down = 1;
+        special_key_up = 0;
+        special_key_status = KEY_ALT;
+        return KEY_ALT;
+    }        
+    if (key_buffer[2] == 0x40) /*Altgr*/       {
+        special_key_down = 1;
+        special_key_up = 0;
+        special_key_status = KEY_ALTGR;
+        return KEY_ALTGR;
+    }        
+    if (key_buffer[4] == 0x39) /*capslock*/       {
+        if (mod_caps == 0)            {
+            mod_caps = 2;
+            set_keyboard_leds(mod_caps);
+        }
+        else            {
+            mod_caps = 0;
+            set_keyboard_leds(mod_caps);
+        }
+        //printf("6-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_buffer[2],key_buffer[4]);
+        special_key_down = 1;
+        return KEY_CAPS;
+    }
+    key_down = 1;
+    key_up = 0;
+    return VALID_KEY;
+}

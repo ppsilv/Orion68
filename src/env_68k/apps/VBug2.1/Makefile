@@ -43,8 +43,10 @@ all: vbug2-1.bin
 #	$(LD) $(LDFLAGS) ../../obj/startup.o   vbug2-1.o -lmc68000 -o $@
 #	@echo "Linked: $@"
 
-vbug2-1.elf: build_counter.sh vbug2-1.o ../../obj/vbu2-1_startup.o drv_uart.o drv_kbd.o drv_picoVga.o vectors.o console.o
-	$(LD) $(LDFLAGS) ../../obj/vbu2-1_startup.o vbug2-1.o drv_uart.o drv_kbd.o drv_picoVga.o vectors.o console.o -lmc68000 -o $@
+vbug2-1.elf: build_counter.sh vbug2-1.o ../../obj/vbu2-1_startup.o drv_uart.o drv_kbd.o drv_picoVga.o vectors.o console.o \
+./dump/mem_dump.o ./xmodem/crc16.o ./xmodem/xmodem.o ./uart0/drv_uart0.o
+	$(LD) $(LDFLAGS) ../../obj/vbu2-1_startup.o vbug2-1.o drv_uart.o drv_kbd.o drv_picoVga.o vectors.o console.o \
+./dump/mem_dump.o ./xmodem/crc16.o ./xmodem/xmodem.o ./uart0/drv_uart0.o -lmc68000 -o $@
 	@echo "Linked: $@"
 	@echo "╔══════════════════════════╗"
 	@echo "║  COMPILACAO TERMINADA!   ║"

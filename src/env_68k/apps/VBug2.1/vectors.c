@@ -1,5 +1,7 @@
 #include "io.h"
 
+extern __attribute__((section(".mram"))) long systemTick;
+
 void __attribute__((interrupt)) SvcBusError     (){
     
 }
@@ -55,7 +57,7 @@ void __attribute__((interrupt)) Int6Handler(){
     
 }
 void __attribute__((interrupt)) Int7Handler(){
-    
+    systemTick += 1;
 }
 void __attribute__((interrupt)) Trap0Handler(){
     
