@@ -92,6 +92,7 @@ void main() {
             case 5:
                     debug_pkt = 1;
                     while(1){
+                        printf("Hit any <ENTER> to continue <ESC> to terminate: ");
                         ch = get_char();
                         printf("ch[%02x]",ch);
                         if( ch == 0x1B ){

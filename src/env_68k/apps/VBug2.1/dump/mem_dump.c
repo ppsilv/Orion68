@@ -31,7 +31,7 @@ void dump_memory(long addr){
             }
             printf("\n");
         }
-        printf("Hit any <ENTER> to continue <ESC> to terminate: ");
+        //
         ch = get_char();
         if( ch == 0x1B ){
             return;

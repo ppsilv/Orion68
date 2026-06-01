@@ -6,6 +6,16 @@ extern char isdigit(char c);
 extern char isupper(char c);
 extern char isalpha(char c);
 
+long strtol(const char *str, char **endptr, int base){
+    long resultado = 0;
+    // Avança enquanto encontrar caracteres numéricos
+    while (*str >= '0' && *str <= '9') {
+        resultado = (resultado * 10) + (*str - '0');
+        str++;
+    }
+    return resultado;
+}
+/*
 long strtol(const char *nptr, char **endptr, int base){
 	const char *s;
 	long acc, cutoff;
@@ -78,3 +88,4 @@ long strtol(const char *nptr, char **endptr, int base){
 		*endptr = (char *) (any ? s - 1 : nptr);
 	return (acc);
 }
+*/

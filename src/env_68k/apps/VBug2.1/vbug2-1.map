@@ -1,0 +1,283 @@
+Archive member included to satisfy reference by file (symbol)
+
+../../lib/libmc68000.a(memcpy.o)
+                              ./xmodem/xmodem.o (memcpy)
+../../lib/libmc68000.a(memset.o)
+                              ./xmodem/xmodem.o (memset)
+../../lib/libmc68000.a(printf.o)
+                              vbug2-1.o (printf)
+../../lib/libmc68000.a(strtol.o)
+                              vbug2-1.o (strtol)
+../../lib/libmc68000.a(strlen.o)
+                              ../../lib/libmc68000.a(printf.o) (strlen)
+../../lib/libmc68000.a(putchar.o)
+                              ../../lib/libmc68000.a(printf.o) (putchar)
+../../lib/libmc68000.a(puts.o)
+                              ../../lib/libmc68000.a(printf.o) (puts)
+
+Discarded input sections
+
+ .comment       0x00000000       0x13 vbug2-1.o
+ .comment       0x00000000       0x13 drv_uart.o
+ .comment       0x00000000       0x13 drv_kbd.o
+ .comment       0x00000000       0x13 drv_picoVga.o
+ .comment       0x00000000       0x13 vectors.o
+ .comment       0x00000000       0x13 console.o
+ .comment       0x00000000       0x13 ./dump/mem_dump.o
+ .comment       0x00000000       0x13 ./xmodem/crc16.o
+ .comment       0x00000000       0x13 ./xmodem/xmodem.o
+ .comment       0x00000000       0x13 ./uart0/drv_uart0.o
+ .comment       0x00000000       0x13 ../../lib/libmc68000.a(memcpy.o)
+ .comment       0x00000000       0x13 ../../lib/libmc68000.a(memset.o)
+ .comment       0x00000000       0x13 ../../lib/libmc68000.a(printf.o)
+ .comment       0x00000000       0x13 ../../lib/libmc68000.a(strtol.o)
+ .comment       0x00000000       0x13 ../../lib/libmc68000.a(strlen.o)
+ .comment       0x00000000       0x13 ../../lib/libmc68000.a(putchar.o)
+ .comment       0x00000000       0x13 ../../lib/libmc68000.a(puts.o)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+ROM              0x00000000         0x00008000         xr
+RAM              0x00080000         0x00100000         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+                0x00000000                        . = 0x0
+
+.vectors        0x00000000        0x0
+ *(.vectors)
+                0x00000000                        . = ALIGN (0x400)
+
+.text           0x00000000     0x27fa
+                0x00000000                        . = ALIGN (0x2)
+ *(.text*)
+ .text          0x00000000       0xe6 ../../obj/vbu2-1_startup.o
+                0x000000c0                _start
+ *fill*         0x000000e6        0x2 
+ .text          0x000000e8      0x300 vbug2-1.o
+                0x000000e8                main
+ .text          0x000003e8       0x86 drv_uart.o
+                0x000003e8                uart_init
+                0x00000438                uart_putchar
+ *fill*         0x0000046e        0x2 
+ .text          0x00000470      0x9cc drv_kbd.o
+                0x00000510                init_kbd
+                0x00000856                get_packet
+                0x00000926                set_keyboard_leds
+                0x000009e0                get_kbd_key
+                0x00000b14                get_char
+                0x00000bdc                print_capslock
+                0x00000c04                main_kbd
+ .text          0x00000e3c       0xe0 drv_picoVga.o
+                0x00000e3c                init_picoVga
+                0x00000e46                run_cmd
+                0x00000e64                picovga_putchar
+                0x00000e82                picovga_gotoxy
+                0x00000ec2                picovga_set_color
+                0x00000f08                clrscr
+ .text          0x00000f1c      0x1ca vectors.o
+                0x00000f1c                SvcBusError
+                0x00000f26                Svcaddress_err
+                0x00000f30                SvcIllegalIns
+                0x00000f3a                SvcDiv0_handler
+                0x00000f44                SvcChkIns
+                0x00000f4e                SvcTrapvIns
+                0x00000f58                SvcPrivViolation
+                0x00000f62                SvcTrace
+                0x00000f6c                SvcLineA
+                0x00000f76                SvcLineF
+                0x00000f80                bad_exception
+                0x00000f8a                SpuriousHandler
+                0x00000f94                Int1Handler
+                0x00000f9e                Int2Handler
+                0x00000fa8                Int3Handler
+                0x00000fb2                Int4Handler
+                0x00000fbc                Int5Handler
+                0x00000fc6                Int6Handler
+                0x00000fd0                Int7Handler
+                0x00000fec                Trap0Handler
+                0x00000ff6                Trap1Handler
+                0x0000105a                Trap2Handler
+                0x00001064                Trap3Handler
+                0x0000106e                Trap4Handler
+                0x00001078                Trap5Handler
+                0x00001082                Trap6Handler
+                0x0000108c                Trap7Handler
+                0x00001096                Trap8Handler
+                0x000010a0                Trap9Handler
+                0x000010aa                TrapAHandler
+                0x000010b4                TrapBHandler
+                0x000010be                TrapCHandler
+                0x000010c8                TrapDHandler
+                0x000010d2                TrapEHandler
+                0x000010dc                TrapFHandler
+ *fill*         0x000010e6        0x2 
+ .text          0x000010e8       0x30 console.o
+                0x000010e8                set_console_output
+                0x00001100                set_console_input
+ .text          0x00001118      0x15a ./dump/mem_dump.o
+                0x00001118                dump_memory
+ *fill*         0x00001272        0x2 
+ .text          0x00001274       0x6c ./xmodem/crc16.o
+                0x00001274                crc16_ccitt
+ .text          0x000012e0      0x6e4 ./xmodem/xmodem.o
+                0x00001396                xmodemReceive
+                0x00001662                xmodemTransmit
+ .text          0x000019c4      0x216 ./uart0/drv_uart0.o
+                0x000019c4                uart0_init
+                0x00001a8c                uart0_read
+                0x00001ae2                uart0_write
+                0x00001b40                _inbyte
+                0x00001bb8                _outbyte
+ *fill*         0x00001bda        0x2 
+ .text          0x00001bdc       0x1e ../../lib/libmc68000.a(memcpy.o)
+                0x00001bdc                memcpy
+ *fill*         0x00001bfa        0x2 
+ .text          0x00001bfc       0x16 ../../lib/libmc68000.a(memset.o)
+                0x00001bfc                memset
+ *fill*         0x00001c12        0x2 
+ .text          0x00001c14      0x3a6 ../../lib/libmc68000.a(printf.o)
+                0x00001c14                itox
+                0x00001c5e                itodec
+                0x00001cbc                itooct
+                0x00001d02                itoudec
+                0x00001d54                pad_zeros
+                0x00001d98                printf
+ *fill*         0x00001fba        0x2 
+ .text          0x00001fbc       0x32 ../../lib/libmc68000.a(strtol.o)
+                0x00001fbc                strtol
+ *fill*         0x00001fee        0x2 
+ .text          0x00001ff0       0x12 ../../lib/libmc68000.a(strlen.o)
+                0x00001ff0                strlen
+ *fill*         0x00002002        0x2 
+ .text          0x00002004       0x1a ../../lib/libmc68000.a(putchar.o)
+                0x00002004                putchar
+ *fill*         0x0000201e        0x2 
+ .text          0x00002020       0x26 ../../lib/libmc68000.a(puts.o)
+                0x00002020                puts
+ *(.rodata)
+ .rodata        0x00002046      0x1f0 vbug2-1.o
+                0x00002046                MsgOrionInit
+ .rodata        0x00002236      0x2cf drv_kbd.o
+                0x00002236                OE_BASE_KEYMAP
+                0x000022b6                OE_SHIFT_KEYMAP
+                0x00002336                OE_CTRL_KEYMAP
+                0x000023b6                OE_ALT_KEYMAP
+                0x00002436                OE_ALTGR_KEYMAP
+ .rodata        0x00002505       0xcd ./dump/mem_dump.o
+ .rodata        0x000025d2      0x200 ./xmodem/crc16.o
+ .rodata        0x000027d2       0x28 ../../lib/libmc68000.a(printf.o)
+                0x000027fa                        . = ALIGN (0x2)
+
+.rodata         0x000027fa       0x20
+                0x000027fa                        . = ALIGN (0x2)
+ *(.rodata*)
+ .rodata.str1.1
+                0x000027fa       0x20 ../../lib/libmc68000.a(printf.o)
+                0x0000281a                        . = ALIGN (0x2)
+
+.data           0x00080000        0x0 load address 0x0000281a
+                0x00080000                        . = ALIGN (0x2)
+                0x00080000                        __data_start = .
+ *(.data*)
+ .data          0x00080000        0x0 ../../obj/vbu2-1_startup.o
+ .data          0x00080000        0x0 vbug2-1.o
+ .data          0x00080000        0x0 drv_uart.o
+ .data          0x00080000        0x0 drv_kbd.o
+ .data          0x00080000        0x0 drv_picoVga.o
+ .data          0x00080000        0x0 vectors.o
+ .data          0x00080000        0x0 console.o
+ .data          0x00080000        0x0 ./dump/mem_dump.o
+ .data          0x00080000        0x0 ./xmodem/crc16.o
+ .data          0x00080000        0x0 ./xmodem/xmodem.o
+ .data          0x00080000        0x0 ./uart0/drv_uart0.o
+ .data          0x00080000        0x0 ../../lib/libmc68000.a(memcpy.o)
+ .data          0x00080000        0x0 ../../lib/libmc68000.a(memset.o)
+ .data          0x00080000        0x0 ../../lib/libmc68000.a(printf.o)
+ .data          0x00080000        0x0 ../../lib/libmc68000.a(strtol.o)
+ .data          0x00080000        0x0 ../../lib/libmc68000.a(strlen.o)
+ .data          0x00080000        0x0 ../../lib/libmc68000.a(putchar.o)
+ .data          0x00080000        0x0 ../../lib/libmc68000.a(puts.o)
+                0x00080000                        . = ALIGN (0x2)
+                0x00080000                        __data_end = .
+
+.minha_ram      0x00080000        0x4 load address 0x0000281a
+ .minha_ram     0x00080000        0x4 vbug2-1.o
+                0x00080000                vbug_status_flag
+
+.mram           0x00080000      0x108
+ *(.mram)
+ .mram          0x00080000      0x108 vbug2-1.o
+                0x00080000                vbug_buffer
+                0x00080100                systemTick
+                0x00080104                flg_system
+                0x0000281a                        __data_load_start = LOADADDR (.data)
+
+.bss            0x00080108       0x44
+                0x00080108                        . = ALIGN (0x2)
+                0x00080108                        __bss_start = .
+ *(.bss*)
+ .bss           0x00080108        0x0 ../../obj/vbu2-1_startup.o
+ .bss           0x00080108        0x0 vbug2-1.o
+ .bss           0x00080108        0x0 drv_uart.o
+ .bss           0x00080108       0x3b drv_kbd.o
+                0x00080108                key_buffer
+                0x00080138                cmd
+                0x00080139                length
+                0x0008013a                type
+                0x0008013b                special_key_up
+                0x0008013c                special_key_down
+                0x0008013d                key_up
+                0x0008013e                key_down
+                0x0008013f                special_key_status
+                0x00080140                _CapsFlag
+                0x00080141                mod_caps
+                0x00080142                debug_pkt
+ *fill*         0x00080143        0x1 
+ .bss           0x00080144        0x0 drv_picoVga.o
+ .bss           0x00080144        0x0 vectors.o
+ .bss           0x00080144        0x8 console.o
+                0x00080144                cconin
+                0x00080148                cconout
+ .bss           0x0008014c        0x0 ./dump/mem_dump.o
+ .bss           0x0008014c        0x0 ./xmodem/crc16.o
+ .bss           0x0008014c        0x0 ./xmodem/xmodem.o
+ .bss           0x0008014c        0x0 ./uart0/drv_uart0.o
+ .bss           0x0008014c        0x0 ../../lib/libmc68000.a(memcpy.o)
+ .bss           0x0008014c        0x0 ../../lib/libmc68000.a(memset.o)
+ .bss           0x0008014c        0x0 ../../lib/libmc68000.a(printf.o)
+ .bss           0x0008014c        0x0 ../../lib/libmc68000.a(strtol.o)
+ .bss           0x0008014c        0x0 ../../lib/libmc68000.a(strlen.o)
+ .bss           0x0008014c        0x0 ../../lib/libmc68000.a(putchar.o)
+ .bss           0x0008014c        0x0 ../../lib/libmc68000.a(puts.o)
+ *(COMMON)
+                0x0008014c                        . = ALIGN (0x2)
+                0x0008014c                        __bss_end = .
+
+.stack          0x0008014c     0x1000
+                0x0008014c                        . = ALIGN (0x2)
+                0x0008014c                        _stack_start = .
+                0x0008114c                        . = (. + 0x1000)
+ *fill*         0x0008014c     0x1000 
+                0x0008114c                        . = ALIGN (0x2)
+                0x0008114c                        _stack_end = .
+
+/DISCARD/
+ *(.comment)
+ *(.note*)
+ *(.align*)
+LOAD ../../obj/vbu2-1_startup.o
+LOAD vbug2-1.o
+LOAD drv_uart.o
+LOAD drv_kbd.o
+LOAD drv_picoVga.o
+LOAD vectors.o
+LOAD console.o
+LOAD ./dump/mem_dump.o
+LOAD ./xmodem/crc16.o
+LOAD ./xmodem/xmodem.o
+LOAD ./uart0/drv_uart0.o
+LOAD ../../lib/libmc68000.a
+OUTPUT(vbug2-1.elf elf32-m68k)
