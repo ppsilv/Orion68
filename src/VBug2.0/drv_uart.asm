@@ -6,16 +6,16 @@ UART_BASE   equ     $FF4000
 ; Change A1
 ; Parametros: none
 ; ----------------------------------------------------------------------
-InitUart:
-        move.l  currentUart,A1
-        move.l  currentBaudRate,D0
-        move.b  #%10000011,LCR(A1) ;DLAB=1
-        move.b  #$08,DLL(A1)       ; set divisor latch low byte
-        move.b  #$00,DLM(A1)       ; set divisor latch high byte
-        move.b  #%00000011,LCR(A1) ; 8 data bits, no parity, 1 stop bit, DLAB=0
-        move.b  #%00001101,FCR(A1) ; enable FIFO
-        clr.b   SCR(A1)            ; clear the scratch register
-        RTS
+;;InitUart:
+;;        move.l  currentUart,A1
+;;        move.l  currentBaudRate,D0
+;;        move.b  #%10000011,LCR(A1) ;DLAB=1
+;;        move.b  #$08,DLL(A1)       ; set divisor latch low byte
+;;        move.b  #$00,DLM(A1)       ; set divisor latch high byte
+;;        move.b  #%00000011,LCR(A1) ; 8 data bits, no parity, 1 stop bit, DLAB=0
+;;        move.b  #%00001101,FCR(A1) ; enable FIFO
+;;        clr.b   SCR(A1)            ; clear the scratch register
+;;        RTS
 InitUart1:
         move.l  currentUart,A1
         move.l  currentBaudRate,D0

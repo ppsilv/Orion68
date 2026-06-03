@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "drv_picoVga.h"
 #include "drv_kbd.h"
+#include "drv_uart.h"
 
 void dump_memory(long addr){
     unsigned char * pcharhex = (unsigned char *)addr;
@@ -31,10 +32,11 @@ void dump_memory(long addr){
             }
             printf("\n");
         }
-        //
+        printf("Hit any <ENTER> to continue <ESC> to terminate: BOSTA ");
         ch = get_char();
         if( ch == 0x1B ){
             return;
         }
     }
+
 }

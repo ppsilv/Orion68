@@ -129,14 +129,18 @@ PicoClearScreen:
 PicoWriteChar:
         MOVE.L  A1,-(SP)
         MOVE.L  D1,-(SP)
+        MOVE.L  D0,-(SP)
         LEA     WRITE_SCREEN,A1
         MOVE.B  D0,(A1)     ; Escreve no endereço do PicoVGA (LDS ativo)
         MOVE.L  #$3F,D1    ; Contador para o delay (ajuste se precisar de mais)
 .DELAY00:
         SUBQ.L  #1,D1       ; Subtrai 1 de D1 (4 ciclos)
         BNE.S   .DELAY00    ; Pula se não for zero (10 ciclos se pular, 8 se não)
+        MOVE.L (SP)+,D0
+        JSR     UartWriteChar
         MOVE.L (SP)+,D1
         MOVE.L (SP)+,A1
+
         RTS
 ;last change
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

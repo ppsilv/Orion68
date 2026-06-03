@@ -6,21 +6,26 @@ CFLAGS = -Wall -O0 -I ./includes -I../../include -ffreestanding -nostdlib
 LDFLAGS = -T ./vbug2-1.ld -L../../lib -nostdlib  -Map=vbug2-1.map
 
 #SRCS = $(wildcard *.c)
-SRCS = vbug2-1.c drv_uart.c drv_kbd.c drv_picoVga.c vectors.c console.o
+SRCS = vbug2-1.c vectors.c console.c \
+./dump/mem_dump.c \
+./kbd/drv_kbd.c \
+./picoVga/drv_picoVga.c \
+./xmodem/crc16.c \
+timers.c
 OBJS = $(SRCS:.c=.o)
 #ELFS = $(SRCS:.c=.elf)
 #BINS = $(SRCS:.c=.bin)
 
 #Tools
-SPLITTER := python3 split68k.py
-FILLER := python3 fill.py
+SPLITTER := python3 ./tools/split68k.py
+FILLER := python3 ./tools/fill.py
 PROGRAMMER := minipro
-CHECKSUMER := python3 checksum_put.py
+CHECKSUMER := python3 ./tools/checksum_put.py
 #CHIP_TYPE := SST39SF010 #28C64A  # Altere para o seu chip Flash
 CHIP_TYPE := AT29C512
 #Rom sizes
-FLASH_SIZE := 65535  # 128KB (tamanho da 39SF010)
-ROM_SIZE := 65535     # 128KB usados
+FLASH_SIZE := 65536  # 128KB (tamanho da 39SF010)
+ROM_SIZE := 65536     # 128KB usados
 
 TARGET := vbug2-1
 TARGET_OBJ := $(TARGET).o
@@ -35,7 +40,7 @@ TARGET_HIGH := $(TARGET)_high.bin
 all: vbug2-1.bin
 
 %.o: %.c
-	@./build_counter.sh
+	@./tools/build_counter.sh
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Regra específica para cada arquivo para evitar problemas com $<
@@ -43,10 +48,8 @@ all: vbug2-1.bin
 #	$(LD) $(LDFLAGS) ../../obj/startup.o   vbug2-1.o -lmc68000 -o $@
 #	@echo "Linked: $@"
 
-vbug2-1.elf: build_counter.sh vbug2-1.o ../../obj/vbu2-1_startup.o drv_uart.o drv_kbd.o drv_picoVga.o vectors.o console.o \
-./dump/mem_dump.o ./xmodem/crc16.o ./xmodem/xmodem.o ./uart0/drv_uart0.o
-	$(LD) $(LDFLAGS) ../../obj/vbu2-1_startup.o vbug2-1.o drv_uart.o drv_kbd.o drv_picoVga.o vectors.o console.o \
-./dump/mem_dump.o ./xmodem/crc16.o ./xmodem/xmodem.o ./uart0/drv_uart0.o -lmc68000 -o $@
+vbug2-1.elf: ./tools/build_counter.sh $(OBJS)
+	$(LD) $(LDFLAGS) ../../obj/vbu2-1_startup.o $(OBJS) -lmc68000 -o $@
 	@echo "Linked: $@"
 	@echo "╔══════════════════════════╗"
 	@echo "║  COMPILACAO TERMINADA!   ║"

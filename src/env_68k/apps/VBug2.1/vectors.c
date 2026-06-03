@@ -1,4 +1,10 @@
 #include "io.h"
+#include "keyboard.h"
+
+extern volatile unsigned char rx_head;
+extern volatile unsigned char rx_tail;
+extern volatile char rx_buffer[RX_BUFFER_SIZE];
+
 
 extern __attribute__((section(".mram"))) long systemTick;
 
@@ -48,13 +54,16 @@ void __attribute__((interrupt)) Int3Handler(){
     
 }
 void __attribute__((interrupt)) Int4Handler(){
-    
+
 }
 void __attribute__((interrupt)) Int5Handler(){
     
 }
 void __attribute__((interrupt)) Int6Handler(){
-    
+//    while (*((volatile unsigned char *)LSR) & 0x01) {
+//        rx_buffer[rx_head] = *((volatile unsigned char *)RBR);
+//        rx_head++; // Overflow natural em 256 por ser uint8_t
+//    }    
 }
 void __attribute__((interrupt)) Int7Handler(){
     systemTick += 1;

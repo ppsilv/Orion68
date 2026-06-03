@@ -6,37 +6,34 @@
 #include "io.h"
 #include "mc68000.h"
 #include "color.h"
+#include "timers.h"
 
-__attribute__((section(".mram"))) char vbug_buffer[256];
-__attribute__((section(".minha_ram"))) int vbug_status_flag;
+//__attribute__((section(".mram"))) char vbug_buffer[256];
+//__attribute__((section(".minha_ram"))) int vbug_status_flag;
 __attribute__((section(".mram"))) long systemTick;
 __attribute__((section(".mram"))) unsigned int flg_system;
 
-#include "build_counter.h"
+#include "./tools/build_counter.h"
 
 const char MsgOrionInit[] = 
     "PDS317 - copyright (C) pdsilva(pgordao).VBug2.1\n"
-    "MC68000 System Monitor\n"
+    "MC68000 System Monitor MERDA\n"
     "Build Date: " __DATE__ " - " __TIME__ "\n"
     "Build Counter: " BUILD_COUNTER "\n"
     "-----------------------------------------------\n\n";
 extern volatile unsigned char debug_pkt;
+ 
+extern void dump_memory(long addr);
+ 
 
-void dump_memory(long addr);
-void print_capslock();
 void main() {
     systemTick = 0;
     // Inicializa os hardwares normalmente
-    init_kbd();
-    uart0_init();
 
     // 1. Direciona o console para a PicoVGA
-   // set_console_output(uart_putchar);
-   // print_string("E este texto vai direto para o terminal Serial a 115200!\r\n");
-
-    // 2. O usuário digitou um comando para mudar de canal? 
     // Basta alterar o ponteiro!
     set_console_output(picovga_putchar);
+    
     set_console_input(get_char);
 
     picovga_set_color(RED,BLACK);
@@ -46,6 +43,20 @@ void main() {
     int col=0,row=15;
     unsigned int ch;
     print_capslock();
+
+    //uart0_init();
+    delay10ms(1000);  //100ms    
+    // uart1_init();
+    // delay10ms(100);  //100ms    
+    // uart2_init();
+    // delay10ms(100);  //100ms    
+    // uart3_init();
+    // delay10ms(100);  //100ms    
+    init_kbd();
+    ch9350_shut_up();
+    delay10ms(1000);  //100ms    
+
+
     while(1) {
         //clrscr();
         picovga_gotoxy(col,row);
@@ -57,6 +68,9 @@ void main() {
         printf(" 4 - Posiciona cursor\n");
         printf(" 5 - Ler kbd\n");
         printf(" 6 - Ler kbd\n");
+        printf(" 7 - Cale a boca\n");
+        printf(" 8 - Enable interrupts\n");
+        printf(" a - escreve na uart\n");
 
         printf("Choose an option: ");
         ch = get_char();
@@ -64,6 +78,8 @@ void main() {
         ch -= '0';
         printf("\n");
         switch(ch){
+            case 0x61:
+                    break;    
             case 0: clrscr();
                     col=0,row=0;
                     break;
@@ -71,11 +87,11 @@ void main() {
                     printf("systemTick: [%08ld]\n",systemTick);
                     break;
             case 2:
-                    char arr[] = "82000";
-                    char *ptr_fim;
-                    long resultado;
+                    //char arr[] = "82000";
+                    //char *ptr_fim;
+                    //long resultado;
+                    //resultado = strtol(arr, &ptr_fim, 10);
 
-                    resultado = strtol(arr, &ptr_fim, 10);
                     dump_memory(0x000);
                     break;
             case 3:
@@ -110,6 +126,13 @@ void main() {
                         }
                     }
                     break;
+            case 7:
+                    ch9350_shut_up();
+                    break;    
+            case 8:
+                    ch9350_shut_up();
+                    enable_kbd_interrupts();                                        
+                    break;    
             default:
                     printf("Wrong option\n");        
         }

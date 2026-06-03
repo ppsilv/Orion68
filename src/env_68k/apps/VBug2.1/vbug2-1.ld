@@ -1,9 +1,9 @@
 MEMORY {
     /* Região da ROM onde o código vai rodar (VBut + Teclado embutido) */
-    ROM (rx)  : ORIGIN = 0x00000000, LENGTH = 32K
+    ROM (rx)  : ORIGIN = 0x00000000, LENGTH = 64K
 
     /* Região da sua Shadow RAM alta para variáveis e pilha */
-    RAM (rwx) : ORIGIN = 0x00080000, LENGTH = 1M
+    RAM (rwx) : ORIGIN = 0x00080000, LENGTH = 512K
 }
 
 SECTIONS {
@@ -42,9 +42,9 @@ SECTIONS {
         __data_end = .;     /* Fim do bloco na RAM */
     } > RAM AT> ROM
 
-    .mram  0x00080000 (NOLOAD) :
+    .mram  (NOLOAD) :
     {
-        *(.mram)
+        *(?.mram)
     } > RAM
 
     /* Guarda o endereço físico na ROM de onde o startup deve copiar os dados */
@@ -61,6 +61,11 @@ SECTIONS {
     } > RAM
 
     /* A Pilha (Stack) também fica alocada na RAM alta de forma segura */
+    /* Defina a Pilha no FINAL da sua RAM de 512K (0x00100000) */
+    /* Como o 68k empilha para BAIXO, ela decresce com segurança */
+    _stack_end = 0x00100000; 
+    _stack_start = _stack_end - 0x2000; /* 8KB de pilha segura */
+/*
     .stack (NOLOAD) : {
         . = ALIGN(2);
         _stack_start = .;
@@ -68,7 +73,7 @@ SECTIONS {
         . = ALIGN(2);
         _stack_end = .;
     } > RAM
-
+*/
     /DISCARD/ : {
         *(.comment)
         *(.note*)

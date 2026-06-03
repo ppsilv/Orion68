@@ -102,7 +102,7 @@ NoEndLine:
         MOVE.L  A0,-(SP)          ; Salva endereço atual
         LEA     MsgHitAnyKey,A0
         JSR     WriteStringConout
-        JSR     Readkbd         ;;;;ReadConin
+        JSR     ReadConin
         CMP.B   #$1B,D0
         BEQ     .fim
 

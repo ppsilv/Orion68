@@ -15,7 +15,9 @@ void set_console_input(getchar_func nova_entrada){
         cconin = nova_entrada;
     }
 }
-
+void enable_interrupts(){
+    __asm__ __volatile__ ("move.w #0x2000, %sr");
+}
 /*
 // Uma função de print genérica que não quer saber quem é o hardware
 void print_string(const char *str) {

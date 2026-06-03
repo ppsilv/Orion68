@@ -3,7 +3,7 @@ import os
 import sys
 
 def fill_file(input_file, target_size):
-    """Preenche um arquivo binário com 0x00 até o tamanho especificado"""
+    """Preenche um arquivo binário com 0xFF até o tamanho especificado"""
     
     # Verifica se o arquivo existe
     if not os.path.exists(input_file):
@@ -29,7 +29,7 @@ def fill_file(input_file, target_size):
     # Preenche com 0x00
     try:
         with open(input_file, 'ab') as f:  # 'ab' mode para adicionar em modo binário
-            f.write(b'\x00' * bytes_needed)
+            f.write(b'\xFF' * bytes_needed)
         
         print(f"Arquivo '{input_file}' preenchido com sucesso.")
         print(f"Bytes adicionados: {bytes_needed} (0x00)")
