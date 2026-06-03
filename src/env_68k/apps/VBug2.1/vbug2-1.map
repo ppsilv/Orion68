@@ -42,7 +42,7 @@ Linker script and memory map
  *(.vectors)
                 0x00000000                        . = ALIGN (0x400)
 
-.text           0x00000000     0x1e4c
+.text           0x00000000     0x1f0c
                 0x00000000                        . = ALIGN (0x2)
  *(.text*)
  .text          0x00000000      0x192 ../../obj/vbu2-1_startup.o
@@ -94,68 +94,68 @@ Linker script and memory map
  *fill*         0x0000070a        0x2 
  .text          0x0000070c      0x168 ./dump/mem_dump.o
                 0x0000070c                dump_memory
- .text          0x00000874      0x81a ./kbd/drv_kbd.o
+ .text          0x00000874      0x89a ./kbd/drv_kbd.o
                 0x000008dc                init_kbd
                 0x00000978                enable_kbd_interrupts
                 0x00000c30                get_packet
-                0x00000e54                get_kbd_key
-                0x00000f88                ch9350_shut_up
-                0x00000f9c                get_char
-                0x00001066                print_capslock
- *fill*         0x0000108e        0x2 
- .text          0x00001090       0xe0 ./picoVga/drv_picoVga.o
-                0x00001090                init_picoVga
-                0x0000109a                run_cmd
-                0x000010b8                picovga_putchar
-                0x000010d6                picovga_gotoxy
-                0x00001116                picovga_set_color
-                0x0000115c                clrscr
- .text          0x00001170       0x6c ./xmodem/crc16.o
-                0x00001170                crc16_ccitt
- .text          0x000011dc       0x30 timers.o
-                0x000011dc                delay10ms
- .text          0x0000120c       0x16 ../../lib/libmc68000.a(memset.o)
-                0x0000120c                memset
- *fill*         0x00001222        0x2 
- .text          0x00001224      0x3a6 ../../lib/libmc68000.a(printf.o)
-                0x00001224                itox
-                0x0000126e                itodec
-                0x000012cc                itooct
-                0x00001312                itoudec
-                0x00001364                pad_zeros
-                0x000013a8                printf
- *fill*         0x000015ca        0x2 
- .text          0x000015cc       0x12 ../../lib/libmc68000.a(strlen.o)
-                0x000015cc                strlen
- *fill*         0x000015de        0x2 
- .text          0x000015e0       0x1a ../../lib/libmc68000.a(putchar.o)
-                0x000015e0                putchar
- *fill*         0x000015fa        0x2 
- .text          0x000015fc       0x26 ../../lib/libmc68000.a(puts.o)
-                0x000015fc                puts
+                0x00000ed4                get_kbd_key
+                0x00001008                ch9350_shut_up
+                0x0000101c                get_char
+                0x000010e6                print_capslock
+ *fill*         0x0000110e        0x2 
+ .text          0x00001110       0xe0 ./picoVga/drv_picoVga.o
+                0x00001110                init_picoVga
+                0x0000111a                run_cmd
+                0x00001138                picovga_putchar
+                0x00001156                picovga_gotoxy
+                0x00001196                picovga_set_color
+                0x000011dc                clrscr
+ .text          0x000011f0       0x6c ./xmodem/crc16.o
+                0x000011f0                crc16_ccitt
+ .text          0x0000125c       0x30 timers.o
+                0x0000125c                delay10ms
+ .text          0x0000128c       0x16 ../../lib/libmc68000.a(memset.o)
+                0x0000128c                memset
+ *fill*         0x000012a2        0x2 
+ .text          0x000012a4      0x3a6 ../../lib/libmc68000.a(printf.o)
+                0x000012a4                itox
+                0x000012ee                itodec
+                0x0000134c                itooct
+                0x00001392                itoudec
+                0x000013e4                pad_zeros
+                0x00001428                printf
+ *fill*         0x0000164a        0x2 
+ .text          0x0000164c       0x12 ../../lib/libmc68000.a(strlen.o)
+                0x0000164c                strlen
+ *fill*         0x0000165e        0x2 
+ .text          0x00001660       0x1a ../../lib/libmc68000.a(putchar.o)
+                0x00001660                putchar
+ *fill*         0x0000167a        0x2 
+ .text          0x0000167c       0x26 ../../lib/libmc68000.a(puts.o)
+                0x0000167c                puts
  *(.rodata)
- .rodata        0x00001622      0x236 vbug2-1.o
-                0x00001622                MsgOrionInit
- .rodata        0x00001858      0x104 ./dump/mem_dump.o
- .rodata        0x0000195c      0x2c7 ./kbd/drv_kbd.o
-                0x0000195c                OE_BASE_KEYMAP
-                0x000019dc                OE_SHIFT_KEYMAP
-                0x00001a5c                OE_CTRL_KEYMAP
-                0x00001adc                OE_ALT_KEYMAP
-                0x00001b5c                OE_ALTGR_KEYMAP
- *fill*         0x00001c23        0x1 
- .rodata        0x00001c24      0x200 ./xmodem/crc16.o
- .rodata        0x00001e24       0x28 ../../lib/libmc68000.a(printf.o)
-                0x00001e4c                        . = ALIGN (0x2)
+ .rodata        0x000016a2      0x236 vbug2-1.o
+                0x000016a2                MsgOrionInit
+ .rodata        0x000018d8      0x104 ./dump/mem_dump.o
+ .rodata        0x000019dc      0x307 ./kbd/drv_kbd.o
+                0x000019dc                OE_BASE_KEYMAP
+                0x00001a5c                OE_SHIFT_KEYMAP
+                0x00001adc                OE_CTRL_KEYMAP
+                0x00001b5c                OE_ALT_KEYMAP
+                0x00001bdc                OE_ALTGR_KEYMAP
+ *fill*         0x00001ce3        0x1 
+ .rodata        0x00001ce4      0x200 ./xmodem/crc16.o
+ .rodata        0x00001ee4       0x28 ../../lib/libmc68000.a(printf.o)
+                0x00001f0c                        . = ALIGN (0x2)
 
-.rodata         0x00001e4c       0x20
-                0x00001e4c                        . = ALIGN (0x2)
+.rodata         0x00001f0c       0x20
+                0x00001f0c                        . = ALIGN (0x2)
  *(.rodata*)
  .rodata.str1.1
-                0x00001e4c       0x20 ../../lib/libmc68000.a(printf.o)
-                0x00001e6c                        . = ALIGN (0x2)
+                0x00001f0c       0x20 ../../lib/libmc68000.a(printf.o)
+                0x00001f2c                        . = ALIGN (0x2)
 
-.data           0x00080000        0x0 load address 0x00001e6c
+.data           0x00080000        0x0 load address 0x00001f2c
                 0x00080000                        . = ALIGN (0x2)
                 0x00080000                        __data_start = .
  *(.data*)
@@ -176,14 +176,14 @@ Linker script and memory map
                 0x00080000                        . = ALIGN (0x2)
                 0x00080000                        __data_end = .
 
-.mram           0x00080000        0x8 load address 0x00001e6c
+.mram           0x00080000        0x8 load address 0x00001f2c
  *(?.mram)
  .mram          0x00080000        0x8 vbug2-1.o
                 0x00080000                systemTick
                 0x00080004                flg_system
-                0x00001e6c                        __data_load_start = LOADADDR (.data)
+                0x00001f2c                        __data_load_start = LOADADDR (.data)
 
-.bss            0x00080008       0x44 load address 0x00001e6c
+.bss            0x00080008       0x44 load address 0x00001f2c
                 0x00080008                        . = ALIGN (0x2)
                 0x00080008                        __bss_start = .
  *(.bss*)

@@ -326,10 +326,11 @@ static void send_cmd_keyboard(unsigned char cmd)
     buf[8] = 0x00;
     buf[9] = 0x0F; // Constante de preenchimento (comum nesse protocolo)
 
-    // Checksum: soma de buf[0] até buf[9]
+    // Checksum: soma de buf[2] até buf[9]
     unsigned char ck = 0;
     for (int i = 2; i < 10; i++)    {
         ck += buf[i];
+        printf("[%02x]%02x.",buf[i],ck);
     }
     buf[10] = ck;
 
@@ -338,6 +339,7 @@ static void send_cmd_keyboard(unsigned char cmd)
         while (!(*(uart_reg + LSR) & 0x20))            ;
         *(uart_reg + THR) = buf[i];
     }
+    printf("\nCAPSLOCK sent ck[%02x]\n",ck);
 }
 static void send_cmd_shutup(unsigned char cmd)
 {
@@ -358,19 +360,20 @@ static void send_cmd_shutup(unsigned char cmd)
     buf[8] = 0x80;
     buf[9] = 0x00; // Constante de preenchimento (comum nesse protocolo)
 
-    // Checksum: soma de buf[0] até buf[9]
+    // Checksum: soma de buf[2] até buf[9]
     unsigned char ck = 0;
     for (int i = 2; i < 10; i++)    {
         ck += buf[i];
+        printf("[%02x]%02x.",buf[i],ck);
     }
     buf[10] = ck;
 
     // Envio para a UART
     for (int i = 0; i < 11; i++)    {
-        while (!(*(uart_reg + LSR) & 0x20))            ;
+        while (!(*(uart_reg + LSR) & 0x20));
         *(uart_reg + THR) = buf[i];
     }
-    //printf(" cmd sent ");
+    printf("\nshutup cmd sent ck[%02x]\n",ck);
 }
 
 unsigned char get_kbd_key(unsigned char code)
