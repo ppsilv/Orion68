@@ -91,7 +91,9 @@ static void printBuffer(char * pkt){
         printf("\n");
     }
 }
-
+void liga_debug(){
+    debug_pkt ^= debug_pkt;
+}
 void init_kbd()
 {
     volatile unsigned char *uart_reg = (volatile unsigned char *)DRV_UART1_BASE;
@@ -153,10 +155,10 @@ static unsigned char read_kbd()
     unsigned char ch;
     while (!(*(uart_reg + LSR) & 0x01)) ;
     return (unsigned char)*(uart_reg + RHR);
-    if( ch != 0xFF ){
-        printf("[%02x]\n",ch);
-        delay10ms(1000);
-    }
+    //if( ch != 0xFF ){
+    //    printf("[%02x]\n",ch);
+    //    delay10ms(1000);
+    //}
     return ch;
 }
 //char read_kbd(void) {
@@ -181,16 +183,7 @@ static unsigned char get_0x81()
 
     return 0;
 }
-static void get_0x87()
-{
-    int i;
-    length = read_kbd();
 
-    for (i = 0; i <= length; i++) {
-
-        read_kbd();
-    }
-}
 static unsigned char get_0x88()
 {
     unsigned char size = read_kbd();
@@ -286,12 +279,9 @@ unsigned char get_packet()
 
         // 3. Lê o Comando (Pelo seu dump, pode vir 0x88, 0x87 ou 0x81)
         cmd = read_kbd();
-        if (cmd == 0x88)        {            
-            ch = get_0x88();
-            printBuffer("\nPKT 88 ");
-            return ch;
-        }
+        //0x80 only in state 2/3/4
         if (cmd == 0x81)        {
+            printf("81 ");
             get_0x81();
             printBuffer("\nPKT 81 ");
             continue;
@@ -301,10 +291,23 @@ unsigned char get_packet()
             //printf("82 ");
             continue;
         }
+        //0x83 only in state 1
+        //0x84 only in state 1
+        if (cmd == 0x85){
+            cmd = read_kbd();
+            printf("85 [%02x]\n",cmd);
+            continue;
+        }
+        //0x86 only in state 1
         if (cmd == 0x87)        {
-            get_0x87();
+            //printf("87 ");
             printBuffer("\nPKT 87");
             continue;
+        }
+        if (cmd == 0x88)        {            
+            ch = get_0x88();
+            printBuffer("\nPKT 88 ");
+            return ch;
         }
     }
     return NO_KEY;
@@ -330,7 +333,7 @@ static void send_cmd_keyboard(unsigned char cmd)
     unsigned char ck = 0;
     for (int i = 2; i < 10; i++)    {
         ck += buf[i];
-        printf("[%02x]%02x.",buf[i],ck);
+        //printf("[%02x]%02x.",buf[i],ck);
     }
     buf[10] = ck;
 
@@ -339,7 +342,7 @@ static void send_cmd_keyboard(unsigned char cmd)
         while (!(*(uart_reg + LSR) & 0x20))            ;
         *(uart_reg + THR) = buf[i];
     }
-    printf("\nCAPSLOCK sent ck[%02x]\n",ck);
+    //printf("\nCAPSLOCK sent ck[%02x]\n",ck);
 }
 static void send_cmd_shutup(unsigned char cmd)
 {
@@ -364,8 +367,9 @@ static void send_cmd_shutup(unsigned char cmd)
     unsigned char ck = 0;
     for (int i = 2; i < 10; i++)    {
         ck += buf[i];
-        printf("[%02x]%02x.",buf[i],ck);
+        //printf("[%02x]%02x.",buf[i],ck);
     }
+    ck = 0x20;
     buf[10] = ck;
 
     // Envio para a UART
@@ -373,7 +377,7 @@ static void send_cmd_shutup(unsigned char cmd)
         while (!(*(uart_reg + LSR) & 0x20));
         *(uart_reg + THR) = buf[i];
     }
-    printf("\nshutup cmd sent ck[%02x]\n",ck);
+    //printf("\nshutup cmd sent ck[%02x]\n",ck);
 }
 
 unsigned char get_kbd_key(unsigned char code)
@@ -422,12 +426,15 @@ unsigned int get_char(){
     while(1){
         memset((void *)key_buffer, 0, sizeof(key_buffer));
         key_flag=get_packet();
-        send_cmd_keyboard(mod_caps);
         //printf("key_flag[%02X]\n",key_flag);
         if ( key_flag == NO_KEY )
             continue;
-        if(  key_buffer[4] == 0x39 )
-            return 0;    
+//        if(  key_buffer[4] == 0x39 )
+//            return 0;    
+        if( key_flag == KEY_CAPS ){
+            send_cmd_keyboard(mod_caps);
+            continue;
+        }
         if( (key_flag != KEY_SHIFT) && (key_flag < VALID_KEY) )
             ch = (key_flag << 8) ;
         key_flag = 0;

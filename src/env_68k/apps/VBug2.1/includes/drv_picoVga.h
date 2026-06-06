@@ -49,5 +49,6 @@ void picovga_putchar(unsigned char ch);
 void picovga_set_color(unsigned char txtcolor,unsigned char bgcolor);
 void picovga_gotoxy(int col,int row);
 void clrscr();
+void picovga_gohome();
 
 #endif

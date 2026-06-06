@@ -25,6 +25,7 @@
 
 void uart0_init(void);
 void uart_putchar(unsigned char ch);
+void uart0_flush();
 
 void uart0_init();
 void uart1_init();

@@ -10,6 +10,8 @@
 
 
 void enable_interrupts();
+void set_flg_program_loaded();
+void clr_flg_program_loaded();
 
 #endif
 

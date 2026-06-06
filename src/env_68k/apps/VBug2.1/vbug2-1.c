@@ -15,16 +15,40 @@ __attribute__((section(".mram"))) unsigned int flg_system;
 
 #include "./tools/build_counter.h"
 
+
+extern void xmodem_receive();
+typedef void (*ProgramaXModem)(void);
+
+void executar_xmodem(void) {
+    // 2. Cria o ponteiro apontando diretamente para o endereço 0x82000
+    ProgramaXModem rodar_xmodem = (ProgramaXModem)0x82000;
+
+    printf("Passando o controle para o XModem em 0x82000...\n");
+
+    // 3. Salta para o programa! (O GCC vai traduzir isso em um JSR ou JMP)
+    rodar_xmodem(); 
+}
+
+void clr_flg_program_loaded(){
+       flg_system &= 0xFE;
+}
+void set_flg_program_loaded(){
+       flg_system |= 0x01;
+}
+unsigned int get_flg_program_loaded(){
+       return flg_system & 0x01 ;
+}
+
 const char MsgOrionInit[] = 
     "PDS317 - copyright (C) pdsilva(pgordao).VBug2.1\n"
-    "MC68000 System Monitor MERDA\n"
+    "MC68000 System Monitor with ch9350\n"
     "Build Date: " __DATE__ " - " __TIME__ "\n"
     "Build Counter: " BUILD_COUNTER "\n"
     "-----------------------------------------------\n\n";
 extern volatile unsigned char debug_pkt;
  
 extern void dump_memory(long addr);
- 
+extern void liga_debug(); 
 
 void main() {
     systemTick = 0;
@@ -44,7 +68,7 @@ void main() {
     unsigned int ch;
     print_capslock();
 
-    //uart0_init();
+    uart0_init();
     delay10ms(1000);  //100ms    
     // uart1_init();
     // delay10ms(100);  //100ms    
@@ -58,19 +82,20 @@ void main() {
 
 
     while(1) {
-        //clrscr();
+        clrscr();
+menu:        
         picovga_gotoxy(col,row);
-        printf("VBug2.1 - Menu\n");
+        printf(" VBug2.1 - Menu\n");
         printf(" 0 - Clear screen\n");
         printf(" 1 - Verificar o systemtick\n");
         printf(" 2 - Memory dump\n");
         printf(" 3 - Xmodem download\n");
         printf(" 4 - Posiciona cursor\n");
-        printf(" 5 - Ler kbd\n");
-        printf(" 6 - Ler kbd\n");
-        printf(" 7 - Cale a boca\n");
-        printf(" 8 - Enable interrupts\n");
-        printf(" a - escreve na uart\n");
+        printf(" 5 - Escreve na uart\n");
+        printf(" 6 - Le e escreve na uart\n");
+        printf(" 7 - Le e escreve na uart\n");
+        printf(" 8 - Le teclado escreve na uart\n");
+        printf(" 9 - Usa _inbute escreve na uart\n");
 
         printf("Choose an option: ");
         ch = get_char();
@@ -78,13 +103,12 @@ void main() {
         ch -= '0';
         printf("\n");
         switch(ch){
-            case 0x61:
-                    break;    
             case 0: clrscr();
-                    col=0,row=0;
+                    col=0,row=1;
                     break;
             case 1:
                     printf("systemTick: [%08ld]\n",systemTick);
+                    goto menu;
                     break;
             case 2:
                     //char arr[] = "82000";
@@ -92,9 +116,11 @@ void main() {
                     //long resultado;
                     //resultado = strtol(arr, &ptr_fim, 10);
 
-                    dump_memory(0x000);
+                    dump_memory(0x82000);
                     break;
             case 3:
+                    xmodem_receive();    
+                    goto menu;
                     break;
             case 4:
                     unsigned char y,x;
@@ -106,33 +132,50 @@ void main() {
                     picovga_gotoxy(y,x);
                     break;
             case 5:
-                    debug_pkt = 1;
-                    while(1){
-                        printf("Hit any <ENTER> to continue <ESC> to terminate: ");
-                        ch = get_char();
-                        printf("ch[%02x]",ch);
-                        if( ch == 0x1B ){
-                            break;
-                        }
-                    }
-                    debug_pkt = 0;
-                    break;
+                    if ( get_flg_program_loaded() ){
+                        executar_xmodem();
+                    }    
+                    break;               
             case 6:
-                    while(1){
-                        ch = get_char();
-                        printf("ch[%02x]",ch);
-                        if( ch == 0x1B ){
-                            break;
+                    while(1){    
+                        int ch = _inbyte(100);
+                        if( ch < 0 ){
+                            continue;
                         }
+                        if( ch > 0 ){
+                            uart0_write((char)ch);
+                            printf("%c",ch);
+                        }
+                        if( ch == 'Z') break;
+                    }
+                    break;      
+            case 7:
+                    while(1){    
+                        ch = uart0_read();
+                        uart0_write((char)ch);
+                        if( ch == 'Z') break;
                     }
                     break;
-            case 7:
-                    ch9350_shut_up();
-                    break;    
             case 8:
-                    ch9350_shut_up();
-                    enable_kbd_interrupts();                                        
-                    break;    
+                    while(1){
+                        ch = get_char();
+                        printf("%c ",ch);
+                        uart0_write((char)ch);
+                        if( ch == 'Z')
+                           break;     
+                    }
+                    break;  
+                             
+            case 9:
+                    while(1){
+                        ch = _inbyte(100)  ;
+                        if( ch < 0) continue;
+                        printf("%c ",ch);
+                        uart0_write((char)ch);
+                        if( ch == 'Z')
+                           break;     
+                    }
+                    break;  
             default:
                     printf("Wrong option\n");        
         }

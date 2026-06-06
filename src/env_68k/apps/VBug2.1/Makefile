@@ -10,7 +10,8 @@ SRCS = vbug2-1.c vectors.c console.c \
 ./dump/mem_dump.c \
 ./kbd/drv_kbd.c \
 ./picoVga/drv_picoVga.c \
-./xmodem/crc16.c \
+./xmodem/xmodem.c \
+./uarts/drv_uart0.c \
 timers.c
 OBJS = $(SRCS:.c=.o)
 #ELFS = $(SRCS:.c=.elf)

@@ -104,6 +104,7 @@ static PT_THREAD (protothread_print_bus_read(struct pt *pt))
                 case D_RUN_CMD:
                     switch(data){
                         case CMD_SET_CUR_POS:
+                            //sprintf(buf,"x:%02X y:%02X\n",cursor_x,cursor_y);
                             vga->setTextCursorPos(cursor_x,cursor_y);
                             break;
                         case CMD_CLEAR_SCREEN:
@@ -111,6 +112,7 @@ static PT_THREAD (protothread_print_bus_read(struct pt *pt))
                             cursor_x = cursor_y = 0;
                             break;
                         case CMD_GO_HOME:
+                            cursor_x = cursor_y = 0;
                             vga->set_vga_home();
                             break;    
                         default:

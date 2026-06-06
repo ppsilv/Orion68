@@ -2,20 +2,22 @@
 #include "drv_picoVga.h"
 #include "drv_kbd.h"
 #include "drv_uart.h"
+#include "timers.h"
 
 void dump_memory(long addr){
     unsigned char * pcharhex = (unsigned char *)addr;
     unsigned char * pcharasc = (unsigned char *)addr;
     unsigned char ch;
     clrscr();
+    delay10ms(1);
     while(1){
-        //clrscr();
-        picovga_gotoxy(0,0);
-        printf("--------------------------------------------------------------------------------\n");
+        clrscr();
+        delay10ms(1);
+        printf("----------------------------------------------------------------\n");
         printf("Dumping 255 bytes from addr %08X\n",addr);
-        printf("--------------------------------------------------------------------------------\n");
         //printf("Address  Data hexacimal                                    Data ASCII\n");
         printf("Address  00 12 13 14 15 16 17 18 19 10 11 12 13 14 15 16 - ASCII\n");
+        printf("----------------------------------------------------------------\n");
         for(int j=0;j<16;j++){
             printf("%07X  ",pcharhex);
             for(int i = 0; i<16; i++){
@@ -32,7 +34,7 @@ void dump_memory(long addr){
             }
             printf("\n");
         }
-        printf("Hit any <ENTER> to continue <ESC> to terminate: BOSTA ");
+        printf("Hit any <ENTER> to continue <ESC> to terminate: ");
         ch = get_char();
         if( ch == 0x1B ){
             return;
