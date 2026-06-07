@@ -1736,3 +1736,8 @@ static void outchar1(unsigned char c)
 
 }
 
+static void outchar(unsigned char ch )
+{
+    putchar(ch);
+    //printf( "%c", ch );
+}

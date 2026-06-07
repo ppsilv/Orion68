@@ -4,7 +4,7 @@ OBJCOPY = m68k-elf-objcopy
 
 CFLAGS = -Wall -Os -Wa,-adhln=tinyBasic.lst -I../../include -ffreestanding -nostdlib -D __68000__ -D ALIGN_MEMORY
 #CFLAGS = -Wall -Os -I../include -ffreestanding -nostdlib -Dmain=main_with_exit
-LDFLAGS = -T ../../linker.ld -L../../lib -nostdlib
+LDFLAGS = -T ../../ram_linker.ld -L../../lib -nostdlib --allow-multiple-definition
 
 SRCS = $(wildcard *.c)
 OBJS = $(SRCS:.c=.o)

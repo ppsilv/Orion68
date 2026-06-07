@@ -46,142 +46,140 @@ Linker script and memory map
  *(.vectors)
                 0x00000000                        . = ALIGN (0x400)
 
-.text           0x00000000     0x230c
+.text           0x00000000     0x2210
                 0x00000000                        . = ALIGN (0x2)
  *(.text*)
  .text          0x00000000      0x192 ../../obj/vbu2-1_startup.o
                 0x000000c0                _start
  *fill*         0x00000192        0x2 
- .text          0x00000194      0x47e vbug2-1.o
+ .text          0x00000194      0x354 vbug2-1.o
                 0x00000194                executar_xmodem
                 0x000001ba                clr_flg_program_loaded
                 0x000001d6                set_flg_program_loaded
                 0x000001f0                get_flg_program_loaded
                 0x00000202                main
- *fill*         0x00000612        0x2 
- .text          0x00000614      0x1ca vectors.o
-                0x00000614                SvcBusError
-                0x0000061e                Svcaddress_err
-                0x00000628                SvcIllegalIns
-                0x00000632                SvcDiv0_handler
-                0x0000063c                SvcChkIns
-                0x00000646                SvcTrapvIns
-                0x00000650                SvcPrivViolation
-                0x0000065a                SvcTrace
-                0x00000664                SvcLineA
-                0x0000066e                SvcLineF
-                0x00000678                bad_exception
-                0x00000682                SpuriousHandler
-                0x0000068c                Int1Handler
-                0x00000696                Int2Handler
-                0x000006a0                Int3Handler
-                0x000006aa                Int4Handler
-                0x000006b4                Int5Handler
-                0x000006be                Int6Handler
-                0x000006c8                Int7Handler
-                0x000006e4                Trap0Handler
-                0x000006ee                Trap1Handler
-                0x00000752                Trap2Handler
-                0x0000075c                Trap3Handler
-                0x00000766                Trap4Handler
-                0x00000770                Trap5Handler
-                0x0000077a                Trap6Handler
-                0x00000784                Trap7Handler
-                0x0000078e                Trap8Handler
-                0x00000798                Trap9Handler
-                0x000007a2                TrapAHandler
-                0x000007ac                TrapBHandler
-                0x000007b6                TrapCHandler
-                0x000007c0                TrapDHandler
-                0x000007ca                TrapEHandler
-                0x000007d4                TrapFHandler
- *fill*         0x000007de        0x2 
- .text          0x000007e0       0x3e console.o
-                0x000007e0                set_console_output
-                0x000007f8                set_console_input
-                0x00000810                enable_interrupts
- *fill*         0x0000081e        0x2 
- .text          0x00000820      0x17a ./dump/mem_dump.o
-                0x00000820                dump_memory
- *fill*         0x0000099a        0x2 
- .text          0x0000099c      0x842 ./kbd/drv_kbd.o
-                0x00000a04                liga_debug
-                0x00000a22                init_kbd
-                0x00000abe                enable_kbd_interrupts
-                0x00000d3e                get_packet
-                0x00000fac                get_kbd_key
-                0x000010e0                ch9350_shut_up
-                0x000010f4                get_char
-                0x000011b6                print_capslock
- *fill*         0x000011de        0x2 
- .text          0x000011e0      0x11e ./picoVga/drv_picoVga.o
-                0x000011e0                init_picoVga
-                0x000011ea                run_cmd
-                0x00001208                picovga_putchar
-                0x0000122c                picovga_gotoxy
-                0x00001278                picovga_gohome
-                0x00001298                picovga_set_color
-                0x000012de                clrscr
- *fill*         0x000012fe        0x2 
- .text          0x00001300      0x276 ./xmodem/xmodem.o
-                0x00001300                xmodem_receive
- *fill*         0x00001576        0x2 
- .text          0x00001578      0x1d0 ./uarts/drv_uart0.o
-                0x00001578                uart0_init
-                0x000015c8                uart0_write
-                0x00001608                uart0_read
-                0x00001642                _inbyte
-                0x000016c0                _outbyte
-                0x00001700                uart0_write_string
-                0x00001736                uart0_flush
- .text          0x00001748       0x30 timers.o
-                0x00001748                delay10ms
- .text          0x00001778       0x1e ../../lib/libmc68000.a(memcpy.o)
-                0x00001778                memcpy
- *fill*         0x00001796        0x2 
- .text          0x00001798       0x16 ../../lib/libmc68000.a(memset.o)
-                0x00001798                memset
- *fill*         0x000017ae        0x2 
- .text          0x000017b0      0x3a6 ../../lib/libmc68000.a(printf.o)
-                0x000017b0                itox
-                0x000017fa                itodec
-                0x00001858                itooct
-                0x0000189e                itoudec
-                0x000018f0                pad_zeros
-                0x00001934                printf
- *fill*         0x00001b56        0x2 
- .text          0x00001b58       0x12 ../../lib/libmc68000.a(strlen.o)
-                0x00001b58                strlen
- *fill*         0x00001b6a        0x2 
- .text          0x00001b6c       0x1a ../../lib/libmc68000.a(putchar.o)
-                0x00001b6c                putchar
- *fill*         0x00001b86        0x2 
- .text          0x00001b88       0x26 ../../lib/libmc68000.a(puts.o)
-                0x00001b88                puts
+ .text          0x000004e8      0x1ca vectors.o
+                0x000004e8                SvcBusError
+                0x000004f2                Svcaddress_err
+                0x000004fc                SvcIllegalIns
+                0x00000506                SvcDiv0_handler
+                0x00000510                SvcChkIns
+                0x0000051a                SvcTrapvIns
+                0x00000524                SvcPrivViolation
+                0x0000052e                SvcTrace
+                0x00000538                SvcLineA
+                0x00000542                SvcLineF
+                0x0000054c                bad_exception
+                0x00000556                SpuriousHandler
+                0x00000560                Int1Handler
+                0x0000056a                Int2Handler
+                0x00000574                Int3Handler
+                0x0000057e                Int4Handler
+                0x00000588                Int5Handler
+                0x00000592                Int6Handler
+                0x0000059c                Int7Handler
+                0x000005b8                Trap0Handler
+                0x000005c2                Trap1Handler
+                0x00000626                Trap2Handler
+                0x00000630                Trap3Handler
+                0x0000063a                Trap4Handler
+                0x00000644                Trap5Handler
+                0x0000064e                Trap6Handler
+                0x00000658                Trap7Handler
+                0x00000662                Trap8Handler
+                0x0000066c                Trap9Handler
+                0x00000676                TrapAHandler
+                0x00000680                TrapBHandler
+                0x0000068a                TrapCHandler
+                0x00000694                TrapDHandler
+                0x0000069e                TrapEHandler
+                0x000006a8                TrapFHandler
+ *fill*         0x000006b2        0x2 
+ .text          0x000006b4       0x3e console.o
+                0x000006b4                set_console_output
+                0x000006cc                set_console_input
+                0x000006e4                enable_interrupts
+ *fill*         0x000006f2        0x2 
+ .text          0x000006f4      0x17a ./dump/mem_dump.o
+                0x000006f4                dump_memory
+ *fill*         0x0000086e        0x2 
+ .text          0x00000870      0x842 ./kbd/drv_kbd.o
+                0x000008d8                liga_debug
+                0x000008f6                init_kbd
+                0x00000992                enable_kbd_interrupts
+                0x00000c12                get_packet
+                0x00000e80                get_kbd_key
+                0x00000fb4                ch9350_shut_up
+                0x00000fc8                get_char
+                0x0000108a                print_capslock
+ *fill*         0x000010b2        0x2 
+ .text          0x000010b4      0x132 ./picoVga/drv_picoVga.o
+                0x000010b4                init_picoVga
+                0x000010be                run_cmd
+                0x000010dc                picovga_putchar
+                0x00001114                picovga_gotoxy
+                0x00001160                picovga_gohome
+                0x00001180                picovga_set_color
+                0x000011c6                clrscr
+ *fill*         0x000011e6        0x2 
+ .text          0x000011e8      0x2d6 ./xmodem/xmodem.o
+                0x000011e8                xmodem_receive
+ *fill*         0x000014be        0x2 
+ .text          0x000014c0      0x1d0 ./uarts/drv_uart0.o
+                0x000014c0                uart0_init
+                0x00001510                uart0_write
+                0x00001550                uart0_read
+                0x0000158a                _inbyte
+                0x00001608                _outbyte
+                0x00001648                uart0_write_string
+                0x0000167e                uart0_flush
+ .text          0x00001690       0x30 timers.o
+                0x00001690                delay10ms
+ .text          0x000016c0       0x1e ../../lib/libmc68000.a(memcpy.o)
+                0x000016c0                memcpy
+ *fill*         0x000016de        0x2 
+ .text          0x000016e0       0x16 ../../lib/libmc68000.a(memset.o)
+                0x000016e0                memset
+ *fill*         0x000016f6        0x2 
+ .text          0x000016f8      0x3a6 ../../lib/libmc68000.a(printf.o)
+                0x000016f8                itox
+                0x00001742                itodec
+                0x000017a0                itooct
+                0x000017e6                itoudec
+                0x00001838                pad_zeros
+                0x0000187c                printf
+ *fill*         0x00001a9e        0x2 
+ .text          0x00001aa0       0x12 ../../lib/libmc68000.a(strlen.o)
+                0x00001aa0                strlen
+ *fill*         0x00001ab2        0x2 
+ .text          0x00001ab4       0x1a ../../lib/libmc68000.a(putchar.o)
+                0x00001ab4                putchar
+ *fill*         0x00001ace        0x2 
+ .text          0x00001ad0       0x26 ../../lib/libmc68000.a(puts.o)
+                0x00001ad0                puts
  *(.rodata)
- .rodata        0x00001bae      0x26b vbug2-1.o
-                0x00001bdf                MsgOrionInit
- .rodata        0x00001e19       0xee ./dump/mem_dump.o
- .rodata        0x00001f07      0x2d6 ./kbd/drv_kbd.o
-                0x00001f07                OE_BASE_KEYMAP
-                0x00001f87                OE_SHIFT_KEYMAP
-                0x00002007                OE_CTRL_KEYMAP
-                0x00002087                OE_ALT_KEYMAP
-                0x00002107                OE_ALTGR_KEYMAP
- .rodata        0x000021dd       0xe3 ./xmodem/xmodem.o
- .rodata        0x000022c0       0x23 ./uarts/drv_uart0.o
- *fill*         0x000022e3        0x1 
- .rodata        0x000022e4       0x28 ../../lib/libmc68000.a(printf.o)
-                0x0000230c                        . = ALIGN (0x2)
+ .rodata        0x00001af6      0x1ef vbug2-1.o
+                0x00001b27                MsgOrionInit
+ .rodata        0x00001ce5       0xee ./dump/mem_dump.o
+ .rodata        0x00001dd3      0x2d6 ./kbd/drv_kbd.o
+                0x00001dd3                OE_BASE_KEYMAP
+                0x00001e53                OE_SHIFT_KEYMAP
+                0x00001ed3                OE_CTRL_KEYMAP
+                0x00001f53                OE_ALT_KEYMAP
+                0x00001fd3                OE_ALTGR_KEYMAP
+ .rodata        0x000020a9      0x11c ./xmodem/xmodem.o
+ .rodata        0x000021c5       0x23 ./uarts/drv_uart0.o
+ .rodata        0x000021e8       0x28 ../../lib/libmc68000.a(printf.o)
+                0x00002210                        . = ALIGN (0x2)
 
-.rodata         0x0000230c       0x20
-                0x0000230c                        . = ALIGN (0x2)
+.rodata         0x00002210       0x20
+                0x00002210                        . = ALIGN (0x2)
  *(.rodata*)
  .rodata.str1.1
-                0x0000230c       0x20 ../../lib/libmc68000.a(printf.o)
-                0x0000232c                        . = ALIGN (0x2)
+                0x00002210       0x20 ../../lib/libmc68000.a(printf.o)
+                0x00002230                        . = ALIGN (0x2)
 
-.data           0x00080000        0x0 load address 0x0000232c
+.data           0x00080000        0x0 load address 0x00002230
                 0x00080000                        . = ALIGN (0x2)
                 0x00080000                        __data_start = .
  *(.data*)
@@ -204,14 +202,14 @@ Linker script and memory map
                 0x00080000                        . = ALIGN (0x2)
                 0x00080000                        __data_end = .
 
-.mram           0x00080000        0x8 load address 0x0000232c
+.mram           0x00080000        0x8 load address 0x00002230
  *(?.mram)
  .mram          0x00080000        0x8 vbug2-1.o
                 0x00080000                systemTick
                 0x00080004                flg_system
-                0x0000232c                        __data_load_start = LOADADDR (.data)
+                0x00002230                        __data_load_start = LOADADDR (.data)
 
-.bss            0x00080008       0xc4 load address 0x0000232c
+.bss            0x00080008       0xc8 load address 0x00002230
                 0x00080008                        . = ALIGN (0x2)
                 0x00080008                        __bss_start = .
  *(.bss*)
@@ -237,19 +235,21 @@ Linker script and memory map
                 0x0008004a                debug_pkt
  *fill*         0x0008004b        0x1 
  .bss           0x0008004c        0x0 ./picoVga/drv_picoVga.o
- .bss           0x0008004c       0x80 ./xmodem/xmodem.o
+ .bss           0x0008004c       0x81 ./xmodem/xmodem.o
                 0x0008004c                buf_xmodem
- .bss           0x000800cc        0x0 ./uarts/drv_uart0.o
- .bss           0x000800cc        0x0 timers.o
- .bss           0x000800cc        0x0 ../../lib/libmc68000.a(memcpy.o)
- .bss           0x000800cc        0x0 ../../lib/libmc68000.a(memset.o)
- .bss           0x000800cc        0x0 ../../lib/libmc68000.a(printf.o)
- .bss           0x000800cc        0x0 ../../lib/libmc68000.a(strlen.o)
- .bss           0x000800cc        0x0 ../../lib/libmc68000.a(putchar.o)
- .bss           0x000800cc        0x0 ../../lib/libmc68000.a(puts.o)
+                0x000800cc                debug
+ *fill*         0x000800cd        0x3 
+ .bss           0x000800d0        0x0 ./uarts/drv_uart0.o
+ .bss           0x000800d0        0x0 timers.o
+ .bss           0x000800d0        0x0 ../../lib/libmc68000.a(memcpy.o)
+ .bss           0x000800d0        0x0 ../../lib/libmc68000.a(memset.o)
+ .bss           0x000800d0        0x0 ../../lib/libmc68000.a(printf.o)
+ .bss           0x000800d0        0x0 ../../lib/libmc68000.a(strlen.o)
+ .bss           0x000800d0        0x0 ../../lib/libmc68000.a(putchar.o)
+ .bss           0x000800d0        0x0 ../../lib/libmc68000.a(puts.o)
  *(COMMON)
-                0x000800cc                        . = ALIGN (0x2)
-                0x000800cc                        __bss_end = .
+                0x000800d0                        . = ALIGN (0x2)
+                0x000800d0                        __bss_end = .
                 0x00100000                        _stack_end = 0x100000
                 0x000fe000                        _stack_start = (_stack_end - 0x2000)
 

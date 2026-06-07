@@ -111,7 +111,7 @@ go_ahead:
         NOP
 
         LEA     0xFF4000,%A1
-        move.b  #0x0D,FCR(%a1)      /*; enable FIFO*/
+        move.b  #0x07,FCR(%a1)      /*; enable FIFO*/
         move.b  #0x83,LCR(%a1)      /*; 8 data bits, no parity, 1 stop bit, DLAB=1*/
         move.b  #0x08,DLL(%A1)      /*; Byte 0 (LSB) -> DLL*/
         move.b  #0x00,DLM(%A1)      /*; Byte 1 (agora no LSB) -> DLM*/

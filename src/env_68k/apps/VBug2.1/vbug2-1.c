@@ -84,18 +84,15 @@ void main() {
     while(1) {
         clrscr();
 menu:        
-        picovga_gotoxy(1,0);
+        picovga_gotoxy(1,1);
         printf(" VBug2.1 - Menu\n");
         printf(" 0 - Clear screen\n");
         printf(" 1 - Verificar o systemtick\n");
         printf(" 2 - Memory dump\n");
         printf(" 3 - Xmodem download\n");
         printf(" 4 - Posiciona cursor\n");
-        printf(" 5 - Escreve na uart\n");
-        printf(" 6 - Le e escreve na uart\n");
-        printf(" 7 - Le e escreve na uart\n");
-        printf(" 8 - Le teclado escreve na uart\n");
-        printf(" 9 - Usa _inbute escreve na uart\n");
+        printf(" 5 - Executa programa\n");
+
 
         printf("Choose an option: ");
         ch = get_char();
@@ -137,44 +134,13 @@ menu:
                     }    
                     break;               
             case 6:
-                    while(1){    
-                        int ch = _inbyte(100);
-                        if( ch < 0 ){
-                            continue;
-                        }
-                        if( ch > 0 ){
-                            uart0_write((char)ch);
-                            printf("%c",ch);
-                        }
-                        if( ch == 'Z') break;
-                    }
                     break;      
             case 7:
-                    while(1){    
-                        ch = uart0_read();
-                        uart0_write((char)ch);
-                        if( ch == 'Z') break;
-                    }
                     break;
             case 8:
-                    while(1){
-                        ch = get_char();
-                        printf("%c ",ch);
-                        uart0_write((char)ch);
-                        if( ch == 'Z')
-                           break;     
-                    }
                     break;  
                              
             case 9:
-                    while(1){
-                        ch = _inbyte(100)  ;
-                        if( ch < 0) continue;
-                        printf("%c ",ch);
-                        uart0_write((char)ch);
-                        if( ch == 'Z')
-                           break;     
-                    }
                     break;  
             default:
                     printf("Wrong option\n");        
