@@ -84,7 +84,7 @@ void main() {
     while(1) {
         clrscr();
 menu:        
-        picovga_gotoxy(col,row);
+        picovga_gotoxy(1,0);
         printf(" VBug2.1 - Menu\n");
         printf(" 0 - Clear screen\n");
         printf(" 1 - Verificar o systemtick\n");

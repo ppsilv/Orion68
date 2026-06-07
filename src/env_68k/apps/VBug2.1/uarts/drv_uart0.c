@@ -44,7 +44,7 @@ void uart0_init(){
 void uart0_write(unsigned char ch){
     volatile unsigned char *uart_reg = (volatile unsigned char *)DRV_UART0_BASE;
     
-    while (!(*(uart_reg + LSR) & 0x05)) ;
+    while (!(*(uart_reg + LSR) & 0x20)) ;
     *(uart_reg + THR) = ch;
 }
 

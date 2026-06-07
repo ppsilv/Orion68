@@ -10,9 +10,9 @@ void run_cmd(unsigned char cmd){
     RUN_CMD = cmd;
 }
 void picovga_putchar(unsigned char ch){
-    int x=0x20;
+    int x=0x10;
     WRITE_SCREEN = ch;
-    while(x--);
+   // while(x--);
 }
 void picovga_gotoxy(int col,int row){
     REG_Y_LOW  = row; //(unsigned char)(row & 0x00FF);
