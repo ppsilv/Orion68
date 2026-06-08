@@ -6,7 +6,8 @@
 void init_picoVga(){
 
 }
-void run_cmd(unsigned char cmd){
+inline void run_cmd(unsigned char cmd){
+    delay10ms(1);
     RUN_CMD = cmd;
 }
 void picovga_putchar(unsigned char ch){
@@ -16,25 +17,31 @@ void picovga_putchar(unsigned char ch){
 }
 void picovga_gotoxy(int col,int row){
     REG_Y_LOW  = row; //(unsigned char)(row & 0x00FF);
-    REG_Y_HIGH = 0;   //(unsigned char)(row > 8);
-    REG_X_LOW  = col; //(unsigned char)(col & 0x00FF);
-    REG_X_HIGH = 0;   //(unsigned char)(col > 8);
     delay10ms(1);
+    REG_Y_HIGH = 0;   //(unsigned char)(row > 8);
+    delay10ms(1);
+    REG_X_LOW  = col; //(unsigned char)(col & 0x00FF);
+    delay10ms(1);
+    REG_X_HIGH = 0;   //(unsigned char)(col > 8);
     //printf("Setando a position Y [%02X] X[%02X]\n",row,col);
-    RUN_CMD = CMD_SET_CUR_POS;
+    //RUN_CMD = CMD_SET_CUR_POS;
+    run_cmd(CMD_SET_CUR_POS);
 }
 void picovga_gohome(){
-    delay10ms(1);
-    RUN_CMD = CMD_GO_HOME;
+    //delay10ms(1);
+    //RUN_CMD = CMD_GO_HOME;
+    run_cmd(CMD_GO_HOME);
 }
 void picovga_set_color(unsigned char txtcolor,unsigned char bgcolor){
     unsigned int color;
     color = (txtcolor << 4) &0xF0;
     color |= bgcolor;
     //printf("Setando a cor [%02X]\n",color);
+    delay10ms(1);
     SET_TXT_COLOR = color;
 }
 void clrscr(){
-    delay10ms(2);
-    RUN_CMD = CMD_CLEAR_SCREEN;
+    delay10ms(1);
+    //RUN_CMD = CMD_CLEAR_SCREEN;
+    run_cmd(CMD_CLEAR_SCREEN);
 }

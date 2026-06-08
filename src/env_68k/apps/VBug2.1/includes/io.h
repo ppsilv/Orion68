@@ -7,9 +7,10 @@ extern putchar_func cconout;
 extern getchar_func cconin;
 
 // Declara as funções principais de entrada e saída do sistema
-void cconin_init(getchar_func entrada_padrao);
-void cconout_init(putchar_func saida_padrao);
+//void cconin_init(getchar_func entrada_padrao);
+//void cconout_init(putchar_func saida_padrao);
 
 void print_string(const char *str);
+// Declara as funções principais de entrada e saída do sistema
 void set_console_input(getchar_func nova_entrada);
 void set_console_output(putchar_func nova_saida);

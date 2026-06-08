@@ -12,7 +12,8 @@ SRCS = vbug2-1.c vectors.c console.c \
 ./picoVga/drv_picoVga.c \
 ./xmodem/xmodem.c \
 ./uarts/drv_uart0.c \
-timers.c
+timers.c interrupt.c
+
 OBJS = $(SRCS:.c=.o)
 #ELFS = $(SRCS:.c=.elf)
 #BINS = $(SRCS:.c=.bin)

@@ -7,16 +7,19 @@
 #include "mc68000.h"
 #include "color.h"
 #include "timers.h"
+#include "interrupt.h"
 
 //__attribute__((section(".mram"))) char vbug_buffer[256];
 //__attribute__((section(".minha_ram"))) int vbug_status_flag;
-__attribute__((section(".mram"))) long systemTick;
-__attribute__((section(".mram"))) unsigned int flg_system;
+volatile __attribute__((section(".mram"))) long systemTick;
+volatile __attribute__((section(".mram"))) unsigned int flg_system;
 
 #include "./tools/build_counter.h"
 
 
 extern void xmodem_receive();
+extern uint32_t get_system_tick_nmi_safe(void);
+
 typedef void (*ProgramaXModem)(void);
 
 void executar_xmodem(void) {
@@ -38,6 +41,13 @@ void set_flg_program_loaded(){
 unsigned int get_flg_program_loaded(){
        return flg_system & 0x01 ;
 }
+void print_msg(char *str){
+        unsigned char x,y;
+        y = 0x1D; //29
+        x = 0;
+        picovga_gotoxy(x,y); //padrao col,row
+        printf("%s",str);
+}
 
 const char MsgOrionInit[] = 
     "PDS317 - copyright (C) pdsilva(pgordao).VBug2.1\n"
@@ -51,9 +61,7 @@ extern void dump_memory(long addr);
 extern void liga_debug(); 
 
 void main() {
-    systemTick = 0;
     // Inicializa os hardwares normalmente
-
     // 1. Direciona o console para a PicoVGA
     // Basta alterar o ponteiro!
     set_console_output(picovga_putchar);
@@ -64,7 +72,7 @@ void main() {
 
     printf("%s",MsgOrionInit);
     picovga_set_color(GREEN,BLACK);
-    int col=0,row=15;
+    //int col=0,row=15;
     unsigned int ch;
     print_capslock();
 
@@ -84,7 +92,7 @@ void main() {
     while(1) {
         clrscr();
 menu:        
-        picovga_gotoxy(1,1);
+        picovga_gotoxy(0,0);
         printf(" VBug2.1 - Menu\n");
         printf(" 0 - Clear screen\n");
         printf(" 1 - Verificar o systemtick\n");
@@ -92,6 +100,8 @@ menu:
         printf(" 3 - Xmodem download\n");
         printf(" 4 - Posiciona cursor\n");
         printf(" 5 - Executa programa\n");
+        printf(" 6 - Desabilita interrupcao\n");
+        printf(" 7 - habilitita interrupcao\n");
 
 
         printf("Choose an option: ");
@@ -101,10 +111,10 @@ menu:
         printf("\n");
         switch(ch){
             case 0: clrscr();
-                    col=0,row=1;
                     break;
             case 1:
-                    printf("systemTick: [%08ld]\n",systemTick);
+                    print_msg("systemTick: ");    
+                    printf("[%08ld]",get_system_tick());
                     goto menu;
                     break;
             case 2:
@@ -120,22 +130,27 @@ menu:
                     goto menu;
                     break;
             case 4:
-                    unsigned char y,x;
+                    unsigned char x,y;
                     printf("Digite o valor de y: ");y = get_char();
                     printf("Digite o valor de x: ");x = get_char();
                     y -= '0';
                     x -= '0';
-                    col=x;row=y;
-                    picovga_gotoxy(y,x);
+                    picovga_gotoxy(x,y);
+                    putchar('A');
+                    goto menu;
                     break;
             case 5:
                     if ( get_flg_program_loaded() ){
                         executar_xmodem();
                     }    
+                    print_msg("Nao tem programa na memoria");                    
+                    goto menu;
                     break;               
             case 6:
+                    m68k_disable_all_interrupts();
                     break;      
             case 7:
+                    m68k_enable_all_interrupts();
                     break;
             case 8:
                     break;  

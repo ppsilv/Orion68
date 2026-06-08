@@ -1,12 +1,13 @@
 #include "io.h"
 #include "keyboard.h"
+#include "interrupt.h"
 
 extern volatile unsigned char rx_head;
 extern volatile unsigned char rx_tail;
 extern volatile char rx_buffer[RX_BUFFER_SIZE];
 
 
-extern __attribute__((section(".mram"))) long systemTick;
+static __attribute__((section(".mram"))) long systemTick=0;
 
 void __attribute__((interrupt)) SvcBusError     (){
     
@@ -48,7 +49,7 @@ void __attribute__((interrupt)) Int1Handler(){
     
 }
 void __attribute__((interrupt)) Int2Handler(){
-    
+    systemTick++;    
 }
 void __attribute__((interrupt)) Int3Handler(){
     
@@ -60,13 +61,10 @@ void __attribute__((interrupt)) Int5Handler(){
     
 }
 void __attribute__((interrupt)) Int6Handler(){
-//    while (*((volatile unsigned char *)LSR) & 0x01) {
-//        rx_buffer[rx_head] = *((volatile unsigned char *)RBR);
-//        rx_head++; // Overflow natural em 256 por ser uint8_t
-//    }    
+   
 }
 void __attribute__((interrupt)) Int7Handler(){
-    systemTick += 1;
+    //systemTick++;
 }
 void __attribute__((interrupt)) Trap0Handler(){
     
@@ -131,4 +129,16 @@ void __attribute__((interrupt)) TrapEHandler(){
 }
 void __attribute__((interrupt)) TrapFHandler(){
     
+}
+
+// A SUA FUNÇÃO DE LEITURA FICA ASSIM:
+unsigned long get_system_tick(void) {
+    unsigned long tick;
+    unsigned int status_antigo;
+    
+    status_antigo = m68k_disable_level2(); // Salva o estado atual do SR e barra o nível 2
+    tick = systemTick;                     // Copia os 32 bits em segurança
+    m68k_restore_interrupts(status_antigo); // Devolve o SR exatamente como estava
+    
+    return tick;
 }

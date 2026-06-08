@@ -14099,7 +14099,7 @@
 		)
 		(uuid "98ca9bcf-a4b1-464e-b757-02c340f5a96f")
 	)
-	(label "IRQ6"
+	(label "IRQ5"
 		(at 233.68 259.08 0)
 		(effects
 			(font
