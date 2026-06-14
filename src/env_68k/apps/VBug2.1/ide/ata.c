@@ -129,6 +129,60 @@ int ata_read_sector(int sector, char *buffer)
 	return 512;
 }
 
+int ata_write_sector(int sector, const char *buffer)
+{
+	short saved_status;
+
+	LOCK(saved_status);
+
+	// Set 8-bit mode
+	(*ATA_REG_FEATURE) = 0x01;
+	(*ATA_REG_COMMAND) = ATA_CMD_SET_FEATURE;
+	ATA_WAIT();
+
+	// Read a sector
+	(*ATA_REG_DRIVE_HEAD) = 0xE0;
+	//(*ATA_REG_DRIVE_HEAD) = 0xE0 | (uint8_t) ((sector >> 24) & 0x0F);
+	(*ATA_REG_CYL_HIGH) = (uint8_t) (sector >> 16);
+	(*ATA_REG_CYL_LOW) = (uint8_t) (sector >> 8);
+	(*ATA_REG_SECTOR_NUM) = (uint8_t) sector;
+	(*ATA_REG_SECTOR_COUNT) = 1;
+	(*ATA_REG_COMMAND) = ATA_CMD_WRITE_SECTORS;
+	ATA_WAIT();
+
+	char status = (*ATA_REG_STATUS);
+	//printk("IDE: %x\n", status);
+	if (status & 0x01) {
+		log_error("Error while writing ata: %x\n", (*ATA_REG_ERROR));
+		UNLOCK(saved_status);
+		return 0;
+	}
+
+	ATA_DELAY(100);
+	ATA_WAIT();
+	ATA_WAIT_FOR_DATA();
+
+	for (int i = 0; i < 512; i++) {
+		ATA_WAIT();
+		//while (((*ATA_REG_STATUS) & ATA_ST_BUSY) || !((*ATA_REG_STATUS) & ATA_ST_DATA_READY)) { }
+
+		//((uint16_t *) buffer)[i] = (*ATA_REG_DATA);
+		//asm volatile("rol.w	#8, %0\n" : "+g" (((uint16_t *) buffer)[i]));
+		(*ATA_REG_DATA_BYTE) = buffer[i];
+	}
+
+	ATA_WAIT();
+
+	if (*ATA_REG_STATUS & ATA_ST_ERROR) {
+		log_error("Error writing sector %d: %x\n", sector, *ATA_REG_ERROR);
+	}
+
+	UNLOCK(saved_status);
+
+	return 512;
+}
+
+
 typedef unsigned long sector_t;
 
 struct partition {
