@@ -3,7 +3,7 @@
 
 unsigned long get_system_tick_nmi_safe(void);
 
-static inline unsigned int m68k_disable_interrupts(void) __attribute__((always_inline));
+//static inline unsigned int m68k_disable_interrupts(void) __attribute__((always_inline));
 static inline void m68k_restore_interrupts(unsigned int old_sr) __attribute__((always_inline));
 static inline void m68k_enable_all_interrupts(void) __attribute__((always_inline));
 static inline void m68k_disable_all_interrupts(void) __attribute__((always_inline));

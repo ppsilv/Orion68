@@ -136,7 +136,7 @@ unsigned long get_system_tick(void) {
     unsigned long tick;
     unsigned int status_antigo;
     
-    status_antigo = m68k_disable_level2(); // Salva o estado atual do SR e barra o nível 2
+    status_antigo = m68k_disable_level2_perfect(); // Salva o estado atual do SR e barra o nível 2
     tick = systemTick;                     // Copia os 32 bits em segurança
     m68k_restore_interrupts(status_antigo); // Devolve o SR exatamente como estava
     

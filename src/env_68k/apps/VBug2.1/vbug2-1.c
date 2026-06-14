@@ -8,6 +8,7 @@
 #include "color.h"
 #include "timers.h"
 #include "interrupt.h"
+#include "ata.h"
 
 //__attribute__((section(".mram"))) char vbug_buffer[256];
 //__attribute__((section(".minha_ram"))) int vbug_status_flag;
@@ -59,6 +60,8 @@ extern volatile unsigned char debug_pkt;
  
 extern void dump_memory(long addr);
 extern void liga_debug(); 
+extern int ata_detect(void);
+extern int ata_init(void);
 
 void main() {
     // Inicializa os hardwares normalmente
@@ -88,6 +91,7 @@ void main() {
     ch9350_shut_up();
     delay10ms(1000);  //100ms    
 
+    m68k_enable_all_interrupts(); 
 
     while(1) {
         clrscr();
@@ -102,6 +106,7 @@ menu:
         printf(" 5 - Executa programa\n");
         printf(" 6 - Desabilita interrupcao\n");
         printf(" 7 - habilitita interrupcao\n");
+        printf(" 8 - le o setor 0 do disco\n");
 
 
         printf("Choose an option: ");
@@ -153,6 +158,9 @@ menu:
                     m68k_enable_all_interrupts();
                     break;
             case 8:
+                    ata_init();
+                    //ata_read((unsigned char*)0x82000, 0, 1, ATA_MASTER);    
+                    goto menu;
                     break;  
                              
             case 9:
