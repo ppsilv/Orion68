@@ -13,6 +13,8 @@ SRCS = vbug2-1.c vectors.c console.c \
 ./xmodem/xmodem.c \
 ./uarts/drv_uart0.c \
 ./ide/ata.c \
+./fatfs/diskio.c \
+./fatfs/ff.c \
 timers.c interrupt.c
 
 OBJS = $(SRCS:.c=.o)

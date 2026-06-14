@@ -1,13 +1,21 @@
 Archive member included to satisfy reference by file (symbol)
 
+../../lib/libmc68000.a(strchr.o)
+                              ./fatfs/ff.o (strchr)
 ../../lib/libmc68000.a(memcpy.o)
                               ./xmodem/xmodem.o (memcpy)
+../../lib/libmc68000.a(memcmp.o)
+                              ./fatfs/ff.o (memcmp)
 ../../lib/libmc68000.a(memset.o)
                               ./kbd/drv_kbd.o (memset)
 ../../lib/libmc68000.a(putchar.o)
                               vbug2-1.o (putchar)
 ../../lib/libmc68000.a(printf.o)
                               vbug2-1.o (printf)
+../../lib/libmc68000.a(__mulsi3.o)
+                              ./fatfs/ff.o (__mulsi3)
+../../lib/libmc68000.a(__udivsi3.o)
+                              ./fatfs/ff.o (__udivsi3)
 ../../lib/libmc68000.a(strlen.o)
                               ../../lib/libmc68000.a(printf.o) (strlen)
 ../../lib/libmc68000.a(puts.o)
@@ -24,12 +32,18 @@ Discarded input sections
  .comment       0x00000000       0x13 ./xmodem/xmodem.o
  .comment       0x00000000       0x13 ./uarts/drv_uart0.o
  .comment       0x00000000       0x13 ./ide/ata.o
+ .comment       0x00000000       0x13 ./fatfs/diskio.o
+ .comment       0x00000000       0x13 ./fatfs/ff.o
  .comment       0x00000000       0x13 timers.o
  .comment       0x00000000       0x13 interrupt.o
+ .comment       0x00000000       0x13 ../../lib/libmc68000.a(strchr.o)
  .comment       0x00000000       0x13 ../../lib/libmc68000.a(memcpy.o)
+ .comment       0x00000000       0x13 ../../lib/libmc68000.a(memcmp.o)
  .comment       0x00000000       0x13 ../../lib/libmc68000.a(memset.o)
  .comment       0x00000000       0x13 ../../lib/libmc68000.a(putchar.o)
  .comment       0x00000000       0x13 ../../lib/libmc68000.a(printf.o)
+ .comment       0x00000000       0x13 ../../lib/libmc68000.a(__mulsi3.o)
+ .comment       0x00000000       0x13 ../../lib/libmc68000.a(__udivsi3.o)
  .comment       0x00000000       0x13 ../../lib/libmc68000.a(strlen.o)
  .comment       0x00000000       0x13 ../../lib/libmc68000.a(puts.o)
 
@@ -48,7 +62,7 @@ Linker script and memory map
  *(.vectors)
                 0x00000000                        . = ALIGN (0x400)
 
-.text           0x00000000     0x2a8c
+.text           0x00000000     0x6b50
                 0x00000000                        . = ALIGN (0x2)
  *(.text*)
  .text          0x00000000      0x192 ../../obj/vbu2-1_startup.o
@@ -137,62 +151,101 @@ Linker script and memory map
                 0x000016dc                _outbyte
                 0x0000171c                uart0_write_string
                 0x00001752                uart0_flush
- .text          0x00001764      0x636 ./ide/ata.o
+ .text          0x00001764      0x6d0 ./ide/ata.o
                 0x0000177e                ata_detect
-                0x00001856                ata_read_sector
-                0x000019cc                ata_write_sector
-                0x00001baa                read_partition_table
-                0x00001c98                ata_init
- *fill*         0x00001d9a        0x2 
- .text          0x00001d9c       0x30 timers.o
-                0x00001d9c                delay10ms
- .text          0x00001dcc        0x0 interrupt.o
- .text          0x00001dcc       0x1e ../../lib/libmc68000.a(memcpy.o)
-                0x00001dcc                memcpy
- *fill*         0x00001dea        0x2 
- .text          0x00001dec       0x16 ../../lib/libmc68000.a(memset.o)
-                0x00001dec                memset
- *fill*         0x00001e02        0x2 
- .text          0x00001e04       0x1a ../../lib/libmc68000.a(putchar.o)
-                0x00001e04                putchar
- *fill*         0x00001e1e        0x2 
- .text          0x00001e20      0x3a6 ../../lib/libmc68000.a(printf.o)
-                0x00001e20                itox
-                0x00001e6a                itodec
-                0x00001ec8                itooct
-                0x00001f0e                itoudec
-                0x00001f60                pad_zeros
-                0x00001fa4                printf
- *fill*         0x000021c6        0x2 
- .text          0x000021c8       0x12 ../../lib/libmc68000.a(strlen.o)
-                0x000021c8                strlen
- *fill*         0x000021da        0x2 
- .text          0x000021dc       0x26 ../../lib/libmc68000.a(puts.o)
-                0x000021dc                puts
+                0x0000183a                ata_read_sector
+                0x000019b0                ata_read_sector_multi
+                0x000019fc                ata_write_sector
+                0x00001bda                ata_write_sector_multi
+                0x00001c26                read_partition_table
+                0x00001d14                ata_init
+                0x00001e08                ata_disk_status
+                0x00001e1e                ata_disk_initialize
+ .text          0x00001e34      0x1b2 ./fatfs/diskio.o
+                0x00001e34                disk_status
+                0x00001e84                disk_initialize
+                0x00001ece                disk_read
+                0x00001f32                disk_write
+                0x00001f96                disk_ioctl
+ *fill*         0x00001fe6        0x2 
+ .text          0x00001fe8     0x3dac ./fatfs/ff.o
+                0x000040c8                f_mount
+                0x00004184                f_open
+                0x0000457a                f_read
+                0x00004900                f_write
+                0x00004d20                f_sync
+                0x00004e80                f_close
+                0x00004eba                f_lseek
+                0x0000523e                f_opendir
+                0x0000531a                f_closedir
+                0x00005344                f_readdir
+                0x000053e8                f_stat
+                0x00005460                f_getfree
+                0x00005606                f_truncate
+                0x000057b8                f_unlink
+                0x000058fe                f_mkdir
+                0x00005b40                f_rename
+ .text          0x00005d94       0x30 timers.o
+                0x00005d94                delay10ms
+ .text          0x00005dc4        0x0 interrupt.o
+ .text          0x00005dc4       0x1c ../../lib/libmc68000.a(strchr.o)
+                0x00005dc4                strchr
+ .text          0x00005de0       0x1e ../../lib/libmc68000.a(memcpy.o)
+                0x00005de0                memcpy
+ *fill*         0x00005dfe        0x2 
+ .text          0x00005e00       0x3e ../../lib/libmc68000.a(memcmp.o)
+                0x00005e00                memcmp
+ *fill*         0x00005e3e        0x2 
+ .text          0x00005e40       0x16 ../../lib/libmc68000.a(memset.o)
+                0x00005e40                memset
+ *fill*         0x00005e56        0x2 
+ .text          0x00005e58       0x1a ../../lib/libmc68000.a(putchar.o)
+                0x00005e58                putchar
+ *fill*         0x00005e72        0x2 
+ .text          0x00005e74      0x3a6 ../../lib/libmc68000.a(printf.o)
+                0x00005e74                itox
+                0x00005ebe                itodec
+                0x00005f1c                itooct
+                0x00005f62                itoudec
+                0x00005fb4                pad_zeros
+                0x00005ff8                printf
+ *fill*         0x0000621a        0x2 
+ .text          0x0000621c       0x36 ../../lib/libmc68000.a(__mulsi3.o)
+                0x0000621c                __mulsi3
+ *fill*         0x00006252        0x2 
+ .text          0x00006254       0x3a ../../lib/libmc68000.a(__udivsi3.o)
+                0x00006254                __udivsi3
+ *fill*         0x0000628e        0x2 
+ .text          0x00006290       0x12 ../../lib/libmc68000.a(strlen.o)
+                0x00006290                strlen
+ *fill*         0x000062a2        0x2 
+ .text          0x000062a4       0x26 ../../lib/libmc68000.a(puts.o)
+                0x000062a4                puts
  *(.rodata)
- .rodata        0x00002202      0x261 vbug2-1.o
-                0x00002236                MsgOrionInit
- .rodata        0x00002463       0xee ./dump/mem_dump.o
- .rodata        0x00002551      0x2d6 ./kbd/drv_kbd.o
-                0x00002551                OE_BASE_KEYMAP
-                0x000025d1                OE_SHIFT_KEYMAP
-                0x00002651                OE_CTRL_KEYMAP
-                0x000026d1                OE_ALT_KEYMAP
-                0x00002751                OE_ALTGR_KEYMAP
- .rodata        0x00002827      0x11c ./xmodem/xmodem.o
- .rodata        0x00002943       0x23 ./uarts/drv_uart0.o
- .rodata        0x00002966       0xfe ./ide/ata.o
- .rodata        0x00002a64       0x28 ../../lib/libmc68000.a(printf.o)
-                0x00002a8c                        . = ALIGN (0x2)
+ .rodata        0x000062ca      0x261 vbug2-1.o
+                0x000062fe                MsgOrionInit
+ .rodata        0x0000652b       0xee ./dump/mem_dump.o
+ .rodata        0x00006619      0x2d6 ./kbd/drv_kbd.o
+                0x00006619                OE_BASE_KEYMAP
+                0x00006699                OE_SHIFT_KEYMAP
+                0x00006719                OE_CTRL_KEYMAP
+                0x00006799                OE_ALT_KEYMAP
+                0x00006819                OE_ALTGR_KEYMAP
+ .rodata        0x000068ef      0x11c ./xmodem/xmodem.o
+ .rodata        0x00006a0b       0x23 ./uarts/drv_uart0.o
+ .rodata        0x00006a2e       0xd8 ./ide/ata.o
+ .rodata        0x00006b06       0x22 ./fatfs/ff.o
+ .rodata        0x00006b28       0x28 ../../lib/libmc68000.a(printf.o)
+                0x00006b50                        . = ALIGN (0x2)
 
-.rodata         0x00002a8c       0x20
-                0x00002a8c                        . = ALIGN (0x2)
+.rodata         0x00006b50       0x20
+                0x00006b50                        . = ALIGN (0x2)
  *(.rodata*)
  .rodata.str1.1
-                0x00002a8c       0x20 ../../lib/libmc68000.a(printf.o)
-                0x00002aac                        . = ALIGN (0x2)
+                0x00006b50       0x20 ../../lib/libmc68000.a(printf.o)
+                0x00006b70                        . = ALIGN (0x2)
 
-.data           0x00080000        0x0 load address 0x00002aac
+.data           0x00080000        0x0 load address 0x00006b70
                 0x00080000                        . = ALIGN (0x2)
                 0x00080000                        __data_start = .
  *(.data*)
@@ -206,28 +259,34 @@ Linker script and memory map
  .data          0x00080000        0x0 ./xmodem/xmodem.o
  .data          0x00080000        0x0 ./uarts/drv_uart0.o
  .data          0x00080000        0x0 ./ide/ata.o
+ .data          0x00080000        0x0 ./fatfs/diskio.o
+ .data          0x00080000        0x0 ./fatfs/ff.o
  .data          0x00080000        0x0 timers.o
  .data          0x00080000        0x0 interrupt.o
+ .data          0x00080000        0x0 ../../lib/libmc68000.a(strchr.o)
  .data          0x00080000        0x0 ../../lib/libmc68000.a(memcpy.o)
+ .data          0x00080000        0x0 ../../lib/libmc68000.a(memcmp.o)
  .data          0x00080000        0x0 ../../lib/libmc68000.a(memset.o)
  .data          0x00080000        0x0 ../../lib/libmc68000.a(putchar.o)
  .data          0x00080000        0x0 ../../lib/libmc68000.a(printf.o)
+ .data          0x00080000        0x0 ../../lib/libmc68000.a(__mulsi3.o)
+ .data          0x00080000        0x0 ../../lib/libmc68000.a(__udivsi3.o)
  .data          0x00080000        0x0 ../../lib/libmc68000.a(strlen.o)
  .data          0x00080000        0x0 ../../lib/libmc68000.a(puts.o)
                 0x00080000                        . = ALIGN (0x2)
                 0x00080000                        __data_end = .
 
-.mram           0x00080000        0x4 load address 0x00002aac
+.mram           0x00080000        0x4 load address 0x00006b70
  .mram          0x00080000        0x4 vectors.o
 
-.mram           0x00080004        0x8 load address 0x00002ab0
+.mram           0x00080004        0x8 load address 0x00006b74
  *(?.mram)
  .mram          0x00080004        0x8 vbug2-1.o
                 0x00080004                systemTick
                 0x00080008                flg_system
-                0x00002aac                        __data_load_start = LOADADDR (.data)
+                0x00006b70                        __data_load_start = LOADADDR (.data)
 
-.bss            0x0008000c       0xf0 load address 0x00002ab0
+.bss            0x0008000c       0xf8 load address 0x00006b74
                 0x0008000c                        . = ALIGN (0x2)
                 0x0008000c                        __bss_start = .
  *(.bss*)
@@ -259,17 +318,23 @@ Linker script and memory map
  *fill*         0x000800d1        0x3 
  .bss           0x000800d4        0x0 ./uarts/drv_uart0.o
  .bss           0x000800d4       0x28 ./ide/ata.o
- .bss           0x000800fc        0x0 timers.o
- .bss           0x000800fc        0x0 interrupt.o
- .bss           0x000800fc        0x0 ../../lib/libmc68000.a(memcpy.o)
- .bss           0x000800fc        0x0 ../../lib/libmc68000.a(memset.o)
- .bss           0x000800fc        0x0 ../../lib/libmc68000.a(putchar.o)
- .bss           0x000800fc        0x0 ../../lib/libmc68000.a(printf.o)
- .bss           0x000800fc        0x0 ../../lib/libmc68000.a(strlen.o)
- .bss           0x000800fc        0x0 ../../lib/libmc68000.a(puts.o)
+ .bss           0x000800fc        0x0 ./fatfs/diskio.o
+ .bss           0x000800fc        0x8 ./fatfs/ff.o
+ .bss           0x00080104        0x0 timers.o
+ .bss           0x00080104        0x0 interrupt.o
+ .bss           0x00080104        0x0 ../../lib/libmc68000.a(strchr.o)
+ .bss           0x00080104        0x0 ../../lib/libmc68000.a(memcpy.o)
+ .bss           0x00080104        0x0 ../../lib/libmc68000.a(memcmp.o)
+ .bss           0x00080104        0x0 ../../lib/libmc68000.a(memset.o)
+ .bss           0x00080104        0x0 ../../lib/libmc68000.a(putchar.o)
+ .bss           0x00080104        0x0 ../../lib/libmc68000.a(printf.o)
+ .bss           0x00080104        0x0 ../../lib/libmc68000.a(__mulsi3.o)
+ .bss           0x00080104        0x0 ../../lib/libmc68000.a(__udivsi3.o)
+ .bss           0x00080104        0x0 ../../lib/libmc68000.a(strlen.o)
+ .bss           0x00080104        0x0 ../../lib/libmc68000.a(puts.o)
  *(COMMON)
-                0x000800fc                        . = ALIGN (0x2)
-                0x000800fc                        __bss_end = .
+                0x00080104                        . = ALIGN (0x2)
+                0x00080104                        __bss_end = .
                 0x00100000                        _stack_end = 0x100000
                 0x000fe000                        _stack_start = (_stack_end - 0x2000)
 
@@ -287,6 +352,8 @@ LOAD ./picoVga/drv_picoVga.o
 LOAD ./xmodem/xmodem.o
 LOAD ./uarts/drv_uart0.o
 LOAD ./ide/ata.o
+LOAD ./fatfs/diskio.o
+LOAD ./fatfs/ff.o
 LOAD timers.o
 LOAD interrupt.o
 LOAD ../../lib/libmc68000.a

@@ -2,10 +2,13 @@
 #define __STDDEF_H__
 
 
-typedef unsigned int size_t;
 
 #define NULL    0
 
-typedef unsigned int size_t;
+
+#ifndef _SIZE_T
+#define _SIZE_T
+typedef unsigned long size_t;
+#endif
 
 #endif

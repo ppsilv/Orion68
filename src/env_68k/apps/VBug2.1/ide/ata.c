@@ -57,7 +57,6 @@ int ata_detect(void)
 	status = *ATA_REG_STATUS;
 	// If the busy bit is already set, or the two bits that are always 0, then perhaps nothing is connected
 	if (status & (ATA_ST_BUSY | 0x06)){
-        printf("MERDA OCUPADA\n");
 		return 0;
     }
 	ATA_DELAY(10);
@@ -73,7 +72,6 @@ int ata_detect(void)
 		if (!(status & ATA_ST_BUSY)) {
 			if (status & ATA_ST_DATA_READY) {
 				ATA_DELAY(100);
-                printf("Aparentemente tudo OK\n");
 				return 1;
 			} else {
 				printf("ata: data not ready\n");
@@ -128,6 +126,17 @@ int ata_read_sector(int sector, char *buffer)
 	UNLOCK(saved_status);
 	return 512;
 }
+int ata_read_sector_multi(int sector, char *buffer, int count){
+	char *pbuf = buffer;
+	int i=0;
+	for(i=0;i < count; i++){
+		if(ata_read_sector(sector+i,pbuf) == 0){
+			return 1; //RES_ERROR
+		}
+		pbuf+=512;
+	}
+	return 0; //RES_OK
+}
 
 int ata_write_sector(int sector, const char *buffer)
 {
@@ -181,6 +190,17 @@ int ata_write_sector(int sector, const char *buffer)
 
 	return 512;
 }
+int ata_write_sector_multi(int sector, const char *buffer, int count){
+	char * pbuf = buffer;
+	int i=0;
+	for( i=0; i < count; i++){
+		if( ata_write_sector(sector+i,pbuf) == 0 ){
+			return 1; //RES_ERROR
+		}
+		pbuf += 512;
+	}
+	return 0; //RES_OK
+}
 
 
 typedef unsigned long sector_t;
@@ -229,16 +249,10 @@ int read_partition_table(char *buffer, struct partition *devices)
 
 int ata_init(void)
 {
-	int error;
-
-	//*COMET_VME_CF_CONTROL = 0xb8;
 
 	for (short i = 0; i < PARTITION_MAX; i++) {
 		drives[0].parts[i].base = 0;
 	}
-
-	if (error < 0)
-		return error;
 
 	// TODO this doesn't work very well
 	if (!ata_detect()) {
@@ -257,5 +271,19 @@ int ata_init(void)
 		}
 	}
 
-	return 0;
+	return 1;
+}
+
+int ata_disk_status(){
+	if( ata_detect() ){
+		return 0; //RES_OK
+	}
+	return 1; //RES_ERROR
+}
+
+int ata_disk_initialize(){
+	if( ata_init() ){
+		return 0; //RES_OK
+	}
+	return 1; //RES_ERROR
 }
