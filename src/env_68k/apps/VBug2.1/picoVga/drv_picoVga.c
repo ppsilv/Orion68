@@ -11,9 +11,9 @@ inline void run_cmd(unsigned char cmd){
     delay10ms(1);
 }
 void picovga_putchar(unsigned char ch){
-    int x=0x10;
+    //int x=0x10;
     WRITE_SCREEN = ch;
-    while(x--); //0,11us 
+    //while(x--); //0,11us 
 }
 void picovga_gotoxy(int col,int row){
     REG_Y_LOW  = row; //(unsigned char)(row & 0x00FF);
