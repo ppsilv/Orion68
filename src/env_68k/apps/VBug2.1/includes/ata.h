@@ -1,6 +1,25 @@
 #ifndef __ATA_H__
 #define __ATA_H__
 
+#define PARTITION_MAX   4
+
+#define ATA_MAX_DRIVES		1
+typedef unsigned long sector_t;
+
+struct partition {
+    sector_t base;                                                                                                                               
+    sector_t size;
+    uint8_t fstype;
+    uint8_t flags;
+};
+
+
+struct ata_drive {
+	struct partition parts[PARTITION_MAX];
+};
+
+
+
 int ata_detect(void);
 int ata_read_sector(int sector, char *buffer);
 int ata_read_sector_multi(int sector, char *buffer, int count);

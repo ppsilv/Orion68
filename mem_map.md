@@ -4,28 +4,27 @@
 
 Orion68 Memory Map (Initial)
 
-000000 – 0FFFFF   SRAM 1 MB & ROM (Boot / Monitor) ROM de 128K selecionada somente no boot.
-100000 – 1FFFFF   SRAM 1 MB
-200000 – DFFFFF   Expansion space (memory boards)
+ROM
+000000  -   07FFFF   512Kb de espaço para rom
 
-A23 A22 A21 A20   = 0xF = ROM_CS
+RAM
+080000  -   0FFFFF   512KW de espaço para ram - populado
+100000  -   17FFFF   512KW de espaço para ram - NÃO populado
+180000  -   17FFFF   512KW de espaço para ram - NÃO populado
+180000  -   1FFFFF   512KW de espaço para ram - NÃO populado
 
-E00000 - EFFFFF   Espelhamento da ROM 128K 1MB de espaço
+200000  -   27FFFF   512KW de espaço para ram - NÃO populado
+280000  -   2FFFFF   512KW de espaço para ram - NÃO populado
+300000  -   37FFFF   512KW de espaço para ram - NÃO populado
+380000  -   3FFFFF   512KW de espaço para ram - NÃO populado
 
-A23 A22 A21 A20   = 0xF = IO_CS 1MB de espaço
+400000  -   47FFFF   512KW de espaço para ram - NÃO populado
+480000  -   4FFFFF   512KW de espaço para ram - NÃO populado
+500000  -   57FFFF   512KW de espaço para ram - NÃO populado
+580000  -   5FFFFF   512KW de espaço para ram - NÃO populado
 
-F00000 – FFFFFF   I/O space
-                  Serial ports
-                  Video interface
-                  Future peripherals
 
-# Rom endereço alto FB0000 -> FCFFFF
-Rom 132kbytes
 
-0x00000000  0x000F      ;stack pointer 0x0FFFF0
-0x00000002  0xFFF0
-0x00000004  0x00FB      ;Program start 0xFB0000
-0x00000006  0x0000
 
 
 # I/O mapeado          FF0xxx -> FFFxxx

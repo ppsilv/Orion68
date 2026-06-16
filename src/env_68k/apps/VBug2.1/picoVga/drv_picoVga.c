@@ -7,8 +7,8 @@ void init_picoVga(){
 
 }
 inline void run_cmd(unsigned char cmd){
-    delay10ms(1);
     RUN_CMD = cmd;
+    delay10ms(1);
 }
 void picovga_putchar(unsigned char ch){
     int x=0x40;
@@ -28,8 +28,6 @@ void picovga_gotoxy(int col,int row){
     run_cmd(CMD_SET_CUR_POS);
 }
 void picovga_gohome(){
-    //delay10ms(1);
-    //RUN_CMD = CMD_GO_HOME;
     run_cmd(CMD_GO_HOME);
 }
 void picovga_set_color(unsigned char txtcolor,unsigned char bgcolor){
@@ -41,7 +39,7 @@ void picovga_set_color(unsigned char txtcolor,unsigned char bgcolor){
     SET_TXT_COLOR = color;
 }
 void clrscr(){
-    delay10ms(1);
     //RUN_CMD = CMD_CLEAR_SCREEN;
     run_cmd(CMD_CLEAR_SCREEN);
+    delay10ms(10);
 }

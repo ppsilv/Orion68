@@ -12,6 +12,10 @@
 #include "diskio.h"		/* Declarations FatFs MAI */
 #include "ata.h"
 
+typedef unsigned long sector_t;
+extern struct ata_drive drives[];
+extern int ata_read_sector(int sector, char *buffer);
+
 /* Example: Declarations of the platform and disk functions in the project */
 #include "platform.h"
 #include "storage.h"
@@ -20,31 +24,34 @@
 #define DEV_FLASH	0	/* Map FTL to physical drive 0 */
 #define DEV_MMC		1	/* Map MMC/SD card to physical drive 1 */
 #define DEV_USB		2	/* Map USB MSD to physical drive 2 */
-#define DEV_MIDE    3   /* Solid State disk*
+#define DEV_MIDE    3   /* Solid State disk*/
+
+#define MAX_DRIVES	10		/* Max number of physical drives to be used */
+#define	SZ_BLOCK	128		/* Erase block size to be returned by GET_BLOCK_SIZE command */
+
+#define SZ_RAMDISK	135		/* Size of RAM disk (0) [MiB] */
+#define SS_RAMDISK	512		/* Initial sector size of RAM disk (0) [byte] */
+
+#define MIN_READ_ONLY	1	/* Read-only drive from */
+#define	MAX_READ_ONLY	2	/* Read-only drive to */
+
+
+typedef struct {
+	DSTATUS	status;
+	WORD sz_sector;
+	LBA_t n_sectors;
+
+} STAT;
+
+static volatile STAT Stat[MAX_DRIVES];
 
 /*-----------------------------------------------------------------------*/
 /* Get Drive Status                                                      */
 /*-----------------------------------------------------------------------*/
 
-DSTATUS disk_status (
-	BYTE pdrv		/* Physical drive nmuber to identify the drive */
-)
+DSTATUS disk_status (BYTE pdrv)		/* Physical drive nmuber to identify the drive */
 {
-	DSTATUS stat;
-	int result;
-
-	switch (pdrv) {
-	case DEV_MIDE :
-		result = ata_disk_status();
-		return stat;
-
-	case DEV_MMC :
-		return stat;
-
-	case DEV_USB :
-		return stat;
-	}
-	return STA_NOINIT;
+	return ata_disk_status();
 }
 
 
@@ -53,36 +60,44 @@ DSTATUS disk_status (
 /* Inidialize a Drive                                                    */
 /*-----------------------------------------------------------------------*/
 
-DSTATUS disk_initialize (
-	BYTE pdrv				/* Physical drive nmuber to identify the drive */
-)
+DSTATUS disk_initialize ( BYTE pdrv	)			/* Physical drive nmuber to identify the drive */
 {
-	DSTATUS stat;
-	int result;
-
-	switch (pdrv) {
-	case DEV_MIDE :
-		return ata_disk_initialize();
-	case DEV_MMC :
-		return stat;
-
-	case DEV_USB :
-		return stat;
-	}
-	return STA_NOINIT;
+	return ata_disk_initialize();
 }
 
+/* * ESTA É A PONTE: A FatFs vai chamar essa função sempre que precisar de dados.
+ * Você deve plugar isso dentro do arquivo 'diskio.c' da FatFs ou mapear adequadamente.
+ */
+DRESULT disk_read (
+    BYTE pdrv,    /* Physical drive nmuber to identify the drive */
+    BYTE *buff,   /* Data buffer to store read data */
+    LBA_t sector, /* Start sector number (LBA) */
+    UINT count    /* Number of sectors to read */
+) {
+    if (pdrv != 0) return RES_PARERR;
+
+    // Soma a base da partição ativa que o seu MBR leu
+    sector_t physical_sector = drives[0].parts[0].base + sector;
+
+    // Lê quantos setores a FatFs pedir
+    for (UINT i = 0; i < count; i++) {
+        if (!ata_read_sector(physical_sector + i, (char *)buff + (i * 512))) {
+            return RES_ERROR; // Erro físico no CompactFlash
+        }
+    }
+    return RES_OK;
+}
 
 
 /*-----------------------------------------------------------------------*/
 /* Read Sector(s)                                                        */
 /*-----------------------------------------------------------------------*/
-
+/*
 DRESULT disk_read (
-	BYTE pdrv,		/* Physical drive nmuber to identify the drive */
-	BYTE *buff,		/* Data buffer to store read data */
-	LBA_t sector,	/* Start sector in LBA */
-	UINT count		/* Number of sectors to read */
+	BYTE pdrv,		// Physical drive nmuber to identify the drive 
+	BYTE *buff,		// Data buffer to store read data 
+	LBA_t sector,	// Start sector in LBA 
+	UINT count		// Number of sectors to read
 )
 {
 	DRESULT res;
@@ -101,7 +116,7 @@ DRESULT disk_read (
 	}
 
 	return RES_PARERR;
-}
+}*/
 
 
 
@@ -163,7 +178,7 @@ DRESULT disk_ioctl (
 		return res;
 	}
 
-	switch (ctrl) {
+	switch (cmd) {
 	case CTRL_SYNC:			/* Nothing to do */
 		res = RES_OK;
 		break;

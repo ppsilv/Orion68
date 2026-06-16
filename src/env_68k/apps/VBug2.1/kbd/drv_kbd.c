@@ -141,13 +141,14 @@ __attribute__((interrupt)) void uart_isr(void) {
     // Limpa pendência de interrupção no hardware se necessário
 }
 */
+/*
 void enable_kbd_interrupts(){
     volatile unsigned char *uart_reg = (volatile unsigned char *)DRV_UART1_BASE;
     *(uart_reg + IER) = 0x01; // Garante que interrupções estão ligadas
     // ATENÇÃO: Seta o bit OUT2 no MCR para conectar a IRQ interna ao pino físico do chip!
     *(uart_reg + MCR) = 0x08;  //enable pin int
 }
-
+*/
 //static unsigned char read_kbd_uart()
 static unsigned char read_kbd()
 {
@@ -155,10 +156,6 @@ static unsigned char read_kbd()
     unsigned char ch;
     while (!(*(uart_reg + LSR) & 0x01)) ;
     return (unsigned char)*(uart_reg + RHR);
-    //if( ch != 0xFF ){
-    //    printf("[%02x]\n",ch);
-    //    delay10ms(1000);
-    //}
     return ch;
 }
 //char read_kbd(void) {
@@ -283,7 +280,7 @@ unsigned char get_packet()
         if (cmd == 0x81)        {
             printf("81 ");
             get_0x81();
-            printBuffer("\nPKT 81 ");
+            //printBuffer("\nPKT 81 ");
             continue;
         }
         if (cmd == 0x82){
@@ -422,15 +419,15 @@ unsigned int get_char(){
 
     ch = 0;
     key_flag=0;
+    init_kbd();
 
     while(1){
-        memset((void *)key_buffer, 0, sizeof(key_buffer));
+        memset((void *)key_buffer, 0, 48);
         key_flag=get_packet();
         //printf("key_flag[%02X]\n",key_flag);
-        if ( key_flag == NO_KEY )
+        if ( key_flag == NO_KEY ){
             continue;
-//        if(  key_buffer[4] == 0x39 )
-//            return 0;    
+        }
         if( key_flag == KEY_CAPS ){
             send_cmd_keyboard(mod_caps);
             continue;

@@ -73,7 +73,7 @@ _start:
         MOVE.B  #0x41,(%A0)
         /*1. Limpa a RAM e por conseguinte a área bss*/
         LEA     0x080000,%A0
-        LEA     0x0FFFFF,%A1
+        LEA     0x100000,%A1
         MOVE.L  #0x0,%D0
 .ClearLoop:
         MOVE.L  %D0,(%A0)+

@@ -4,8 +4,11 @@
 #include <errno.h>
 #include "interrupt.h"
 #include "endian.h"
+#include "ata.h"
 
-#define PARTITION_MAX   4
+struct ata_drive drives[ATA_MAX_DRIVES];
+
+
 
 #define ATA_REG_BASE 0x00FF4400
 
@@ -203,23 +206,6 @@ int ata_write_sector_multi(int sector, const char *buffer, int count){
 }
 
 
-typedef unsigned long sector_t;
-
-struct partition {
-    sector_t base;                                                                                                                               
-    sector_t size;
-    uint8_t fstype;
-    uint8_t flags;
-};
-
-
-struct ata_drive {
-	struct partition parts[PARTITION_MAX];
-};
-
-#define ATA_MAX_DRIVES		1
-
-static struct ata_drive drives[ATA_MAX_DRIVES];
 
 struct partition_entry {
     uint8_t status;

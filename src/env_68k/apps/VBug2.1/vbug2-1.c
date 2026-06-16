@@ -9,6 +9,7 @@
 #include "timers.h"
 #include "interrupt.h"
 #include "ata.h"
+#include "show_registers.h"
 
 //__attribute__((section(".mram"))) char vbug_buffer[256];
 //__attribute__((section(".minha_ram"))) int vbug_status_flag;
@@ -20,6 +21,8 @@ volatile __attribute__((section(".mram"))) unsigned int flg_system;
 
 extern void xmodem_receive();
 extern uint32_t get_system_tick_nmi_safe(void);
+extern void listar_diretorio_raiz(void);
+extern void ler_e_exibir_joblog(void);
 
 typedef void (*ProgramaXModem)(void);
 
@@ -67,6 +70,8 @@ void main() {
     // Inicializa os hardwares normalmente
     // 1. Direciona o console para a PicoVGA
     // Basta alterar o ponteiro!
+    m68k_enable_all_interrupts(); 
+
     set_console_output(picovga_putchar);
     
     set_console_input(get_char);
@@ -80,7 +85,7 @@ void main() {
     print_capslock();
 
     uart0_init();
-    delay10ms(1000);  //100ms    
+    delay10ms(100);  //100ms    
     // uart1_init();
     // delay10ms(100);  //100ms    
     // uart2_init();
@@ -89,9 +94,8 @@ void main() {
     // delay10ms(100);  //100ms    
     init_kbd();
     ch9350_shut_up();
-    delay10ms(1000);  //100ms    
+    delay10ms(10);  //100ms    
 
-    m68k_enable_all_interrupts(); 
 
     while(1) {
         clrscr();
@@ -107,16 +111,27 @@ menu:
         printf(" 6 - Desabilita interrupcao\n");
         printf(" 7 - habilitita interrupcao\n");
         printf(" 8 - le o setor 0 do disco\n");
-
-
+        printf(" 9 - listar o diretorio raiz\n");
+        printf(" A|a - ler joblog\n");
+        printf(" B|b - dump registers\n");
         printf("Choose an option: ");
+
         ch = get_char();
-        printf("%c",ch);
-        ch -= '0';
+        if( ch >= 0x30 && ch <= 0x39)
+                ch -= '0';
+        
         printf("\n");
         switch(ch){
+            case 0x41:
+            case 0x61:
+                    ler_e_exibir_joblog();
+                    goto menu;     
+            case 0x42:
+            case 0x62:
+                    dump_registradores();
+                    goto menu;     
             case 0: clrscr();
-                    break;
+                    goto menu;
             case 1:
                     print_msg("systemTick: ");    
                     printf("[%08ld]",get_system_tick());
@@ -164,6 +179,8 @@ menu:
                     break;  
                              
             case 9:
+                    listar_diretorio_raiz();
+                    goto menu;
                     break;  
             default:
                     printf("Wrong option\n");        

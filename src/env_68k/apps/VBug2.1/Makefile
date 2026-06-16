@@ -3,6 +3,8 @@ LD = m68k-elf-ld
 OBJCOPY = m68k-elf-objcopy
 
 CFLAGS = -Wall -O0 -I ./includes -I../../include -ffreestanding -nostdlib
+CFLAGS += -DCHIP_$(CHIP_TYPE) -DROM_SIZE_BYTES=$(ROM_SIZE)
+
 LDFLAGS = -T ./vbug2-1.ld -L../../lib -nostdlib  -Map=vbug2-1.map
 
 #SRCS = $(wildcard *.c)
@@ -15,6 +17,8 @@ SRCS = vbug2-1.c vectors.c console.c \
 ./ide/ata.c \
 ./fatfs/diskio.c \
 ./fatfs/ff.c \
+./tst_fat/tstfat.c \
+./tst_fat/ler_joblog.c \
 timers.c interrupt.c
 
 OBJS = $(SRCS:.c=.o)
@@ -26,11 +30,21 @@ SPLITTER := python3 ./tools/split68k.py
 FILLER := python3 ./tools/fill.py
 PROGRAMMER := minipro
 CHECKSUMER := python3 ./tools/checksum_put.py
-#CHIP_TYPE := SST39SF010 #28C64A  # Altere para o seu chip Flash
-CHIP_TYPE := AT29C512
-#Rom sizes
-FLASH_SIZE := 65536  # 128KB (tamanho da 39SF010)
-ROM_SIZE := 65536     # 128KB usados
+# Define um chip padrão caso esqueça de passar na linha de comando
+CHIP ?= AT29C512
+# Condicional para selecionar os tamanhos e tipos baseado na variável CHIP
+ifeq ($(CHIP), AT29C512)
+    CHIP_TYPE  := AT29C512
+    FLASH_SIZE := 65536  # 64KB
+    ROM_SIZE   := 65536  # 64KB
+else ifeq ($(CHIP), AT28C256)
+    CHIP_TYPE  := AT28C256
+    FLASH_SIZE := 32768  # 32KB
+    ROM_SIZE   := 32768  # 32KB
+else
+    $(error Chip desconhecido: $(CHIP). Escolha AT29C512 ou AT28C256)
+endif
+
 
 TARGET := vbug2-1
 TARGET_OBJ := $(TARGET).o
@@ -83,10 +97,11 @@ fill: split
 
 programL:
 	@echo "Gravando parte LOW na Flash..."
-	@$(PROGRAMMER) -p $(CHIP_TYPE) -w $(TARGET_LOW) -s
+	$(PROGRAMMER) -p $(CHIP_TYPE) -w $(TARGET_LOW) -s
 	@echo "Gravação concluída LOW! BOA SORTE"
 
 programH: split
 	@echo "Gravando parte HIGH na Flash..."
-	@$(PROGRAMMER) -p $(CHIP_TYPE) -w $(TARGET_HIGH) -s
+	@echo $(CHIP_TYPE)
+	$(PROGRAMMER) -p $(CHIP_TYPE) -w $(TARGET_HIGH) -s
 	@echo "Gravação concluída HIGH! GRAVE A MEMORIA LOW"
