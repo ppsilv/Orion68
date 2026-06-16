@@ -51,11 +51,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  23 .debug_line   0001e914  00000000  00000000  0006531e  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 24 .debug_str    000080c0  00000000  00000000  00083c32  2**0
+ 24 .debug_str    000080c1  00000000  00000000  00083c32  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  25 .debug_frame  0000326c  00000000  00000000  0008bcf4  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 26 .debug_line_str 0000027f  00000000  00000000  0008ef60  2**0
+ 26 .debug_line_str 00000280  00000000  00000000  0008ef60  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 /home/pdsilva/project/Orion68/src/card_vga_pico2/build/vgaPico2.elf:     file format elf32-littlearm
