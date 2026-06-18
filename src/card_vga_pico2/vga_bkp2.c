@@ -198,7 +198,7 @@ int main(){
 
     // start the serial i/o
     stdio_init_all() ;
-    set_sys_clock_khz(150000, true);
+    //set_sys_clock_khz(150000, true);
       vga = create_screen( MODE_TEXT_80_S ); //, 0, 0, font );
       video_mode = MODE_TEXT_80_S;
       
