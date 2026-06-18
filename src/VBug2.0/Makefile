@@ -15,7 +15,7 @@ FILLER := python3 fill.py
 PROGRAMMER := minipro
 CHECKSUMER := python3 checksum_put.py
 #CHIP_TYPE := SST39SF010 #28C64A  # Altere para o seu chip Flash
-CHIP_TYPE := AT29C512
+ 
 
 # Nomes de arquivos
 SOURCE := vbug2-0.asm
@@ -28,15 +28,18 @@ TARGET_LOW := $(TARGET)_low.bin
 TARGET_HIGH := $(TARGET)_high.bin
 LAYOUT_FILE := layout.ld
 
-# Tamanhos (ajuste conforme sua memória)
-#FLASH_SIZE := 8192  # 8KB (tamanho da 28C64A)
-#ROM_SIZE := 8192     # 8KB usados
-#FLASH_SIZE := 16384  # 8KB (tamanho da 28C64A)
-#ROM_SIZE := 16384     # 8KB usados
-#FLASH_SIZE := 131072  # 128KB (tamanho da 39SF010)
-#ROM_SIZE := 131072     # 128KB usados
-FLASH_SIZE := 65535  # 128KB (tamanho da 39SF010)
-ROM_SIZE := 65535     # 128KB usados
+CHIP ?= AT28C256
+ifeq ($(CHIP), AT29C512)
+    CHIP_TYPE  := AT29C512
+    FLASH_SIZE := 65536  # 64KB
+    ROM_SIZE   := 65536  # 64KB
+else ifeq ($(CHIP), AT28C256)
+    CHIP_TYPE  := AT28C256
+    FLASH_SIZE := 32768  # 32KB
+    ROM_SIZE   := 32768  # 32KB
+else
+    $(error Chip desconhecido: $(CHIP). Escolha AT29C512 ou AT28C256)
+endif
 
 
 
@@ -102,12 +105,12 @@ fill: split
 
 programL:
 	@echo "Gravando parte LOW na Flash..."
-	@$(PROGRAMMER) -p $(CHIP_TYPE) -w $(TARGET_LOW) -s
+	$(PROGRAMMER) -p $(CHIP_TYPE) -w $(TARGET_LOW) -s
 	@echo "Gravação concluída LOW! BOA SORTE"
 
 programH: split
 	@echo "Gravando parte HIGH na Flash..."
-	@$(PROGRAMMER) -p $(CHIP_TYPE) -w $(TARGET_HIGH) -s
+	$(PROGRAMMER) -p $(CHIP_TYPE) -w $(TARGET_HIGH) -s
 	@echo "Gravação concluída HIGH! GRAVE A MEMORIA LOW"
 
 criaRom:

@@ -34,6 +34,8 @@ void uart3_init();
 
 unsigned int uart0_read();
 void uart0_write(unsigned char ch);
+unsigned int uart0_read_timeout();
+void uart0_write_string(char * str);
 int _inbyte(int delay);
 void _outbyte(unsigned char ch);
 

@@ -183,7 +183,7 @@ void core1_entry() {
 int main(){
 
     // set the clock
-    set_sys_clock_khz(300000, true);
+    set_sys_clock_khz(200000, true);
 
     // start bus read
     initReadBus_Pio();

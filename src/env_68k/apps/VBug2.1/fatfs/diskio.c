@@ -128,17 +128,17 @@ DRESULT disk_read (
 
 DRESULT disk_write (
 	BYTE pdrv,			/* Physical drive nmuber to identify the drive */
-	const BYTE *buff,	/* Data to be written */
+	const char *buff,	/* Data to be written */
 	LBA_t sector,		/* Start sector in LBA */
 	UINT count			/* Number of sectors to write */
 )
 {
-	DRESULT res;
-	int result;
+	DRESULT res=0;
+	 
 
 	switch (pdrv) {
 	case DEV_MIDE :
-		result = ata_write_sector_multi(sector, buff, count);
+		res = ata_write_sector(sector, buff);
 		return res;
 
 	case DEV_MMC :
@@ -164,8 +164,7 @@ DRESULT disk_ioctl (
 	void *buff		/* Buffer to send/receive control data */
 )
 {
-	DRESULT res;
-	int result;
+	DRESULT res=0;
 
 	switch (pdrv) {
 	case DEV_MIDE :

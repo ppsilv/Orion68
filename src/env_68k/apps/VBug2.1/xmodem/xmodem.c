@@ -3,7 +3,53 @@
 #include <string.h>
 #include "vbug2-1.h"
 #include "drv_uart.h"
+#include "sysflags.h"
 
+// main.c
+
+// Declaração da função externa em Assembly
+extern int xmodem_receive(void);
+
+// Se você quiser ler a flag que o Assembly altera:
+extern unsigned char flag_pgm_loaded; 
+
+void xmodem_loader() {
+    printf("Aguardando transmissão XMODEM...\n");
+    
+    // Chama a sua rotina em Assembly!
+    if( xmodem_receive() ){
+        sys_flags.bit.xmodem_error = 0;
+    }else{
+        sys_flags.bit.xmodem_error = 1;
+    }
+
+    
+    // Quando der o RTS no Assembly, o fluxo volta para cá suavemente
+    if (sys_flags.bit.xmodem_error == 0) {
+        printf("Sucesso! Programa carregado em 0x00082000\n");
+    } else {
+        printf("Erro na recepção.\n");
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*************************************************************************************
 #define SOH     0x01
 #define EOT     0x04
 #define ACK     0x06
@@ -82,3 +128,4 @@ Transfer_Complete:
     printf("Transfer finished...\n");
 }
 
+******************************************************************************************/

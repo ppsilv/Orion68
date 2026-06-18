@@ -1,3 +1,4 @@
+#include "stdio.h"
 #include "io.h"
 #include "keyboard.h"
 #include "interrupt.h"
@@ -6,6 +7,47 @@ extern volatile unsigned char rx_head;
 extern volatile unsigned char rx_tail;
 extern volatile char rx_buffer[RX_BUFFER_SIZE];
 
+// A variável do tick agora é perfeitamente acessível pelo Assembly
+extern volatile long systemTick; 
+
+// A TRAP 14 agora é uma função C NORMAL, chamada via JSR pelo vectors.S
+void TRAP14_Handler(void) {
+    // Olha o registrador D1 que está intacto na máquina
+    register unsigned long d0_val asm("d0"); 
+    register unsigned long d1_val asm("d1"); 
+    printf("TRAP14_Handler: DO[%08X]\n",d0_val);
+    switch(d1_val & 0xFF) {
+        case 0: uart0_init(); break;
+        case 1: uart0_write(d0_val); break;
+        case 2: uart0_read(); break;
+        case 3: uart0_read_timeout(); break;
+    }
+}
+
+// Sua função de leitura atômica do tick continua linda aqui
+unsigned long get_system_tick(void) {
+    unsigned long tick;
+    unsigned int status_antigo;
+    
+    status_antigo = m68k_disable_level2_perfect(); 
+    tick = systemTick;                     
+    m68k_restore_interrupts(status_antigo); 
+    
+    return tick;
+}
+
+
+
+/*
+#include "io.h"
+#include "keyboard.h"
+#include "interrupt.h"
+
+extern volatile unsigned char rx_head;
+extern volatile unsigned char rx_tail;
+extern volatile char rx_buffer[RX_BUFFER_SIZE];
+
+extern void TRAP14_Handler(void);
 
 static __attribute__((section(".mram"))) long systemTick=0;
 
@@ -69,8 +111,10 @@ void __attribute__((interrupt)) Int7Handler(){
 void __attribute__((interrupt)) Trap0Handler(){
     
 }
-void __attribute__((interrupt)) Trap1Handler(){
-// Amarre variáveis locais diretamente aos registradores físicos
+void __attribute__((interrupt)) Trap1Handler(){ 
+    __asm__ __volatile__ ("movem.l %d2-%d7/%a0-%a6,-(%sp)");
+
+    // Amarre variáveis locais diretamente aos registradores físicos
     register unsigned short function_code asm("d0");
     register unsigned char  character     asm("d1");
 
@@ -87,6 +131,7 @@ void __attribute__((interrupt)) Trap1Handler(){
             }
             break;
     }    
+    __asm__ __volatile__ ("movem.l (%sp)+,%d2-%d7/%a0-%a6");
 }
 void __attribute__((interrupt)) Trap2Handler(){
     
@@ -122,15 +167,21 @@ void __attribute__((interrupt)) TrapCHandler(){
     
 }
 void __attribute__((interrupt)) TrapDHandler(){
+    __asm__ __volatile__ ("movem.l %d2-%d7/%a0-%a6,-(%sp)");
+
+    __asm__ __volatile__ ("movem.l (%sp)+,%d2-%d7/%a0-%a6");
     
 }
 void __attribute__((interrupt)) TrapEHandler(){
-    
+    __asm__ __volatile__ ("movem.l %d2-%d7/%a0-%a6,-(%sp)");
+
+    TRAP14_Handler();
+
+    __asm__ __volatile__ ("movem.l (%sp)+,%d2-%d7/%a0-%a6");    
 }
 void __attribute__((interrupt)) TrapFHandler(){
-    
 }
-
+merda merda
 // A SUA FUNÇÃO DE LEITURA FICA ASSIM:
 unsigned long get_system_tick(void) {
     unsigned long tick;
@@ -142,3 +193,4 @@ unsigned long get_system_tick(void) {
     
     return tick;
 }
+*/

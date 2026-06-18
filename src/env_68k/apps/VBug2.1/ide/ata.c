@@ -129,17 +129,6 @@ int ata_read_sector(int sector, char *buffer)
 	UNLOCK(saved_status);
 	return 512;
 }
-int ata_read_sector_multi(int sector, char *buffer, int count){
-	char *pbuf = buffer;
-	int i=0;
-	for(i=0;i < count; i++){
-		if(ata_read_sector(sector+i,pbuf) == 0){
-			return 1; //RES_ERROR
-		}
-		pbuf+=512;
-	}
-	return 0; //RES_OK
-}
 
 int ata_write_sector(int sector, const char *buffer)
 {
@@ -192,17 +181,6 @@ int ata_write_sector(int sector, const char *buffer)
 	UNLOCK(saved_status);
 
 	return 512;
-}
-int ata_write_sector_multi(int sector, const char *buffer, int count){
-	char * pbuf = buffer;
-	int i=0;
-	for( i=0; i < count; i++){
-		if( ata_write_sector(sector+i,pbuf) == 0 ){
-			return 1; //RES_ERROR
-		}
-		pbuf += 512;
-	}
-	return 0; //RES_OK
 }
 
 
@@ -273,3 +251,30 @@ int ata_disk_initialize(){
 	}
 	return 1; //RES_ERROR
 }
+
+/*
+
+int ata_read_sector_multi (long sector, char *buffer, long count){
+	char *pbuf = buffer;
+	long i=0;
+	for(i=0;i < count; i++){
+		if(ata_read_sector(sector+i,pbuf) == 0){
+			return 1; //RES_ERROR
+		}
+		pbuf+=512;
+	}
+	return 0; //RES_OK
+}
+int ata_write_sector_multi(long sector, char *buffer, long count){
+	char * pbuf = buffer;
+	long i=0;
+	for( i=0; i < count; i++){
+		if( ata_write_sector(sector+i,pbuf) == 0 ){
+			return 1; //RES_ERROR
+		}
+		pbuf += 512;
+	}
+	return 0; //RES_OK
+}
+
+*/

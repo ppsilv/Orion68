@@ -1,9 +1,9 @@
 .section .text
-.global _start             /* Torna o símbolo visível para o Linker Script */
+.global _start
 
-/*
-.section .vectors
-.org 0x00000000*/
+.global UartWrCh
+.global uart0_initialize
+
 .equ RHR, 0x01
 .equ THR, 0x01
 .equ FCR, 0x05
@@ -12,9 +12,8 @@
 .equ DLL, 0x01
 .equ DLM, 0x03
 
-
 _vectors:
-          .long    0x000FFFF0
+          .long    0x000FFFF0       /* Pilha no topo real da RAM (ajuste se seu limite for outro) */
           .long    _start
           .long    SvcBusError
           .long    Svcaddress_err
@@ -65,13 +64,10 @@ _vectors:
 
 
 _start:
-        /* Se o seu hardware precisa de alguma inicialização crítica, faça aqui. */
-        ORI.W   #0x0700,%SR
-        /*MOVE.W  #0x2000, %SR*/    /*Habilita todas as interruções*/
-        LEA     0x000FFFF0,%A7
-        LEA     0x00FF8001,%A0
-        MOVE.B  #0x41,(%A0)
-        /*1. Limpa a RAM e por conseguinte a área bss*/
+        ORI.W   #0x0700,%SR         /* Desabilita interrupções no boot */
+        LEA     0x000FFFF0,%A7      /* Garante o ponteiro da pilha limpo */
+
+        /* 1. Limpa a RAM (bss) */
         LEA     0x080000,%A0
         LEA     0x100000,%A1
         MOVE.L  #0x0,%D0
@@ -80,59 +76,81 @@ _start:
         CMPA.L  %A0,%A1
         BHI     .ClearLoop
 
-        /*2. Rotina que CARREGA a seção .data da ROM para a RAM*/
-        lea     __data_load_start, %a0  | A0 aponta para a origem (na ROM)
-        lea     __data_start, %a1       | A1 aponta para o destino (na RAM)
-        lea     __data_end, %a2         | A2 determina o fim do bloco na RAM
-
-        lea     0x84000,%A5
-        MOVE.L  __data_load_start,(%A5)+
-        MOVE.L  __data_start,(%A5)+
-        MOVE.L  __data_end,(%A5)+
+        /* 2. Carrega seção .data da ROM para a RAM */
+        lea     __data_load_start, %a0
+        lea     __data_start, %a1
+        lea     __data_end, %a2
 copy_data:
-        cmpa.l  %a2, %a1                | Chegou no fim do bloco de RAM?
-        bge.s   go_ahead                | Se sim, vai para a próxima etapa
-        move.b  (%a0)+, (%a1)+          | Copia o byte da ROM para a RAM e avança ambos
-        bra.s   copy_data               | Loop
+        cmpa.l  %a2, %a1
+        bge.s   go_ahead
+        move.b  (%a0)+, (%a1)+
+        bra.s   copy_data
 go_ahead:
-        /* Salta direto para a função principal do seu VBug escrita em C! */
-        JSR     main
 
-
-
-        LEA     0x00FF8001,%A0
-        MOVE.B  #0x41,(%A0)
-        NOP
-        MOVE.B  #0x42,(%A0)
-        NOP
-        MOVE.B  #0x0A,(%A0)
-        NOP
-        MOVE.B  #0x0D,(%A0)
-        NOP
-
+        /* Uart 0 init */
         LEA     0xFF4000,%A1
-        move.b  #0x07,FCR(%a1)      /*; enable FIFO*/
-        move.b  #0x83,LCR(%a1)      /*; 8 data bits, no parity, 1 stop bit, DLAB=1*/
-        move.b  #0x08,DLL(%A1)      /*; Byte 0 (LSB) -> DLL*/
-        move.b  #0x00,DLM(%A1)      /*; Byte 1 (agora no LSB) -> DLM*/
-        bclr.b  #0x07,LCR(%a1)      /*; 8 data bits, no parity, 1 stop bit, DLAB=0*/
+        move.b  #0x07,FCR(%a1)
+        move.b  #0x83,LCR(%a1)
+        move.b  #0x08,DLL(%A1)
+        move.b  #0x00,DLM(%A1)
+        bclr.b  #0x07,LCR(%a1)
 
-        move.b  #0x41,%D0
-        JSR     UartWrCh
-        move.b  #0x42,%D0
-        JSR     UartWrCh
+        lea     bootstrap_string,%a0
+        jsr     print_string
 
         jsr     main
 
-        /* Se a main retornar por algum milagre, trava a CPU num loop infinito */
 .dead:
         bra.s   .dead
 
 UartWrCh:
         move.l  #0xFF4000,%A1
 .WaitTx:
-        btst    #5, LSR(%A1)
+        btst    #5,LSR(%A1)
         beq     .WaitTx
         move.b  %D0,THR(%A1)
         RTS
 
+PicoWrCh:
+        LEA     0x00FF8001,%A1
+        MOVE.B  %D0,(%A1)
+        NOP
+        NOP
+        NOP
+        NOP
+        RTS
+
+uart0_initialize:
+        LEA     0xFF4000,%A1
+        move.b  #0x07,FCR(%a1)
+        move.b  #0x83,LCR(%a1)
+        move.b  #0x08,DLL(%A1)
+        move.b  #0x00,DLM(%A1)
+        bclr.b  #0x07,LCR(%a1)
+        RTS
+
+print_string:
+        move.b  (%A0)+,%d0
+        beq     .end_print_string
+        jsr     UartWrCh
+        bra     print_string
+.end_print_string:
+        RTS
+
+startup_delay:
+        move.l  #2000,%d1
+.outer_loop:
+        move.l  #400,%d2
+.inner_loop:
+        subq.l  #1,%d2
+        bne     .inner_loop
+        subq.l  #1,%d1
+        bne     .outer_loop
+        rts
+
+.section .text
+.align 2
+bootstrap_string:
+        .ascii  "PDS317 - Bootstrap 2026 V1.0"
+        .byte   13, 10, 0
+.align 2        /* <--- CRÍTICO: Garante que o PRÓXIMO arquivo linkado comece em endereço PAR */

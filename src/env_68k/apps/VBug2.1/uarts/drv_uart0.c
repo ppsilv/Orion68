@@ -9,7 +9,14 @@
 #define DMA_MODE_SEL    0x08
 #define RX_TRIG_LEVEL   0x00  //00 - triguer de 1 byte | 01 triguer de 4 bytes  | 10 triguer 8 bytes |  11 triquer de 14 bytes 
 
+extern unsigned long get_system_tick(void);
 
+/* TRAP 14
+AH = 0x00: Inicializa a porta (Baud rate, paridade, stop bits).
+AH = 0x01: Escreve um caractere (Equivalente ao seu UART_WriteChar).
+AH = 0x02: Lê um caractere (Equivalente ao seu UART_ReadChar).
+AH = 0x03: Pega o status da porta (Para fazer Polling).
+*/
 
 /*RX_TRIG_LEVEL
 Bit 7	Bit 6	Valor em Hex 	Nível de Gatilho 	Comportamento no Hardware
@@ -19,6 +26,10 @@ Bit 7	Bit 6	Valor em Hex 	Nível de Gatilho 	Comportamento no Hardware
 1	       0	   0x80	             8 Bytes	     O hardware espera acumular 8 bytes (metade do buffer) antes de avisar a CPU.
 1	       1	   0xC0	            14 Bytes                            
 */
+
+void writec_char(char ch){
+    printf("D0[%02x]\n",ch);
+}
 
 void uart0_init(){
     volatile unsigned char *uart_reg = (volatile unsigned char *)DRV_UART0_BASE;
@@ -43,7 +54,7 @@ void uart0_init(){
 
 void uart0_write(unsigned char ch){
     volatile unsigned char *uart_reg = (volatile unsigned char *)DRV_UART0_BASE;
-    
+    printf("Enviando [%02x]\n",ch);
     while (!(*(uart_reg + LSR) & 0x20)) ;
     *(uart_reg + THR) = ch;
 }
@@ -53,6 +64,24 @@ unsigned int uart0_read(){
     unsigned char ch;
     while (!(*(uart_reg + LSR) & 0x01)) ;
     ch = (unsigned char)*(uart_reg + RHR);
+    //uart0_write(ch);
+    return ch;
+}
+
+unsigned int uart0_read_timeout(){
+    volatile unsigned char *uart_reg = (volatile unsigned char *)DRV_UART0_BASE;
+    unsigned char ch;
+    printf("Read Entrando...\n");
+    unsigned long time_now = get_system_tick();
+    unsigned long timeout = time_now + 3000;
+    while (!(*(uart_reg + LSR) & 0x01)){
+        if(timeout < get_system_tick()) {
+            printf("Saindo...\n");
+            return 0;
+        }
+    }
+    ch = (unsigned char)*(uart_reg + RHR);
+    printf("Saindo com ch...\n");
     //uart0_write(ch);
     return ch;
 }

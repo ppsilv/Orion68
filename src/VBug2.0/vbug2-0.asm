@@ -346,8 +346,6 @@ Vbug2Start:
         ;Initialize TRAP1
         JSR  InitTrap1
 
-Esse monitor pode nãoe star funcionando mas com certeza com algum pequeno bug, que agora que tenho o C vou deixar para lá
-
 MenuLoop:
 subLoop:    
         JSR     PicoClearScreen

@@ -10,6 +10,10 @@
 #include "interrupt.h"
 #include "ata.h"
 #include "show_registers.h"
+#include "sysflags.h"
+
+// Aqui a memória é alocada de verdade!
+SystemFlags sys_flags;
 
 //__attribute__((section(".mram"))) char vbug_buffer[256];
 //__attribute__((section(".minha_ram"))) int vbug_status_flag;
@@ -19,7 +23,7 @@ volatile __attribute__((section(".mram"))) unsigned int flg_system;
 #include "./tools/build_counter.h"
 
 
-extern void xmodem_receive();
+extern void xmodem_loader();
 extern uint32_t get_system_tick_nmi_safe(void);
 extern void listar_diretorio_raiz(void);
 extern void ler_e_exibir_joblog(void);
@@ -65,26 +69,34 @@ extern void dump_memory(long addr);
 extern void liga_debug(); 
 extern int ata_detect(void);
 extern int ata_init(void);
+extern void abrir_arquivo();
+
+extern void UartWrCh(unsigned char ch);
+
+void write_string(char * str){
+    while(*str){
+        UartWrCh(*str++);
+    }
+}
 
 void main() {
     // Inicializa os hardwares normalmente
     // 1. Direciona o console para a PicoVGA
     // Basta alterar o ponteiro!
     m68k_enable_all_interrupts(); 
-
     set_console_output(picovga_putchar);
-    
+    init_kbd();
+    ch9350_shut_up();
+    delay10ms(10);  //100ms    
     set_console_input(get_char);
 
     picovga_set_color(RED,BLACK);
-
     printf("%s",MsgOrionInit);
+
     picovga_set_color(GREEN,BLACK);
-    //int col=0,row=15;
     unsigned int ch;
     print_capslock();
 
-    uart0_init();
     delay10ms(100);  //100ms    
     // uart1_init();
     // delay10ms(100);  //100ms    
@@ -92,9 +104,6 @@ void main() {
     // delay10ms(100);  //100ms    
     // uart3_init();
     // delay10ms(100);  //100ms    
-    init_kbd();
-    ch9350_shut_up();
-    delay10ms(10);  //100ms    
 
 
     while(1) {
@@ -125,6 +134,7 @@ menu:
             case 0x41:
             case 0x61:
                     ler_e_exibir_joblog();
+                    //abrir_arquivo();
                     goto menu;     
             case 0x42:
             case 0x62:
@@ -146,7 +156,7 @@ menu:
                     dump_memory(0x82000);
                     break;
             case 3:
-                    xmodem_receive();    
+                    xmodem_loader();    
                     goto menu;
                     break;
             case 4:

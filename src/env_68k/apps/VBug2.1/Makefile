@@ -7,7 +7,10 @@ CFLAGS += -DCHIP_$(CHIP_TYPE) -DROM_SIZE_BYTES=$(ROM_SIZE)
 
 LDFLAGS = -T ./vbug2-1.ld -L../../lib -nostdlib  -Map=vbug2-1.map
 
-#SRCS = $(wildcard *.c)
+# 1. ADICIONADO: Lista de arquivos em Assembly (.S)
+ASMS = ./xmodem/xmodem_asm.S vectors_asm.S
+
+# Lista de arquivos C
 SRCS = vbug2-1.c vectors.c console.c \
 ./dump/mem_dump.c \
 ./kbd/drv_kbd.c \
@@ -21,18 +24,16 @@ SRCS = vbug2-1.c vectors.c console.c \
 ./tst_fat/ler_joblog.c \
 timers.c interrupt.c
 
-OBJS = $(SRCS:.c=.o)
-#ELFS = $(SRCS:.c=.elf)
-#BINS = $(SRCS:.c=.bin)
+# 2. ALTERADO: Agora a lista de objetos junta os .o vindos do .c e do .S
+OBJS = $(SRCS:.c=.o) $(ASMS:.S=.o)
 
 #Tools
 SPLITTER := python3 ./tools/split68k.py
 FILLER := python3 ./tools/fill.py
 PROGRAMMER := minipro
 CHECKSUMER := python3 ./tools/checksum_put.py
-# Define um chip padrão caso esqueça de passar na linha de comando
-CHIP ?= AT29C512
-# Condicional para selecionar os tamanhos e tipos baseado na variável CHIP
+
+CHIP ?= AT28C256
 ifeq ($(CHIP), AT29C512)
     CHIP_TYPE  := AT29C512
     FLASH_SIZE := 65536  # 64KB
@@ -45,27 +46,25 @@ else
     $(error Chip desconhecido: $(CHIP). Escolha AT29C512 ou AT28C256)
 endif
 
-
 TARGET := vbug2-1
 TARGET_OBJ := $(TARGET).o
 TARGET_ELF := $(TARGET).elf
 TARGET_BIN := $(TARGET).bin
 TARGET_LOW := $(TARGET)_low.bin
 TARGET_HIGH := $(TARGET)_high.bin
- 
 
-.PHONY: all clean
+.PHONY: all clean split fill programL programH
 
 all: vbug2-1.bin
 
+# Regra para compilar os arquivos .c
 %.o: %.c
 	@./tools/build_counter.sh
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Regra específica para cada arquivo para evitar problemas com $<
-#vbug2-1.elf:  $(OBJS) ../../obj/crt0.o ../../obj/vbu2-1_startup.o
-#	$(LD) $(LDFLAGS) ../../obj/startup.o   vbug2-1.o -lmc68000 -o $@
-#	@echo "Linked: $@"
+# 3. ADICIONADO: Regra explícita para compilar arquivos Assembly (.S)
+%.o: %.S
+	$(CC) $(CFLAGS) -c $< -o $@
 
 vbug2-1.elf: ./tools/build_counter.sh $(OBJS)
 	$(LD) $(LDFLAGS) ../../obj/vbu2-1_startup.o $(OBJS) -lmc68000 -o $@
@@ -79,7 +78,7 @@ vbug2-1.bin: vbug2-1.elf
 	@echo "Binary: $@"
 
 clean:
-	rm -f *.bin $(OBJS) $(ELFS) $(BINS) *.map
+	rm -f *.bin $(OBJS) *.map $(TARGET_LOW) $(TARGET_HIGH) $(TARGET_ELF)
 	@echo "Clean complete"
 
 split: vbug2-1.elf
@@ -91,8 +90,6 @@ split: vbug2-1.elf
 
 fill: split
 	@echo "Preenchendo arquivos para $(FLASH_SIZE) bytes..."
-	#@$(FILLER) $(TARGET_LOW) $(FLASH_SIZE)
-	#@$(FILLER) $(TARGET_HIGH) $(FLASH_SIZE)
 	@echo "Preenchimento completo."
 
 programL:
