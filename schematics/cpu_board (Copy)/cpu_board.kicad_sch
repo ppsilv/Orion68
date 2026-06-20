@@ -15446,16 +15446,6 @@
 	)
 	(wire
 		(pts
-			(xy 300.99 76.2) (xy 307.34 76.2)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "add2c9af-4ba3-4758-a091-d93a4674e93e")
-	)
-	(wire
-		(pts
 			(xy 111.76 165.1) (xy 113.03 165.1)
 		)
 		(stroke
@@ -16761,16 +16751,6 @@
 			(type default)
 		)
 		(uuid "fe39bd5d-a85c-4917-a823-12d647ff035f")
-	)
-	(wire
-		(pts
-			(xy 300.99 69.85) (xy 307.34 69.85)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "fe4ecac0-74db-4829-bcb3-e1a871e1f4da")
 	)
 	(wire
 		(pts
@@ -19999,72 +19979,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector_Generic:Conn_01x01")
-		(at 312.42 69.85 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "0f31b81e-b26c-4636-b9ed-1f3fe4efd7bf")
-		(property "Reference" "Pin609"
-			(at 314.96 68.5799 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "Vcc"
-			(at 314.96 71.1199 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x01_P2.54mm_Vertical"
-			(at 312.42 69.85 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 312.42 69.85 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Generic connector, single row, 01x01, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 312.42 69.85 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "a9525cf5-4c12-4ada-b295-709ec363527c")
-		)
-		(instances
-			(project "cpu_board"
-				(path "/018d513c-a274-442d-a21c-9e77b7891407"
-					(reference "Pin609")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 374.65 234.95 0)
 		(unit 1)
@@ -22255,72 +22169,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector_Generic:Conn_01x01")
-		(at 312.42 76.2 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "404020f4-12d2-409f-8cd9-59f95041c919")
-		(property "Reference" "Pin610"
-			(at 314.96 74.9299 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "gnd"
-			(at 314.96 77.4699 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x01_P2.54mm_Vertical"
-			(at 312.42 76.2 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 312.42 76.2 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Generic connector, single row, 01x01, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 312.42 76.2 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "6636f04c-2495-465c-ac87-918933c6a19c")
-		)
-		(instances
-			(project "cpu_board"
-				(path "/018d513c-a274-442d-a21c-9e77b7891407"
-					(reference "Pin610")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "CPU_NXP_68000:68000D")
 		(at 190.5 96.52 0)
 		(unit 1)
@@ -23522,71 +23370,6 @@
 			(project "cpu_board"
 				(path "/018d513c-a274-442d-a21c-9e77b7891407"
 					(reference "CU606_1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 300.99 76.2 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "5dd3a736-58f1-438e-9683-c1696e329255")
-		(property "Reference" "#PWR010"
-			(at 300.99 82.55 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 300.99 81.28 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 300.99 76.2 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 300.99 76.2 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 300.99 76.2 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "afed1c34-3e5a-4434-9fd4-23cd88377828")
-		)
-		(instances
-			(project "cpu_board"
-				(path "/018d513c-a274-442d-a21c-9e77b7891407"
-					(reference "#PWR010")
 					(unit 1)
 				)
 			)
@@ -26428,72 +26211,6 @@
 			(project "cpu_board"
 				(path "/018d513c-a274-442d-a21c-9e77b7891407"
 					(reference "CY600_1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:+5V")
-		(at 300.99 69.85 0)
-		(mirror y)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "b7123da2-7bd1-445b-a18a-7d4ee6cca360")
-		(property "Reference" "#PWR09"
-			(at 300.99 73.66 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+5V"
-			(at 298.958 69.342 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 300.99 69.85 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 300.99 69.85 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 300.99 69.85 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "f936604b-3d2f-4057-9867-8df6aad3fa61")
-		)
-		(instances
-			(project "cpu_board"
-				(path "/018d513c-a274-442d-a21c-9e77b7891407"
-					(reference "#PWR09")
 					(unit 1)
 				)
 			)
