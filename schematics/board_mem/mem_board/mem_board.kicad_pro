@@ -451,7 +451,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "cpu_board.kicad_pro",
+    "filename": "mem_board.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -469,7 +469,7 @@
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "priority": 2147483647,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
-        "track_width": 0.5,
+        "track_width": 1.0,
         "via_diameter": 0.6,
         "via_drill": 0.3,
         "wire_width": 6
@@ -611,7 +611,7 @@
   },
   "sheets": [
     [
-      "018d513c-a274-442d-a21c-9e77b7891407",
+      "c4368a3b-2bf3-456e-adb2-8ad70a1dd7d5",
       "Root"
     ]
   ],
