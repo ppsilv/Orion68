@@ -5,7 +5,7 @@
 Orion68 Memory Map (Initial)
 
 ROM
-000000  -   07FFFF   512Kb de espaço para rom
+000000  -   07FFFF   512KW de espaço para rom
 
 RAM
 080000  -   0FFFFF   512KW de espaço para ram - populado
