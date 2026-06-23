@@ -4,8 +4,8 @@
 .section .text
 .global xmodem_receive
 
-.extern uart0_debug_char
-.extern uart0_read_timeout
+xdef xmodem_receive
+
  
 
 UART_WriteChar:
@@ -152,12 +152,3 @@ Transfer_INComplete:
         // MOVEM correto para desempilhar
         movem.l (%sp)+,%d2-%d7/%a0-%a6
         rts
-
-// ---- Seção BSS ----
-.section .bss
-.align 2
-expected_block:   .skip 1
-block_number:     .skip 1
-flag_pgm_loaded:  .skip 1
-.align 4
-xmodem_buffer:    .skip 128

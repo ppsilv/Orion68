@@ -11,17 +11,32 @@ extern volatile char rx_buffer[RX_BUFFER_SIZE];
 extern volatile long systemTick; 
 
 // A TRAP 14 agora é uma função C NORMAL, chamada via JSR pelo vectors.S
-void TRAP14_Handler(void) {
-    // Olha o registrador D1 que está intacto na máquina
-    register unsigned long d0_val asm("d0"); 
-    register unsigned long d1_val asm("d1"); 
-    printf("TRAP14_Handler: DO[%08X]\n",d0_val);
+unsigned long TRAP14_Handler(unsigned long d0_val, unsigned long d1_val) {
+    unsigned long retorno_final = 0; // Cria a variável com 32-bits vazia
+    unsigned char ch = 0;
+    
     switch(d1_val & 0xFF) {
-        case 0: uart0_init(); break;
-        case 1: uart0_write(d0_val); break;
-        case 2: uart0_read(); break;
-        case 3: uart0_read_timeout(); break;
+        case 0: 
+            uart0_init(); 
+            break;
+        case 1: 
+            uart0_write(d0_val); 
+            break;
+        case 2: 
+            retorno_final = (unsigned long)uart0_read(); 
+            break;
+        case 3: 
+            ch = uart0_read_timeout(); 
+            printf("TRAP14_Handler: Retornando com ch... [%02x]\n", ch);
+            retorno_final = (unsigned long)ch; // Garante os 32 bits limpos aqui
+            break;
+        default:
+            printf("\n\nQUE MERDA É ESSA: D1 era %ld\n\n\n\n", d1_val);
+            break;
     }
+    
+    // O único return da função. O GCC é OBRIGADO a jogar 'retorno_final' em D0 aqui e sair direto.
+    return retorno_final; 
 }
 
 // Sua função de leitura atômica do tick continua linda aqui

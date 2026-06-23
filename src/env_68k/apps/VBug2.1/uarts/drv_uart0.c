@@ -27,8 +27,8 @@ Bit 7	Bit 6	Valor em Hex 	Nível de Gatilho 	Comportamento no Hardware
 1	       1	   0xC0	            14 Bytes                            
 */
 
-void writec_char(char ch){
-    printf("D0[%02x]\n",ch);
+void uart0_debug_char(char ch){
+    printf("D0[%02x]\n",ch & 0xFF);
 }
 
 void uart0_init(){
@@ -62,6 +62,7 @@ void uart0_write(unsigned char ch){
 unsigned int uart0_read(){
     volatile unsigned char *uart_reg = (volatile unsigned char *)DRV_UART0_BASE;
     unsigned char ch;
+    printf("Aguardando...uart0_read()");
     while (!(*(uart_reg + LSR) & 0x01)) ;
     ch = (unsigned char)*(uart_reg + RHR);
     //uart0_write(ch);
@@ -71,9 +72,9 @@ unsigned int uart0_read(){
 unsigned int uart0_read_timeout(){
     volatile unsigned char *uart_reg = (volatile unsigned char *)DRV_UART0_BASE;
     unsigned char ch;
-    printf("Read Entrando...\n");
     unsigned long time_now = get_system_tick();
     unsigned long timeout = time_now + 3000;
+    printf("Read Entrando... ");
     while (!(*(uart_reg + LSR) & 0x01)){
         if(timeout < get_system_tick()) {
             printf("Saindo...\n");
@@ -81,7 +82,7 @@ unsigned int uart0_read_timeout(){
         }
     }
     ch = (unsigned char)*(uart_reg + RHR);
-    printf("Saindo com ch...\n");
+    printf("uart0_read_timeout:Saindo com ch...[%02x]\n",ch);
     //uart0_write(ch);
     return ch;
 }

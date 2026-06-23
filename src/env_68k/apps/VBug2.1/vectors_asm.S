@@ -130,12 +130,19 @@ Trap1Handler:
    5. TRAP 14 (A FAMOSA TRAP DO XMODEM / SERIAL)
    ========================================================================= */
 TrapEHandler:
-        /* Salva contexto geral da aplicação, EXCETO o D0 */
+        /* 1. Salva o contexto na pilha para restaurar depois */
         movem.l %d1-%d7/%a0-%a6,-(%sp)
 
-        /* Chama o seu despachante principal (que avalia D1 e chama o C) */
+        /* 2. Empurra os valores REAIS de D0 e D1 para a pilha como argumentos para o C */
+        move.l  %d1,-(%sp)    /* Segundo argumento de TRAP14_Handler */
+        move.l  %d0,-(%sp)    /* Primeiro argumento de TRAP14_Handler */
+
+        /* 3. Chama o despachante em C */
         jsr     TRAP14_Handler
 
-        /* Restaura o contexto. O D0 passa intacto com o 0x00 do timeout! */
+        /* 4. Remove os dois argumentos (4 bytes cada = 8 bytes) da pilha */
+        addq.l  #8,%sp
+
+        /* 5. Restaura o contexto original */
         movem.l (%sp)+,%d1-%d7/%a0-%a6
         rte

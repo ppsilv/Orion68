@@ -66,26 +66,26 @@ Source: "vbug2-0.asm"
                             	    54:         SECTION .jumptable
                             	    55:         ORG     $0400
                             	    56: ROM_JUMPTABLE:
-                            	    57:         ; BRA     UART_Init          ;        0x400
-                            	    58:         ; BRA     UART_WriteConout     ;        0x404
-                            	    59:         ; BRA     UART_ReadConin      ;        0x408
-                            	    60:         ; BRA     UART_Select        ;        0x40C
-                            	    61:         ; BRA     UART_Setbaudrate   ;        0x410
-                            	    62:         ; BRA     DELAY_MS           ;        0x414
-                            	    63:         ; BRA     MEMDUMP            ;        0x418
-                            	    64:         ; BRA     UART_ReadConinNonEcho;       0x41C
-                            	    65:         ; BRA     vbug2_start         ;       0x420
-                            	    66:         ; BRA     warm_start          ;       0x424
-                            	    67:         ; BRA     MenuLoop            ;       0x428
-                            	    68:         ; BRA     NewLine            ;       0x42C
-                            	    69:         ; BRA     UART_WriteStringConout    ;       0x430
-                            	    70:         ; BRA     UART_INIT1          ;       0x434
+                            	    57:         ; BRA     UART_Init              ; 0x400        trap14
+                            	    58:         ; BRA     UART_WriteConout       ; 0x404        trap14
+                            	    59:         ; BRA     UART_ReadConin         ; 0x408        trap14
+                            	    60:         ; BRA     UART_Select            ; 0x40C        trap14
+                            	    61:         ; BRA     UART_Setbaudrate       ; 0x410        trap14
+                            	    62:         ; BRA     DELAY_MS               ; 0x414
+                            	    63:         ; BRA     MEMDUMP                ; 0x418
+                            	    64:         ; BRA     UART_ReadConinNonEcho  ; 0x41C
+                            	    65:         ; BRA     vbug2_start            ; 0x420
+                            	    66:         ; BRA     warm_start             ; 0x424
+                            	    67:         ; BRA     MenuLoop               ; 0x428
+                            	    68:         ; BRA     NewLine                ; 0x42C
+                            	    69:         ; BRA     UART_WriteStringConout ; 0x430
+                            	    70:         ; BRA     UART_INIT1             ; 0x434
                             	    71: ; =============================================================================
                             	    72: ; FIM DA TABELA DE VETORES (Endereço $000400 alcançado de forma contínua!)
                             	    73: ; =============================================================================
                             	    74: 
                             	    75: ROMBASE           equ $00000
-                            	    76: ROMSIZE           equ $3FFFF    ;256K WORDS
+                            	    76: ROMSIZE           equ $0FFFF    ;256K WORDS
                             	    77: RAMBASE           equ $80000
                             	    78: RAMSIZE           equ $7FFFF    ;512K WORDS
                             	    79: USER_SP           equ $6F000
@@ -104,9 +104,9 @@ Source: "vbug2-0.asm"
                             	    92: ;0x80400 -> 0x80800 - 1024bytes Ram variables
                             	    93: ;0x80800 -> 0x80C00 - 5120bytes Ram vector code
                             	    94: ;0x82000 -> 0x84000 - 8192bytes Ram user app area
-                            	    95:         SECTION .text
-                            	    96:         ORG $00001000
-                            	    97: 
+                            	    95: 
+                            	    96:         SECTION .text
+                            	    97:         ORG $00001000
                             	    98: SERVICE_BUS_ERR:
 02:00001000 4E73            	    99:         RTE
                             	   100: SERVICE_ADDR_ERR:
@@ -601,9 +601,9 @@ Source: "pds_std_io.asm"
                             	   105: 
 
 Source: "vbug2-0.asm"
-                            	   478:         INCLUDE "drv_uart.inc"
+                            	   478:         INCLUDE "drivers_hw/uarts/uart.inc"
 
-Source: "drv_uart.inc"
+Source: "drivers_hw/uarts/uart.inc"
                             	     1: 
                             	     2: 
                             	     3: 
@@ -654,9 +654,9 @@ Source: "drv_uart.inc"
                             	    48: 
 
 Source: "vbug2-0.asm"
-                            	   479:         INCLUDE "drv_uart.asm"
+                            	   479:         INCLUDE "drivers_hw/uarts/uart.asm"
 
-Source: "drv_uart.asm"
+Source: "drivers_hw/uarts/uart.asm"
                             	     1: ;Uart register offsets
                             	     2: UART_BASE   equ     $FF4000
                             	     3: 
@@ -863,9 +863,9 @@ Source: "drv_uart.asm"
                             	   204: 
 
 Source: "vbug2-0.asm"
-                            	   480:         INCLUDE "drv_uartb.asm"
+                            	   480:         INCLUDE "drivers_hw/uarts/uartb.asm"
 
-Source: "drv_uartb.asm"
+Source: "drivers_hw/uarts/uartb.asm"
                             	     1: ;Uart register offsets
                             	     2: UARTB_BASE   equ     $FF4100
                             	     3: 
@@ -968,9 +968,9 @@ Source: "drv_uartb.asm"
                             	   100: 
 
 Source: "vbug2-0.asm"
-                            	   481:         INCLUDE "drv_pico_vga.asm"
+                            	   481:         INCLUDE "drivers_hw/vga/pico_vga.asm"
 
-Source: "drv_pico_vga.asm"
+Source: "drivers_hw/vga/pico_vga.asm"
                             	     1: 
                             	     2: 
                             	     3: 
@@ -1167,9 +1167,9 @@ Source: "drv_pico_vga.asm"
                             	   194: 
 
 Source: "vbug2-0.asm"
-                            	   482:         INCLUDE "drv_keyboard.asm"
+                            	   482:         INCLUDE "drivers_hw/kbd/keyboard.asm"
 
-Source: "drv_keyboard.asm"
+Source: "drivers_hw/kbd/keyboard.asm"
                             	     1: 
                             	     2: Readkbd:
                             	     3: 
@@ -1196,9 +1196,9 @@ Source: "drv_keyboard.asm"
                             	    24: 
 
 Source: "vbug2-0.asm"
-                            	   483:         INCLUDE "cmd_mem_dump.asm"
+                            	   483:         INCLUDE "cmd/mem_dump.asm"
 
-Source: "cmd_mem_dump.asm"
+Source: "cmd/mem_dump.asm"
                             	     1: ; ----------------------------------------------------------------------
                             	     2: ; MemDump - Imprime dump de memória formatado
                             	     3: ; Entrada:
@@ -1694,9 +1694,9 @@ Source: "cmd_mem_dump.asm"
 02:00001D7E 4E75            	   493:         RTS                        
 
 Source: "vbug2-0.asm"
-                            	   484:         INCLUDE "cmd_xmodem.asm"
+                            	   484:         INCLUDE "cmd/xmodem.asm"
 
-Source: "cmd_xmodem.asm"
+Source: "cmd/xmodem.asm"
                             	     1: 
                             	     2: ;=== Uart receiver ================= CONSTANTES =================
                             	     3: SOH         EQU     $01        ; Start Of Header
@@ -1766,9 +1766,9 @@ Source: "cmd_xmodem.asm"
                             	    67: 
 
 Source: "vbug2-0.asm"
-                            	   485:         INCLUDE "trap1.asm"
+                            	   485:         INCLUDE "traps/trap1.asm"
 
-Source: "trap1.asm"
+Source: "traps/trap1.asm"
                             	     1: 
                             	     2: MERDA:
 02:00001E02 4D45524441204D45	     3:     DC.B    "MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA MERDA ",13,10,0
@@ -1971,18 +1971,18 @@ Source: "section_data.asm"
 04:000000EF 6F6E69746F72
 04:000000F5 0D
 04:000000F6 0A
-                            	    18:     INCLUDE "build_date.inc"
+                            	    18:     INCLUDE "tools/build_date.inc"
 
-Source: "build_date.inc"
+Source: "tools/build_date.inc"
                             	     1: ;From here it is generated and pushed by update_build.sh
                             	     2: BUILD_DATE:
-04:000000F7 4275696C642E3A20	     3:       DC.B "Build.: 2026-06-18",13,10
+04:000000F7 4275696C642E3A20	     3:       DC.B "Build.: 2026-06-23",13,10
 04:000000FF 323032362D30362D
-04:00000107 3138
+04:00000107 3233
 04:00000109 0D
 04:0000010A 0A
-04:0000010B 53657269616C3A20	     4:       DC.B "Serial: 182050",13,10,0
-04:00000113 313832303530
+04:0000010B 53657269616C3A20	     4:       DC.B "Serial: 232055",13,10,0
+04:00000113 323332303535
 04:00000119 0D
 04:0000011A 0A
 04:0000011B 00
@@ -1990,9 +1990,9 @@ Source: "build_date.inc"
                             	     6: 
 
 Source: "section_data.asm"
-                            	    19:     INCLUDE "build_counter.inc"
+                            	    19:     INCLUDE "tools/build_counter.inc"
 
-Source: "build_counter.inc"
+Source: "tools/build_counter.inc"
 04:0000011C 436F6D70696C6174	     1:       DC.B "Compilation: #00",0
 04:00000124 696F6E3A20233030
 04:0000012C 00
