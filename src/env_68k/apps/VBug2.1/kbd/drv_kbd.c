@@ -197,22 +197,20 @@ static unsigned char get_0x88()
     //printBuffer();
     if (key_buffer[2] == 0x0 && key_buffer[4] == 0x0) /*normal*/       {
         //Esse if é executado em todo key up
-        if( special_key_status > 0 ){
-            if(  special_key_down ){
-                special_key_up = 1;
-                special_key_down=0;
-                special_key_status=0;
-            }
-        }
-        if(  key_down ){
-            key_up = 1;
-            key_down=0;
-            return NO_KEY;
-        }
+        //if( special_key_status > 0 ){
+        //    if(  special_key_down ){
+        //        special_key_up = 1;
+        //        special_key_down=0;
+        //        special_key_status=0;
+        //    }
+        //}
         if(  special_key_down ){
             special_key_up = 1;
             special_key_down=0;
             special_key_status=0;
+        }
+        if(  key_down ){
+            key_down=0;
         }
         //printf("1-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_buffer[2],key_buffer[4]);
         return NO_KEY;
@@ -457,101 +455,3 @@ unsigned int get_char(){
 void print_capslock(){
     printf("Estado tecla capslock[%02d]\n",mod_caps);
 }
-/*
-int main_kbd()
-{
-    unsigned int ch;
-    while(1){
-        ch = get_char();
-        if( ch > 0x20){
-            //printf("\nspecial_key_down [%02X] key_down[%02x]\n",special_key_down,key_down);
-            //printf("special_key_up   [%02X] key_up    [%02x]\n",special_key_up,key_up);
-            if( ch <= 255 )
-                printf("%c",ch);
-            else    
-                printf("%02X",ch);
-        }
-        if ( ch == 'B' ){
-            return 0;
-        }
-    }    
-    return 0;
-}
-
-static unsigned char ___get_0x88()
-{
-    unsigned char size = read_kbd();
-   // printf("\nTamanho do pacote[%d]",size);
-    // Não se esqueça eu lia hardcoded de 0 a 12
-    // agora com size já sendo lido tenho que começar da posição 1
-    // pois o codigo espera os comandos nas posições A=4 e B=2
-    //ALTERADO ESSA MERDA POR ULTIMO
-    int i=0;
-    for (i = 1; i <= size; i++)    {
-        key_buffer[i] = read_kbd();
-    }
-   // printf("\nTamanho lido[%d]",i);
-    //printBuffer();
-    if (key_buffer[2] == 0x0 && key_buffer[4] == 0x0)         {
-        //Esse if é executado em todo key up
-        if( special_key_status > 0 ){
-            if(  special_key_down ){
-                special_key_up = 1;
-                special_key_down=0;
-                special_key_status=0;
-            }
-        }
-        if(  key_down ){
-            key_up = 1;
-            key_down=0;
-            return NO_KEY;
-        }
-        if(  special_key_down ){
-            special_key_up = 1;
-            special_key_down=0;
-            special_key_status=0;
-        }
-        //printf("1-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_buffer[2],key_buffer[4]);
-        return NO_KEY;
-    }
-    if (key_buffer[2] == 0x01 || key_buffer[2] == 0x10)       {
-        special_key_status = KEY_CTRL;
-        special_key_down = 1;
-        special_key_up = 0;
-        return KEY_CTRL;
-    }
-    if (key_buffer[2] == 0x02 || key_buffer[2] == 0x20)        {
-        special_key_down = 1;
-        special_key_up = 0;
-        special_key_status = KEY_SHIFT;
-        return KEY_SHIFT;
-    }
-    if (key_buffer[2] == 0x04 )      {
-        special_key_down = 1;
-        special_key_up = 0;
-        special_key_status = KEY_ALT;
-        return KEY_ALT;
-    }        
-    if (key_buffer[2] == 0x40)      {
-        special_key_down = 1;
-        special_key_up = 0;
-        special_key_status = KEY_ALTGR;
-        return KEY_ALTGR;
-    }        
-    if (key_buffer[4] == 0x39)  
-            mod_caps = 2;
-            send_cmd_keyboard(mod_caps);
-        }
-        else            {
-            mod_caps = 0;
-            send_cmd_keyboard(mod_caps);
-        }
-        //printf("6-key_buffer[2] [%02x] - key_buffer[4] [%02x]\n",key_buffer[2],key_buffer[4]);
-        special_key_down = 1;
-        return KEY_CAPS;
-    }
-    key_down = 1;
-    key_up = 0;
-    return VALID_KEY;
-}
-*/

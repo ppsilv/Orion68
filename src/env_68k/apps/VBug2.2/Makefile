@@ -18,8 +18,8 @@ CHECKSUMER := python3 tools/checksum_put.py
  
 
 # Nomes de arquivos
-SOURCE := vbug2-0.asm
-TARGET := vbug2-0
+SOURCE := vbug2-2.asm
+TARGET := vbug2-2
 #TARGET := $(basename $(SOURCE))
 TARGET_OBJ := $(TARGET).o
 TARGET_ELF := $(TARGET).elf
@@ -100,7 +100,7 @@ programH: split
 	@echo "Gravação concluída HIGH! GRAVE A MEMORIA LOW"
 
 criaRom:
-	python3 montaArq.py vbug2-0.bin keyboard.bin 0x8000
+	python3 montaArq.py vbug2-2.bin keyboard.bin 0x8000
 	python3 fill.py rom_final.bin 66560
 	python3 split68k.py rom_final.bin 
 
@@ -117,7 +117,7 @@ pgmH:
 program: programL programH
 
 clean:
-	@rm -f vbug2-0.bin rom_final.bin rom_final_high.bin rom_final_low.bin *.o *.txt *.lst *.elf *.map
+	@rm -f vbug2-2.bin rom_final.bin rom_final_high.bin rom_final_low.bin *.o *.txt *.lst *.elf *.map
 	@echo "Arquivos temporários removidos."
 
 help:

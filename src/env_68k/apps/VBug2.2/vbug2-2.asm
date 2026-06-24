@@ -293,6 +293,8 @@ NewLine:
         MOVEM.L  (SP)+,D0/D1          ; Restaura D0
         RTS
 
+                INCLUDE "./flags.asm"
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;END OF BASIC CODE
 ;
@@ -397,7 +399,6 @@ TmpReadKbd:
         JMP     subLoop
 ;2
 TmpReadKbd2:
-        JSR     Configkbd
         JMP     subLoop
 
 
@@ -480,11 +481,10 @@ UART_ReadHex1:
         INCLUDE "drivers_hw/uarts/uartb.asm"
         INCLUDE "drivers_hw/vga/pico_vga.asm"
         INCLUDE "drivers_hw/kbd/keyboard.asm"
+        INCLUDE "traps/trap1.asm"
         INCLUDE "cmd/mem_dump.asm"
         INCLUDE "cmd/xmodem.asm"
-        INCLUDE "traps/trap1.asm"
         INCLUDE "rot_print_hex_num.asm"
-
 
 
         INCLUDE "section_data.asm"

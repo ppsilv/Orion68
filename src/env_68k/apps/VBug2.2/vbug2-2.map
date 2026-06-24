@@ -1,0 +1,71 @@
+
+There are no discarded input sections
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+ROM              0x00000000         0x00010000         xr
+RAM              0x00080000         0x00100000         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+
+.vectors        0x00000000      0x2c0
+                0x00000000                        . = ALIGN (0x2)
+ *(.vectors)
+ .vectors       0x00000000      0x2c0 vbug2-2.o
+
+.jumptable      0x00000400        0x0
+ *(.jumptable)
+ .jumptable     0x00000400        0x0 vbug2-2.o
+
+.text           0x00001000      0x21c
+                0x00001000                        _start = .
+ *(.text .text.*)
+ .text          0x00001000      0x21c vbug2-2.o
+                0x0000121c                        . = ALIGN (0x2)
+                0x0000121c                        _start_end = .
+
+.code           0x0000121c      0x91e
+ .code          0x0000121c      0x91e vbug2-2.o
+
+.rodata         0x00001b3c      0x9f4
+ *(.rodata .rodata.*)
+ .rodata        0x00001b3c      0x9f4 vbug2-2.o
+                0x00001b3c                _OE_BASE_KEYMAP
+                0x00001bbc                _OE_SHIFT_KEYMAP
+                0x00001c3c                _OE_CTRL_KEYMAP
+                0x00001cbc                _OE_ALT_KEYMAP
+                0x00001d3c                _OE_ALTGR_KEYMAP
+                0x00002530                        . = ALIGN (0x2)
+
+.data           0x00002530      0x57a
+                0x00002530                        __data_load = LOADADDR (.data)
+                0x00002530                        __data_start = .
+ *(.data .data.*)
+ .data          0x00002530      0x57a vbug2-2.o
+                0x00002aaa                        . = ALIGN (0x2)
+                0x00002aaa                        __data_end = .
+
+DATA            0x00002aac     0x2000
+ DATA           0x00002aac     0x2000 vbug2-2.o
+
+.checksum       0x00004aac        0x4
+                0x00004aac                        . = ALIGN (0x2)
+                0x00004aac                        __checksum_addr = .
+                0x00004aac        0x4 LONG 0x0
+
+.bss            0x00080000      0x6a2
+                0x00080000                        __bss_start = .
+ *(.bss .bss.*)
+ .bss           0x00080000      0x6a2 vbug2-2.o
+ *(COMMON)
+                0x000806a2                        . = ALIGN (0x2)
+                0x000806a2                        __bss_end = .
+
+/DISCARD/
+ *(.comment)
+ *(.note.*)
+LOAD vbug2-2.o
+OUTPUT(vbug2-2.elf elf32-m68k)

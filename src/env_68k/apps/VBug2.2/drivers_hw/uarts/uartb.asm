@@ -53,10 +53,9 @@ UartbReadChar:
 .WaitRx:
         btst    #0,LSR(A1)        ; RX ready?
         beq     .WaitRx
-
         move.b  RHR(A1),D0
         MOVE.L (SP)+,A1
-        JSR     PrintByteHexConout
+        ;JSR     PrintByteHexConout
         RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
