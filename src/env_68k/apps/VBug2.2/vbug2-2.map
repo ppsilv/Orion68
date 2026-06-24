@@ -20,41 +20,41 @@ Linker script and memory map
  *(.jumptable)
  .jumptable     0x00000400        0x0 vbug2-2.o
 
-.text           0x00001000      0x21c
+.text           0x00001000      0x212
                 0x00001000                        _start = .
  *(.text .text.*)
- .text          0x00001000      0x21c vbug2-2.o
-                0x0000121c                        . = ALIGN (0x2)
-                0x0000121c                        _start_end = .
+ .text          0x00001000      0x212 vbug2-2.o
+                0x00001212                        . = ALIGN (0x2)
+                0x00001212                        _start_end = .
 
-.code           0x0000121c      0x91e
- .code          0x0000121c      0x91e vbug2-2.o
+.code           0x00001212      0x922
+ .code          0x00001212      0x922 vbug2-2.o
 
-.rodata         0x00001b3c      0x9f4
+.rodata         0x00001b34      0x9f4
  *(.rodata .rodata.*)
- .rodata        0x00001b3c      0x9f4 vbug2-2.o
-                0x00001b3c                _OE_BASE_KEYMAP
-                0x00001bbc                _OE_SHIFT_KEYMAP
-                0x00001c3c                _OE_CTRL_KEYMAP
-                0x00001cbc                _OE_ALT_KEYMAP
-                0x00001d3c                _OE_ALTGR_KEYMAP
-                0x00002530                        . = ALIGN (0x2)
+ .rodata        0x00001b34      0x9f4 vbug2-2.o
+                0x00001b34                _OE_BASE_KEYMAP
+                0x00001bb4                _OE_SHIFT_KEYMAP
+                0x00001c34                _OE_CTRL_KEYMAP
+                0x00001cb4                _OE_ALT_KEYMAP
+                0x00001d34                _OE_ALTGR_KEYMAP
+                0x00002528                        . = ALIGN (0x2)
 
-.data           0x00002530      0x57a
-                0x00002530                        __data_load = LOADADDR (.data)
-                0x00002530                        __data_start = .
+.data           0x00002528      0x55e
+                0x00002528                        __data_load = LOADADDR (.data)
+                0x00002528                        __data_start = .
  *(.data .data.*)
- .data          0x00002530      0x57a vbug2-2.o
-                0x00002aaa                        . = ALIGN (0x2)
-                0x00002aaa                        __data_end = .
+ .data          0x00002528      0x55e vbug2-2.o
+                0x00002a86                        . = ALIGN (0x2)
+                0x00002a86                        __data_end = .
 
-DATA            0x00002aac     0x2000
- DATA           0x00002aac     0x2000 vbug2-2.o
+DATA            0x00002a88     0x2000
+ DATA           0x00002a88     0x2000 vbug2-2.o
 
-.checksum       0x00004aac        0x4
-                0x00004aac                        . = ALIGN (0x2)
-                0x00004aac                        __checksum_addr = .
-                0x00004aac        0x4 LONG 0x0
+.checksum       0x00004a88        0x4
+                0x00004a88                        . = ALIGN (0x2)
+                0x00004a88                        __checksum_addr = .
+                0x00004a88        0x4 LONG 0x0
 
 .bss            0x00080000      0x6a2
                 0x00080000                        __bss_start = .

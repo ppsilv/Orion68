@@ -11,7 +11,7 @@ MemDump:
         JSR     WriteStringConout
         MOVE.L  (addressInHex),A0
         MOVE.L  A0,D0
-        JSR     PrintHexAddress
+        JSR     Print32bitsHex
         JSR     NewLine
 
         LEA     MsgDumpHeader1,A0
@@ -38,7 +38,7 @@ DumpLoop:
 
         ; Imprime endereço
         MOVE.L  A0,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         MOVE.B  #':',D0
         JSR     WriteConout
@@ -136,22 +136,22 @@ PrintAx:
         LEA     MsgA0,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA1,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+4),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA2,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+8),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA3,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+12),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         ;LEA     MsgNewLine,A0
         ;JSR     WriteStringConout
@@ -159,22 +159,22 @@ PrintAx:
         LEA     MsgA4,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+16),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA5,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+20),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA6,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+24),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA7,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+28),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         MOVE.L  (SP)+,A0          ; Recupera endereço atual
         MOVE.L  (SP)+,D0          ; Recupera endereço atual
@@ -187,22 +187,22 @@ PrintDx:
         ;D0
         LEA     MsgD0,A0
         JSR     WriteStringConout
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D1
         LEA     MsgD1,A0
         JSR     WriteStringConout
         MOVE.L  D1,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D2
         LEA     MsgD2,A0
         JSR     WriteStringConout
         MOVE.L  D2,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D3
         LEA     MsgD3,A0
         JSR     WriteStringConout
         MOVE.L  D3,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         ;LEA     MsgNewLine,A0
         ;JSR     WriteStringConout
@@ -211,22 +211,22 @@ PrintDx:
         LEA     MsgD4,A0
         JSR     WriteStringConout
         MOVE.L  D4,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D5
         LEA     MsgD5,A0
         JSR     WriteStringConout
         MOVE.L  D5,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D6
         LEA     MsgD6,A0
         JSR     WriteStringConout
         MOVE.L  D6,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D7
         LEA     MsgD7,A0
         JSR     WriteStringConout
         MOVE.L  D7,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgNewLine,A0
         JSR     WriteStringConout
@@ -263,22 +263,22 @@ PrintAx2:
         LEA     MsgA0,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA1,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+4),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA2,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+8),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA3,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+12),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         ;LEA     MsgNewLine,A0
         ;JSR     WriteStringConout
@@ -286,22 +286,22 @@ PrintAx2:
         LEA     MsgA4,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+16),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA5,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+20),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA6,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+24),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA7,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+28),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         MOVE.L  (SP)+,A0          ; Recupera endereço atual
         MOVE.L  (SP)+,D0          ; Recupera endereço atual
@@ -314,22 +314,22 @@ PrintDx2:
         ;D0
         LEA     MsgD0,A0
         JSR     WriteStringConout
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D1
         LEA     MsgD1,A0
         JSR     WriteStringConout
         MOVE.L  D1,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D2
         LEA     MsgD2,A0
         JSR     WriteStringConout
         MOVE.L  D2,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D3
         LEA     MsgD3,A0
         JSR     WriteStringConout
         MOVE.L  D3,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         ;LEA     MsgNewLine,A0
         ;JSR     WriteStringConout
@@ -338,22 +338,22 @@ PrintDx2:
         LEA     MsgD4,A0
         JSR     WriteStringConout
         MOVE.L  D4,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D5
         LEA     MsgD5,A0
         JSR     WriteStringConout
         MOVE.L  D5,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D6
         LEA     MsgD6,A0
         JSR     WriteStringConout
         MOVE.L  D6,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D7
         LEA     MsgD7,A0
         JSR     WriteStringConout
         MOVE.L  D7,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgNewLine,A0
         JSR     WriteStringConout
@@ -391,22 +391,22 @@ PrintAx3:
         LEA     MsgA0,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA1,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+4),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA2,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+8),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA3,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+12),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         ;LEA     MsgNewLine,A0
         ;JSR     WriteStringConout
@@ -414,22 +414,22 @@ PrintAx3:
         LEA     MsgA4,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+16),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA5,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+20),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA6,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+24),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgA7,A0
         JSR     WriteStringConout
         MOVE.L  (debug_regs+28),D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         MOVE.L  (SP)+,A0          ; Recupera endereço atual
         MOVE.L  (SP)+,D0          ; Recupera endereço atual
@@ -442,22 +442,22 @@ PrintDx3:
         ;D0
         LEA     MsgD0,A0
         JSR     WriteStringConout
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D1
         LEA     MsgD1,A0
         JSR     WriteStringConout
         MOVE.L  D1,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D2
         LEA     MsgD2,A0
         JSR     WriteStringConout
         MOVE.L  D2,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D3
         LEA     MsgD3,A0
         JSR     WriteStringConout
         MOVE.L  D3,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         ;LEA     MsgNewLine,A0
         ;JSR     WriteStringConout
@@ -466,22 +466,22 @@ PrintDx3:
         LEA     MsgD4,A0
         JSR     WriteStringConout
         MOVE.L  D4,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D5
         LEA     MsgD5,A0
         JSR     WriteStringConout
         MOVE.L  D5,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D6
         LEA     MsgD6,A0
         JSR     WriteStringConout
         MOVE.L  D6,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
         ;D7
         LEA     MsgD7,A0
         JSR     WriteStringConout
         MOVE.L  D7,D0
-        JSR     PrintHexAddress    ; Imprime 8 dígitos hex
+        JSR     Print32bitsHex    ; Imprime 8 dígitos hex
 
         LEA     MsgNewLine,A0
         JSR     WriteStringConout

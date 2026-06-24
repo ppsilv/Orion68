@@ -184,7 +184,7 @@ Trap0Handler:
         ; Manipula o endereço de retorno na pilha
         MOVE.L  monitorStack,A0
         MOVE.L  A0,SP
-        JSR     PrintHexAddress
+        JSR     Print32bitsHex
         BRA     MenuLoop ; Substitui na pilha
         RTE
 ;        MOVE.L  (RAM_VECTOR_BASE),A0     ; Trap 0 mapeada em $80000
@@ -250,7 +250,7 @@ Int1Handler:
         RTE
 Int2Handler:        
         MOVEM.L D0-D7/A0-A6,-(A7)
-        MOVE.L  (RAM_VECTOR_BASE+68),A0
+        ADDQ.L  #1,systemTick
         MOVEM.L (A7)+,D0-D7/A0-A6
         RTE
 Int3Handler:        
@@ -271,13 +271,11 @@ Int5Handler:
 Int6Handler:        
         MOVEM.L D0-D7/A0-A6,-(A7)
         ;MOVE.L  (RAM_VECTOR_BASE+84),A0
-        move.b  #$41,D0
-        jsr     WriteConout
         MOVEM.L (A7)+,D0-D7/A0-A6
         RTE
 Int7Handler:        
         MOVEM.L D0-D7/A0-A6,-(A7)
-        ADDQ.L  #1,systemTick
+        MOVE.L  (RAM_VECTOR_BASE+88),A0
         MOVEM.L (A7)+,D0-D7/A0-A6
         RTE
 
@@ -350,69 +348,49 @@ Vbug2Start:
 
 MenuLoop:
 subLoop:    
-        JSR     PicoClearScreen
         LEA     MsgOrionInit,A0
         JSR     WriteStringConout
-
         ;JSR     PicoClearScreen
-
         LEA     MsgMenuText,A0
         JSR     WriteStringConout
         JSR     ReadConin
         JSR     WriteConout
 
+        CMP.B   #'0',D0
+        BEQ     ClrScreen
         CMP.B   #'1',D0
-        BEQ.S   TmpReadKbd
-        CMP.B   #'2',D0
-        BEQ.S   TmpReadKbd2
+        BEQ     ShowSystick
         CMP.B   #'3',D0
         BEQ     Xmodem
-        CMP.B   #'4',D0
-        BEQ.S   RunTrap1
         CMP.B   #'5',D0
         BEQ     RunProgram
         CMP.B   #'7',D0
         BEQ     MemDump0
         CMP.B   #'8',D0
-        BEQ     ReadInHexa
+        BEQ     disable_interrupt_leve2
         CMP.B   #'9',D0
-        BEQ     ReadHexAddressConin
+        BEQ     enable_interrupt_leve2
 
         JMP     subLoop
+       
 
+;0
+ClrScreen:
+        JSR     PicoClearScreen
+        JMP     subLoop        
+;1
+ShowSystick:
+        lea     MsgSystemtick,A0
+        jsr     WriteStringConout
+        move.l  systemTick,D0
+        jsr     Print32bitsHex
+        JMP     subLoop        
+;3
 Xmodem:
         JSR     XmodemRec
         JMP     subLoop        
-
-MemDump0:
-        JSR     MemDump
-        JMP     subLoop        
-       
-;1
-TmpReadKbd:
-        MOVEM.L D1-D7/A0-A6,-(SP)
-        JSR     $8426.L
-        MOVEM.L (SP)+,D1-D7/A0-A6
-        JSR     WriteConout
-        CMP.B   #$42,D0
-        BNE     TmpReadKbd
-        JMP     subLoop
-;2
-TmpReadKbd2:
-        JMP     subLoop
-
-
-;4 Testa trap 1
-RunTrap1:
-        LEA     MsgWritePrompt,A0
-        JSR     WriteStringConout
-        JSR     ReadConin
-        MOVE.B  D0,D1
-        MOVE.L  #$2,D0
-        TRAP    #1
-        JSR     ReadConin
-        JMP     subLoop
-; 5. Executa programa na RAM
+;4
+;5. Executa programa na RAM
 RunProgram:
         BTST    #PROGRAM_LOADED,flg_system
         BNE     .run_program
@@ -427,6 +405,35 @@ RunProgram:
         LEA     buf_pgm,A0   ; A0 aponta para o endereço buffer onde esta o programa
         JSR     (A0)         ; Chama o código como uma sub-rotina (salva o endereço de retorno)
         BRA     subLoop
+;6
+;7
+MemDump0:
+        JSR     MemDump
+        JMP     subLoop        
+
+;**************************************************************************************************
+;My routines
+disable_interrupt_leve2:
+        move.w  SR,D0
+        andi.w  #$F8FF,D0
+        ori.w   #$0200,D0
+        move.w  D0,SR
+        JMP     subLoop        
+
+enable_interrupt_leve2:
+        move.w  SR,D0
+        andi.w  #$F8FF,SR
+        ori.w   #$0100,D0
+        move.w  D0,SR
+        JMP     subLoop        
+
+disable_interrupt_all:
+        ori.w   #$0700,SR
+        rts
+enable_interrupt_all:
+        andi.w  #$F8FF,SR
+        rts
+
 
 ReadInHexa:
         LEA     MsgTestHexInput,A0

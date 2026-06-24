@@ -156,10 +156,10 @@ PicoPrintString:
         RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; PrintHexAddress - Imprime endereço de 32 bits
+; Print32bitsHex - Imprime endereço de 32 bits
 ; Entrada: D0 = endereço
 ;
-PicoPrintHexAddress:
+PicoPrint32bitsHex:
         SWAP    D0                ; Imprime parte alta primeiro
         JSR     .PrintWordHex
         SWAP    D0                ; Parte baixa

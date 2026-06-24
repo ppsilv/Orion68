@@ -169,7 +169,7 @@ DelUartReadHex:
         JSR     NewLine
         LEA     addressInHex,A0
         MOVE.L  (A0),D0
-        JSR     PicoPrintHexAddress
+        JSR     PicoPrint32bitsHex
         JSR     NewLine
         MOVE.L  (SP)+,D2
         MOVE.L  (SP)+,D1

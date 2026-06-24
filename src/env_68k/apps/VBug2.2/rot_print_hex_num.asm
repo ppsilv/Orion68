@@ -1,9 +1,9 @@
 
 ; ----------------------------------------------------------------------
-; PrintHexAddress - Imprime endereço de 32 bits
+; Print32bitsHex - Imprime endereço de 32 bits
 ; Entrada: D0 = endereço
 ; ----------------------------------------------------------------------
-PrintHexAddress:
+Print32bitsHex:
         MOVE.L  D1,-(SP)
         SWAP    D0                ; Imprime parte alta primeiro
         JSR     PrintWordHex

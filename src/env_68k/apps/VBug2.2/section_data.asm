@@ -13,20 +13,20 @@ MsgDumpHeader1:
     DC.B    13,10,"Address   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F  ASCII",13,10
     DC.B    "--------  -----------------------------------------------  ------------------",13,10,0
 MsgOrionInit:
-    DC.B    13,10,"PDS317 - copyright (C) pdsilva(pgordao).VBug2.0",13,10
-    DC.B    "MC68000 System Monitor",13,10
+    DC.B    13,10,"PDS317 - copyright (C) pdsilva(pgordao).VBug2.2",13,10
+    DC.B    "MC68000 System Monitor with ch9350",13,10
     INCLUDE "tools/build_date.inc"
     INCLUDE "tools/build_counter.inc"
     DC.B          "-----------------------------------------------",13,10,13,10,0
 MsgMenuText:
     DC.B    "Menu choose an option: ",13,10,13,10
-    DC.B    "1. Read keyboard ROM",13,10
-    DC.B    "2. Change conin to ch9350",13,10
-    DC.B    "4. Testa trap #1",13,10
+    DC.B    "0. Clear screen",13,10
+    DC.B    "1. Verificar o systemtick\n",13,10
+    DC.B    "3. Run xmodem",13,10
     DC.B    "5. Run Program",13,10
     DC.B    "7. Memory dump from address buffer",13,10
-    DC.B    "8. Read hexa value and put in address buffer",13,10
-    DC.B    "9. From screen to buffer E from buffer to screen",13,10
+    DC.B    "8. Disable int 2",13,10
+    DC.B    "9. Enable int 2",13,10
     DC.B    "> ",0
 MsgOutOfRange:
     DC.B    13,10,"Invalid address range!",13,10,0
@@ -59,8 +59,8 @@ MsgCscalc:
     DC.B    " - Checksum CAL.: ",0
 MsgDefaultHandler:
     DC.B    " Default handler wrote UART ",13,10,0
-MsgViaTrap1:
-    DC.B    "Mensagem via trap #1",13,10,0
+MsgSystemtick:
+    DC.B    13,10,"Systemtick: ",0
 MsgNewLine:
     DC.B    13,10,0
 MsgA0:

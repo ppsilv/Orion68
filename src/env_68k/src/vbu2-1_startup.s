@@ -129,10 +129,20 @@ uart0_initialize:
         bclr.b  #0x07,LCR(%a1)
         RTS
 
+uart1_initialize:
+        LEA     0xFF4100,%A1
+        move.b  #0x07,FCR(%a1)
+        move.b  #0x83,LCR(%a1)
+        move.b  #0x08,DLL(%A1)
+        move.b  #0x00,DLM(%A1)
+        bclr.b  #0x07,LCR(%a1)
+        RTS
+
 print_string:
         move.b  (%A0)+,%d0
         beq     .end_print_string
         jsr     UartWrCh
+        jsr     PicoWrCh
         bra     print_string
 .end_print_string:
         RTS
