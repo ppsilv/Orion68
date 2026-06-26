@@ -90,7 +90,12 @@ int ata_read_sector(int sector, char *buffer)
 {
 	short saved_status;
 
+	//printf("ata.c: Reading sector[%d] to buffer[%ld]\n",sector,(long *)buffer);
+
 	LOCK(saved_status);
+
+	(*ATA_REG_DRIVE_HEAD) = 0xE0;
+	//(*ATA_REG_DRIVE_HEAD) = 0xE0 | (uint8_t) ((sector >> 24) & 0x0F);
 
 	// Set 8-bit mode
 	(*ATA_REG_FEATURE) = 0x01;
@@ -98,8 +103,6 @@ int ata_read_sector(int sector, char *buffer)
 	ATA_WAIT();
 
 	// Read a sector
-	(*ATA_REG_DRIVE_HEAD) = 0xE0;
-	//(*ATA_REG_DRIVE_HEAD) = 0xE0 | (uint8_t) ((sector >> 24) & 0x0F);
 	(*ATA_REG_CYL_HIGH) = (uint8_t) (sector >> 16);
 	(*ATA_REG_CYL_LOW) = (uint8_t) (sector >> 8);
 	(*ATA_REG_SECTOR_NUM) = (uint8_t) sector;
@@ -125,7 +128,14 @@ int ata_read_sector(int sector, char *buffer)
 		ATA_WAIT();
 		//ATA_DELAY(10);
 	}
-
+/*
+	// leitura de 16-bit (256 repetições)
+	for (int i = 0; i < 256; i++) {
+		((uint16_t *) buffer)[i] = (*ATA_REG_DATA);
+		asm volatile("rol.w   #8, %0\n" : "+g" (((uint16_t *) buffer)[i]));
+		ATA_WAIT();
+	}
+*/
 	UNLOCK(saved_status);
 	return 512;
 }
@@ -222,6 +232,8 @@ int ata_init(void)
 	if (!ata_detect()) {
 		log_info("ata: no device detected\n");
 		return 0;
+	}else{
+		log_info("ata: device detected\n");
 	}
 
 	char *buffer=( char *)0x82000;

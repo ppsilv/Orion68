@@ -1,0 +1,45 @@
+2026/06/16
+Fase 1: O dump travava de forma inconsistente por culpa do loop de
+        boot e da "amnésia" da UART 2.
+
+Fase 2: O dump passou a funcionar, mas precisava de um delay artificial
+        por caractere para não atropelar a concorrência das protothreads
+        no Pico.
+
+Fase 3: Migração para Dual-Core real. O barramento ficou livre, mas a
+        FIFO de hardware de 8 posições virou o gargalo.
+
+Fase 4 (Estado da Arte): Implementação da queue_t na RAM isolando os
+        núcleos e Overclock síncrono para 300 MHz casando perfeitamente
+        com o Pixel Clock do PIO.
+
+
+
+Log de erro: 2026-06-24
+
+Os travamentos do sistema, quando for realmente um fato estará assinalado com *FATO
+
+CPU utilizada é o MC68000P12F que o manual diz ser 16Mhz
+E ele realmente rodou muito tempo em 16Mhz.
+
+Detectei os seguintes fatos:
+
+OBS.: Todas as conclusões foram feitas depois da versão 2.2,por isso a numerção que
+segue a ordem cronológica não faz muito sentido.
+
+1 - Codigo vbug2.0 totalmente em assembler rodando a 16Mhz.
+    - travou por algums motivos de hardware sujeira de solta entre os pinos e wire-up.
+    - *FATO: travou por excesso de velociade para o hardware, detectado muito mais tarde,
+             depois de ter sem querer mudado o clock para 8Mhz.
+
+2 - Codigo vbug2.1 em C e assembler rodando a 8Mhz.
+    - *FATO: travou por excesso de velociade para o hardware.
+    - *FATO: roda bem com clock 4Mhz e dtack em 2Mhz.
+    Em 24/06/2026 coloquei em 8Mhz e funcinou sem problemas aparentes.Em análise...
+
+
+3 - Codigo vbug2.2 totalmente em assembler rodando a 8Mhz.
+    - Tentativa de fazer um codigo muito mais limpo depois da experiência adquirida.
+    - Travou a 8Mhz sem nenhum motivo aparente.
+
+

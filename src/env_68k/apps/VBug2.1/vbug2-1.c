@@ -26,7 +26,7 @@ volatile __attribute__((section(".mram"))) unsigned int flg_system;
 extern void xmodem_loader();
 extern uint32_t get_system_tick_nmi_safe(void);
 extern void listar_diretorio_raiz(void);
-extern void ler_e_exibir_joblog(void);
+
 
 typedef void (*ProgramaXModem)(void);
 
@@ -72,13 +72,13 @@ extern int ata_init(void);
 extern void abrir_arquivo();
 
 extern void UartWrCh(unsigned char ch);
-
+extern void main_tstfat01();
 void write_string(char * str){
     while(*str){
         UartWrCh(*str++);
     }
 }
-
+void ler_e_exibir_joblog(char * filename);
 void main() {
     // Inicializa os hardwares normalmente
     // 1. Direciona o console para a PicoVGA
@@ -97,7 +97,7 @@ void main() {
     unsigned int ch;
     print_capslock();
 
-    delay10ms(100);  //100ms    
+    delay10ms(100);  //10000ms    
     // uart1_init();
     // delay10ms(100);  //100ms    
     // uart2_init();
@@ -119,10 +119,11 @@ menu:
         printf(" 5 - Executa programa\n");
         printf(" 6 - Desabilita interrupcao\n");
         printf(" 7 - habilitita interrupcao\n");
-        printf(" 8 - le o setor 0 do disco\n");
-        printf(" 9 - listar o diretorio raiz\n");
-        printf(" A|a - ler joblog\n");
+        printf(" 8 - ata_init\n");
+        printf(" 9 - read dir\n");
+        printf(" A|a A.TXT\n");
         printf(" B|b - dump registers\n");
+        printf(" C|c - /A.TXT\n");
         printf("Choose an option: ");
 
         ch = get_char();
@@ -133,13 +134,18 @@ menu:
         switch(ch){
             case 0x41:
             case 0x61:
-                    ler_e_exibir_joblog();
-                    //abrir_arquivo();
+                    ler_e_exibir_joblog("A.TXT");
                     goto menu;     
             case 0x42:
             case 0x62:
                     dump_registradores();
                     goto menu;     
+
+            case 0x43:
+            case 0x63:
+                    ler_e_exibir_joblog("/A.TXT");
+                    goto menu;     
+
             case 0: clrscr();
                     goto menu;
             case 1:
@@ -184,7 +190,6 @@ menu:
                     break;
             case 8:
                     ata_init();
-                    //ata_read((unsigned char*)0x82000, 0, 1, ATA_MASTER);    
                     goto menu;
                     break;  
                              

@@ -12281,12 +12281,6 @@
 		(uuid "43becfd1-a72d-4775-bb71-b82ddcb9fcfa")
 	)
 	(junction
-		(at 111.76 165.1)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "45e029d7-f102-4756-a030-65440e927c86")
-	)
-	(junction
 		(at 69.85 115.57)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -12561,6 +12555,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "d378b003-1e6b-48a5-93d1-cf8c0a0b8dca")
+	)
+	(junction
+		(at 113.03 165.1)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "dd3cc681-99e0-43ac-b290-16b5089d2ec1")
 	)
 	(junction
 		(at 68.58 157.48)
@@ -13731,7 +13731,7 @@
 	)
 	(wire
 		(pts
-			(xy 19.05 137.16) (xy 19.05 133.35)
+			(xy 19.05 140.97) (xy 19.05 133.35)
 		)
 		(stroke
 			(width 0)
@@ -14320,16 +14320,6 @@
 			(type default)
 		)
 		(uuid "695a0da8-8f40-43dd-a4cd-a8f64de3196c")
-	)
-	(wire
-		(pts
-			(xy 111.76 156.21) (xy 113.03 156.21)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "69919574-a25e-4c61-9fa3-c6c651a5e680")
 	)
 	(wire
 		(pts
@@ -15436,7 +15426,7 @@
 	)
 	(wire
 		(pts
-			(xy 111.76 156.21) (xy 111.76 165.1)
+			(xy 113.03 156.21) (xy 113.03 165.1)
 		)
 		(stroke
 			(width 0)
@@ -23395,7 +23385,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 19.05 137.16 0)
+		(at 19.05 140.97 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -23404,7 +23394,7 @@
 		(fields_autoplaced yes)
 		(uuid "5b799eb9-fc74-4e8e-9bd5-05b00c8b6a2c")
 		(property "Reference" "#PWR0170"
-			(at 19.05 143.51 0)
+			(at 19.05 147.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -23413,7 +23403,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 19.05 142.24 0)
+			(at 19.05 146.05 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -23422,7 +23412,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 19.05 137.16 0)
+			(at 19.05 140.97 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -23431,7 +23421,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 19.05 137.16 0)
+			(at 19.05 140.97 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -23440,7 +23430,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 19.05 137.16 0)
+			(at 19.05 140.97 0)
 			(effects
 				(font
 					(size 1.27 1.27)

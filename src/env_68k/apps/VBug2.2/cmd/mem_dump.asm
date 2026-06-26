@@ -9,6 +9,8 @@ MemDump:
 
         LEA     MsgDumpHeader,A0
         JSR     WriteStringConout
+        MOVE.L  #$00080000,A0
+        MOVE.L  A0,(addressInHex)
         MOVE.L  (addressInHex),A0
         MOVE.L  A0,D0
         JSR     Print32bitsHex

@@ -13,7 +13,10 @@
 
 /* these are used in the .ino */
 
-
+void outchar( char ch )
+{
+    printf( "%c", ch );
+}
 
 
 /* other helpers */
@@ -42,7 +45,7 @@ void loop( void );
 int main( int argc, char ** argv )
 {
     printf( "TinyBasic pgordao @copyleft 2025...\n" );
-    printf( "Compiled for PDS317 cpu MC68000.\n" );
+    printf( "Compiled for tcpbox68k cpu MC68000.\n" );
     //setup();
     loop();
 }

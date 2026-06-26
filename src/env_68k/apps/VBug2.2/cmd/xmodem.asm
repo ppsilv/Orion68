@@ -7,7 +7,7 @@ NACK        EQU     $15        ; Negative Acknowledge
 CAN         EQU     $18        ; Cancel
 
 XmodemRec:
-        BCLR    #PROGRAM_LOADED,flg_system
+        RESET_FLAG    PROGRAM_LOADED,flg_system
         LEA     buf_pgm,A3
         clr.l     D5
         JSR     UartFlush
@@ -62,5 +62,5 @@ XmodemRec:
         clr.l     D5
         jmp     .receivePacote
 .Transfer_Complete:
-        BSET    #PROGRAM_LOADED,flg_system
+        SET_FLAG    PROGRAM_LOADED,flg_system
         RTS ;

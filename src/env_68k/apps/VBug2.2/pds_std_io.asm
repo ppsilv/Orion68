@@ -5,7 +5,7 @@ ReadConin:
     MOVE.L  (cconin),A5
     JSR     (A5)
     ANDI.L  #$FF,D0       ; Mantém apenas o byte inferior
-    BTST    #ECHO_ON,flg_system
+    TEST_FLAG    ECHO_ON,flg_system
     BEQ     .fim        
     MOVE.B  D0,-(SP)          ; Salva byte original
     JSR     WriteConout    

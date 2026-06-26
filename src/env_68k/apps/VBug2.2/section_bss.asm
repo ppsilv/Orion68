@@ -48,6 +48,22 @@ length              DS.B     1
 type                DS.B     1
 _CapsFlag           DS.B     1
 debug_pkt           DS.B     1
+    even    
+;Basic variables
+RANPNT	DC.L	BASIC_START		;;random number pointer
+CURRNT	DS.L	1	            ;;Current line pointer
+STKGOS	DS.L	1	            ;;Saves stack pointer in 'GOSUB'
+STKINP	DS.L	1	            ;;Saves stack pointer during 'INPUT'
+LOPVAR	DS.L	1	            ;;'FOR' loop save area
+LOPINC	DS.L	1	            ;;increment
+LOPLMT	DS.L	1	            ;;limit
+LOPLN	DS.L	1	            ;;line number
+LOPPT	DS.L	1	            ;;text pointer
+TXTUNF	DS.L	1	            ;;points to unfilled text area
+VARBGN	DS.L	1	            ;;points to variable area
+STKLMT	DS.L	1	            ;;holds lower limit for stack growth
+BUFFER	DS.B	BUFLEN          ;;Keyboard input buffer
+
 
 
 SECTION DATA

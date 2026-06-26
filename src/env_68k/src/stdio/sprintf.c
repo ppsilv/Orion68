@@ -1,3 +1,13 @@
+#include <stdio.h>
+#include <stdarg.h>
+#include <string.h>
+
+
+extern char *itodec(int value, char *str);
+extern char *itooct(unsigned int value, char *str);
+extern char *itoudec(unsigned int value, char *str);
+extern char *itox(unsigned int value, char *str);
+extern void pad_zeros(char *str, int width);
 
 int sprintf(char *str, const char *format, ...) {
     va_list args;

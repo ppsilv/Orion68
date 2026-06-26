@@ -16,7 +16,6 @@ trap_cconin:
     MOVE.L  (cconin),A2
     JSR     (A2)
     MOVE.L (SP)+,A2
-
     ANDI.L  #$FF,D0       ; Mantém apenas o byte inferior
     RTE                   ; Retorna da exceção
 

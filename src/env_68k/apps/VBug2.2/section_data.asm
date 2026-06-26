@@ -115,6 +115,17 @@ MsgUnknown:   DC.B "Unknown Exception!",0
 
 PROGRAM_LOADED  equ     0
 ECHO_ON         equ     1 
+
+;Basic data .rodata
+INITMSG DC.B	CR,LF,'Gordo''s MC68000 Tiny BASIC, v1.2',CR,LF,LF,0
+OKMSG	DC.B	CR,LF,'OK',CR,LF,0
+HOWMSG	DC.B	'How?',CR,LF,0
+WHTMSG	DC.B	'What?',CR,LF,0
+SRYMSG	DC.B	'Sorry.'
+CLMSG	DC.B	CR,LF,0
+
+
+
 ;    ALIGN   2
 ;    ;Isso preenche 762 com 00
 ;    ;DS.B    $00000762 - *, $00

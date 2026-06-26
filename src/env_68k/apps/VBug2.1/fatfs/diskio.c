@@ -117,7 +117,7 @@ DRESULT disk_read (
 
 	return RES_PARERR;
 }*/
-
+ 
 
 
 /*-----------------------------------------------------------------------*/
@@ -134,21 +134,9 @@ DRESULT disk_write (
 )
 {
 	DRESULT res=0;
-	 
 
-	switch (pdrv) {
-	case DEV_MIDE :
-		res = ata_write_sector(sector, buff);
-		return res;
-
-	case DEV_MMC :
-		return res;
-
-	case DEV_USB :
-		return res;
-	}
-
-	return RES_PARERR;
+	res = ata_write_sector(sector, buff);
+	return res;
 }
 
 #endif

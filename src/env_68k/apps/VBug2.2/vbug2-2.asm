@@ -249,9 +249,7 @@ Int1Handler:
         MOVEM.L (A7)+,D0-D7/A0-A6
         RTE
 Int2Handler:        
-        MOVEM.L D0-D7/A0-A6,-(A7)
         ADDQ.L  #1,systemTick
-        MOVEM.L (A7)+,D0-D7/A0-A6
         RTE
 Int3Handler:        
         MOVEM.L D0-D7/A0-A6,-(A7)
@@ -274,9 +272,7 @@ Int6Handler:
         MOVEM.L (A7)+,D0-D7/A0-A6
         RTE
 Int7Handler:        
-        MOVEM.L D0-D7/A0-A6,-(A7)
         MOVE.L  (RAM_VECTOR_BASE+88),A0
-        MOVEM.L (A7)+,D0-D7/A0-A6
         RTE
 
 ; Tratador para todos os outros vetores que você não mapeou individualmente ainda
@@ -346,6 +342,7 @@ Vbug2Start:
         ;Initialize TRAP1
         JSR  InitTrap1
 
+        ;move.w #$0000,SR
 MenuLoop:
 subLoop:    
         LEA     MsgOrionInit,A0
@@ -360,6 +357,8 @@ subLoop:
         BEQ     ClrScreen
         CMP.B   #'1',D0
         BEQ     ShowSystick
+        CMP.B   #'2',D0
+        BEQ     RunBasic
         CMP.B   #'3',D0
         BEQ     Xmodem
         CMP.B   #'5',D0
@@ -384,7 +383,10 @@ ShowSystick:
         jsr     WriteStringConout
         move.l  systemTick,D0
         jsr     Print32bitsHex
-        JMP     subLoop        
+        JMP     subLoop   
+;2
+RunBasic:
+        jmp     BASIC_START             
 ;3
 Xmodem:
         JSR     XmodemRec
@@ -392,7 +394,7 @@ Xmodem:
 ;4
 ;5. Executa programa na RAM
 RunProgram:
-        BTST    #PROGRAM_LOADED,flg_system
+        TEST_FLAG    PROGRAM_LOADED,flg_system
         BNE     .run_program
         LEA     MsgNoProgramToRUN,A0
         JSR     WriteStringConout
@@ -423,7 +425,7 @@ disable_interrupt_leve2:
 enable_interrupt_leve2:
         move.w  SR,D0
         andi.w  #$F8FF,SR
-        ori.w   #$0100,D0
+        ;ori.w   #$0100,D0
         move.w  D0,SR
         JMP     subLoop        
 
@@ -492,9 +494,10 @@ UART_ReadHex1:
         INCLUDE "cmd/mem_dump.asm"
         INCLUDE "cmd/xmodem.asm"
         INCLUDE "rot_print_hex_num.asm"
-
-
+        INCLUDE "basic/tbi68k.asm"
         INCLUDE "section_data.asm"
         INCLUDE "section_bss.asm"
+
+
 
         END

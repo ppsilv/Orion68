@@ -2,10 +2,11 @@ CC = m68k-elf-gcc
 LD = m68k-elf-ld
 OBJCOPY = m68k-elf-objcopy
 
-CFLAGS = -Wall -Os -I ./includes -I../../include -ffreestanding -nostdlib
+CFLAGS = -Wall -O0 -I ./includes -I../../include -ffreestanding -nostdlib
 CFLAGS += -DCHIP_$(CHIP_TYPE) -DROM_SIZE_BYTES=$(ROM_SIZE)
 
 LDFLAGS = -T ./vbug2-1.ld -L../../lib -nostdlib  -Map=vbug2-1.map
+LDLIBS = -lmc68000
 
 # 1. ADICIONADO: Lista de arquivos em Assembly (.S)
 ASMS = ./xmodem/xmodem_asm.S vectors_asm.S
@@ -18,11 +19,18 @@ SRCS = vbug2-1.c vectors.c console.c \
 ./xmodem/xmodem.c \
 ./uarts/drv_uart0.c \
 ./ide/ata.c \
-./fatfs/diskio.c \
 ./fatfs/ff.c \
+./fatfs/ffsystem.c \
+./fatfs/diskio.c \
 ./tst_fat/tstfat.c \
-./tst_fat/ler_joblog.c \
 timers.c interrupt.c
+
+
+#./fatfs/diskio.c \
+#./fatfs/ff.c \
+#./tst_fat/tstfat.c \
+#./tst_fat/ler_joblog.c \
+
 
 # 2. ALTERADO: Agora a lista de objetos junta os .o vindos do .c e do .S
 OBJS = $(SRCS:.c=.o) $(ASMS:.S=.o)
@@ -67,7 +75,7 @@ all: vbug2-1.bin
 	$(CC) $(CFLAGS) -c $< -o $@
 
 vbug2-1.elf: ./tools/build_counter.sh $(OBJS)
-	$(LD) $(LDFLAGS) ../../obj/vbu2-1_startup.o $(OBJS) -lmc68000 -o $@
+	$(LD) $(LDFLAGS) ../../obj/vbu2-1_startup.o $(OBJS) $(LDLIBS) -o $@
 	@echo "Linked: $@"
 	@echo "╔══════════════════════════╗"
 	@echo "║  COMPILACAO TERMINADA!   ║"
@@ -76,6 +84,9 @@ vbug2-1.elf: ./tools/build_counter.sh $(OBJS)
 vbug2-1.bin: vbug2-1.elf
 	$(OBJCOPY) -O binary $< $@
 	@echo "Binary: $@"
+
+cplib:
+	cp fatlib/lib/libfatfs.a ../../lib/.
 
 clean:
 	rm -f *.bin $(OBJS) *.map $(TARGET_LOW) $(TARGET_HIGH) $(TARGET_ELF)
