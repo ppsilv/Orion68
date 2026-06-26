@@ -12,7 +12,7 @@ LDLIBS = -lmc68000
 ASMS = ./xmodem/xmodem_asm.S vectors_asm.S
 
 # Lista de arquivos C
-SRCS = vbug2-1.c vectors.c console.c \
+SRCS = vbug2-1.c line_edit.c vectors.c console.c \
 ./dump/mem_dump.c \
 ./kbd/drv_kbd.c \
 ./picoVga/drv_picoVga.c \

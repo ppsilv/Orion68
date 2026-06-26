@@ -62,6 +62,12 @@ struct vga_text {
   void (*pchar)(uint8_t c);
   void (*clrscr)(void);
   void (*change_mode)(uint8_t mode);
+  void (*inc_cursor_y)(void);
+  void (*inc_cursor_x)(void);
+  void (*dec_cursor_y)(void);
+  void (*dec_cursor_x)(void);
+
+
 
   void * _private;
 };

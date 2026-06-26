@@ -2421,9 +2421,9 @@ static FRESULT dir_find (	/* FR_OK(0):succeeded, !=0:error */
 	FATFS *fs = dp->obj.fs;
 	BYTE et;
 
-	printf("[dir_find] clust[%lu] / 0x%08X\n", (unsigned long)dp->clust, (unsigned long)dp->clust);
-	printf("[dir_find]  sect[%lu] / 0x%08X\n", (unsigned long)dp->sect, (unsigned long)dp->sect);
-	printf("[dir_find]    dp[%s]\n",(char*)dp->fn);
+	//printf("[dir_find] clust[%lu] / 0x%08X\n", (unsigned long)dp->clust, (unsigned long)dp->clust);
+	//printf("[dir_find]  sect[%lu] / 0x%08X\n", (unsigned long)dp->sect, (unsigned long)dp->sect);
+	//printf("[dir_find]    dp[%s]\n",(char*)dp->fn);
 	
 
 	res = dir_sdi(dp, 0);			/* Rewind directory object */
@@ -2435,7 +2435,7 @@ static FRESULT dir_find (	/* FR_OK(0):succeeded, !=0:error */
 		et = dp->dir[DIR_Name];		/* Entry type */
 		if (et == 0) { res = FR_NO_FILE; break; }	/* Reached end of directory table */
 		dp->obj.attr = dp->dir[DIR_Attr] & AM_MASK;
-		printf("dp->dir[%s] dp->fn[%s]\n", (char *)dp->dir, (char *)dp->fn);
+		//printf("dp->dir[%s] dp->fn[%s]\n", (char *)dp->dir, (char *)dp->fn);
 		if (!(dp->dir[DIR_Attr] & AM_VOL) && !memcmp((char *)dp->dir, (char *)dp->fn, 11)) break;	/* Is it a valid entry? */
 		res = dir_next(dp, 0);	/* Next entry */
 	} while (res == FR_OK);
@@ -3560,20 +3560,20 @@ FRESULT f_open (
 	DEF_NAMEBUFF
 
 
-	printf("Abrindo arq.: [%s]\n",path);
+	//printf("Abrindo arq.: [%s]\n",path);
 
 	if (!fp) return FR_INVALID_OBJECT;	/* Reject null pointer */
 
 
 	memset((void*)&dj,0,sizeof(DIR));
 
-	printf("mounting volume.: [%s]\n",path);
+	//printf("mounting volume.: [%s]\n",path);
 
 	/* Get logical drive number and mount the volume if needed */
 	mode &= FF_FS_READONLY ? FA_READ : FA_READ | FA_WRITE | FA_CREATE_ALWAYS | FA_CREATE_NEW | FA_OPEN_ALWAYS | FA_OPEN_APPEND;
 	res = mount_volume(&path, &fs, mode);
 
-	printf("mounted volume.: [%d:OK-%d]\n",res,FR_OK);
+	//printf("mounted volume.: [%d:OK-%d]\n",res,FR_OK);
 
 
 	if (res == FR_OK) {
@@ -3582,7 +3582,7 @@ FRESULT f_open (
 		INIT_NAMEBUFF(fs);
 		printf("f_open: calling follow_path\n");
 		res = follow_path(&dj, path);	/* Follow the file path */
-		printf("f_open: returning from calling follow_path");
+		//printf("f_open: returning from calling follow_path");
 
 		if (res == FR_OK) {
 			if (dj.fn[NSFLAG] & NS_NONAME) {	/* Origin directory itself? */
@@ -3591,7 +3591,7 @@ FRESULT f_open (
 		}
 		/* Create or Open a file */
 		if (mode & (FA_CREATE_ALWAYS | FA_OPEN_ALWAYS | FA_CREATE_NEW)) {
-			printf("f_open: creating a file %s\n",path);
+			//printf("f_open: creating a file %s\n",path);
 			if (res != FR_OK) {					/* No file, create new */
 				if (res == FR_NO_FILE) {		/* There is no file to open, create a new entry */
 					res = dir_register(&dj);

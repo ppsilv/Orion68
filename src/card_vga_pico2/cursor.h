@@ -15,8 +15,8 @@ typedef enum {
 } cursorShape_t ;
 
 struct cursor{
-    uint16_t x;
-    uint16_t y;
+    int16_t x;
+    int16_t y;
     bool visible;
     bool blink;
     uint16_t blink_interval;

@@ -12,6 +12,12 @@
 
 // 5x7 font
 void writeStringBold(char* str);
+static void inc_cursor_y();
+static void inc_cursor_x();
+static void dec_cursor_y();
+static void dec_cursor_x();
+
+
 
 /*
 struct cursor{
@@ -59,6 +65,46 @@ static void clrscr(){
   priv->cursor->x = 0 ;
   priv->cursor->y = 0 ;
 }
+
+static void dec_cursor_x(){
+  vga_text_private_t* priv = (vga_text_private_t*)vga->_private;
+
+
+  priv->cursor->x -= priv->font.width;
+
+  if(priv->cursor->x < 0){
+    priv->cursor->x = 0;       
+  }
+}
+
+static void dec_cursor_y(){
+  vga_text_private_t* priv = (vga_text_private_t*)vga->_private;
+
+  priv->cursor->y -= priv->font.height  ;
+  if(priv->cursor->y < 0){
+    priv->cursor->y = 0;       
+  }
+}
+
+static void inc_cursor_x(){
+  vga_text_private_t* priv = (vga_text_private_t*)vga->_private;
+
+  priv->cursor->x += priv->font.width;
+  if(priv->cursor->x > 79){
+    priv->cursor->x = 0; 
+    inc_cursor_y();      
+  }
+}
+
+static void inc_cursor_y(){
+  vga_text_private_t* priv = (vga_text_private_t*)vga->_private;
+
+  priv->cursor->y += priv->font.height  ;
+  if(priv->cursor->y > 30){
+    priv->cursor->y = 0;       
+  }
+}
+
 
 static void set_vga_data_array(uint8_t video_data_array[])
 {
@@ -590,6 +636,10 @@ vga_t* create_screen(screenMode_t mode){ //,uint8_t active_buffer1[],uint32_t tx
   vga->set_vga_data_array = set_vga_data_array;
   vga->printString1 = printString1;
   vga->printString2 = printString2;
+  vga->inc_cursor_y = inc_cursor_y;
+  vga->inc_cursor_x = inc_cursor_x;
+  vga->dec_cursor_y = dec_cursor_y;
+  vga->dec_cursor_x = dec_cursor_x;
 
   return vga;
 }

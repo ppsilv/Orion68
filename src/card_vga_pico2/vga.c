@@ -140,7 +140,21 @@ void core1_entry() {
                     vga->setTextColor(text_color, bg_color);  
                     break;    
                 case D_WRITE_SCREEN:    
-                        vga->pchar(data);  
+                        put_cursor(0);
+                        vga->setTextCursorVisible(false);
+                        put_cursor(0);
+                        if( data == 0x08 ){
+                            vga->dec_cursor_x();                                
+                        }else{
+                            if( data > 0x80 ){
+                                sprintf(buf,"%d",data);
+                                vga->printString(buf);
+                            }else{
+                                vga->pchar(data);  
+                            }
+                        }
+                        vga->setTextCursorVisible(true);                        
+                        put_cursor(1);
                         break;
                 case D_REG_X_HIGH:
                         //cursor_x = (data <<8)|cursor_x;

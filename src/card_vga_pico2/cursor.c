@@ -67,7 +67,7 @@ cursor_t* create_default_cursor()
     this->y = 0 ;
     this->visible = true ;
     this->blink = true ;
-    this->blink_interval = 250 ;
+    this->blink_interval = 150 ;
     this->shape = CURSOR_BAR ;
     this->set_x = set_x ;
     this->set_y = set_y ;

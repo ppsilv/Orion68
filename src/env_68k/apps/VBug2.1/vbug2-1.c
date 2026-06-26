@@ -72,13 +72,17 @@ extern int ata_init(void);
 extern void abrir_arquivo();
 
 extern void UartWrCh(unsigned char ch);
-extern void main_tstfat01();
+
 void write_string(char * str){
     while(*str){
         UartWrCh(*str++);
     }
 }
-void ler_e_exibir_joblog(char * filename);
+extern void ler_e_exibir_joblog(char * filename);
+extern void ler_comando(char *buffer) ;
+extern void processar_comando(char *cmd_line);
+
+char buffer[64];
 void main() {
     // Inicializa os hardwares normalmente
     // 1. Direciona o console para a PicoVGA
@@ -115,7 +119,7 @@ menu:
         printf(" 1 - Verificar o systemtick\n");
         printf(" 2 - Memory dump\n");
         printf(" 3 - Xmodem download\n");
-        printf(" 4 - Posiciona cursor\n");
+        printf(" 4 - command\n");
         printf(" 5 - Executa programa\n");
         printf(" 6 - Desabilita interrupcao\n");
         printf(" 7 - habilitita interrupcao\n");
@@ -166,13 +170,8 @@ menu:
                     goto menu;
                     break;
             case 4:
-                    unsigned char x,y;
-                    printf("Digite o valor de y: ");y = get_char();
-                    printf("Digite o valor de x: ");x = get_char();
-                    y -= '0';
-                    x -= '0';
-                    picovga_gotoxy(x,y);
-                    putchar('A');
+                    ler_comando(buffer) ;
+                    processar_comando(buffer);
                     goto menu;
                     break;
             case 5:
