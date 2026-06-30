@@ -347,28 +347,3 @@ int printf(const char *format, ...) {
     return chars_printed;
 }
 
-
-// Funções auxiliares simples
-//void memcpy(void *dest, const void *src, int n) {
-//    char *d = (char *)dest;
-//    const char *s = (const char *)src;
-//    while (n--) *d++ = *s++;
-//}
-
-//void memset(void *s, int c, int n) {
-//    char *p = (char *)s;
-//    while (n--) *p++ = c;
-//}
-
-//int strcmp(const char *s1, const char *s2) {
-//    while (*s1 && (*s1 == *s2)) {
-//        s1++;
-//        s2++;
-//    }
-//    return *(unsigned char *)s1 - *(unsigned char *)s2;
-//}
-
-
-
-
-

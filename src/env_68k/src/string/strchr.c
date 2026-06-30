@@ -1,7 +1,7 @@
 #include <stddef.h>
 #include <string.h>
 
-const char *strchr(const char *str, int ch)
+char *strchr(char *str, int ch)
 {
 	for (; *str; str++) {
 		if (*str == ch)

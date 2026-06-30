@@ -25,7 +25,7 @@ ASM_OBJS = $(ASM_SRCS:$(SRC_DIR)/%.s=$(OBJ_DIR)/%.o)
 OBJS = $(C_OBJS) $(ASM_OBJS)
 
 # Nome da biblioteca
-LIB_NAME = libmc68000.a
+LIB_NAME = libc68k.a
 
 .PHONY: all lib examples
 
