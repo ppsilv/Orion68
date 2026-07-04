@@ -6,7 +6,7 @@ CFLAGS = -Wall -O0 -I ./includes -I../../include -ffreestanding -nostdlib
 CFLAGS += -DCHIP_$(CHIP_TYPE) -DROM_SIZE_BYTES=$(ROM_SIZE)
 
 LDFLAGS = -T ./vbug2-1.ld -L../../lib -nostdlib  -Map=vbug2-1.map
-LDLIBS = -lmc68000
+LDLIBS = -lc68k
 
 # 1. ADICIONADO: Lista de arquivos em Assembly (.S)
 ASMS = ./xmodem/xmodem_asm.S vectors_asm.S

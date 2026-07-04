@@ -11,3 +11,10 @@ void toupper_str(char *str) {
         str++;
     }
 }
+
+int toupper(int c) {
+    if (c >= 'a' && c <= 'z') {
+        return c - ('a' - 'A'); // Ou c - 32, que puxa para a maiúscula equivalente na tabela ASCII
+    }
+    return c;
+}

@@ -5,7 +5,7 @@
 #include "timers.h"
 #include "show_registers.h"
 
-void dump_memory(long addr){
+void dump_memory(void * addr,int size){
     unsigned char * pcharhex;
     unsigned char * pcharasc;
     unsigned char ch;
@@ -21,7 +21,8 @@ void dump_memory(long addr){
         printf("Address  00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F - ASCII\n"); // Corrigido os números hex do cabeçalho
         printf("----------------------------------------------------------------\n");
         
-        for(int j=0; j<16; j++){
+        int total_linhas = size /16;    
+        for(int j=0; j<total_linhas; j++){
             // Imprime o endereço real dessa linha específica
             printf("%08X  ", (unsigned int)pcharhex);
             
@@ -98,7 +99,7 @@ void dump_memory2(long addr){
 }
 
 
-void dump_memory_by_addr(long addr){
+void dump_memory_by_addr(void *addr, int size){
     unsigned char * pcharhex;
     unsigned char * pcharasc;
     unsigned char ch;
@@ -112,8 +113,8 @@ void dump_memory_by_addr(long addr){
         printf("Dumping 256 bytes from addr %08X\n", pcharhex); // Agora vai atualizar de verdade!
         printf("Address  00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F - ASCII\n"); // Corrigido os números hex do cabeçalho
         printf("----------------------------------------------------------------\n");
-        
-        for(int j=0; j<32; j++){
+        int total_linhas = size /16;    
+        for(int j=0; j<total_linhas; j++){
             // Imprime o endereço real dessa linha específica
             printf("%08X  ", (unsigned int)pcharhex);
             

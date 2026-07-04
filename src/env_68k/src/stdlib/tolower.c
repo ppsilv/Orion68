@@ -7,3 +7,11 @@ void tolower_str(char *str) {
         str++;
     }
 }
+
+
+int tolower(int c) {
+    if (c >= 'A' && c <= 'Z') {
+        return c + ('a' - 'A'); // Ou c + 32, que dá o mesmo resultado na tabela ASCII
+    }
+    return c;
+}

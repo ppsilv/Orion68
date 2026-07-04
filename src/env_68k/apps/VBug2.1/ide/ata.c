@@ -45,7 +45,7 @@ struct ata_drive drives[ATA_MAX_DRIVES];
 #define ATA_CMD_IDENTIFY	0xEC
 #define ATA_CMD_SET_FEATURE	0xEF
 
-#define ATA_ST_BUSY		0x80
+#define ATA_ST_BUSY			0x80
 #define ATA_ST_DATA_READY	0x08
 #define ATA_ST_ERROR		0x01
 
@@ -264,29 +264,90 @@ int ata_disk_initialize(){
 	return 1; //RES_ERROR
 }
 
-/*
+void dump_memory(void * addr,int size);
+#define ATA_TIMEOUT             100000
 
-int ata_read_sector_multi (long sector, char *buffer, long count){
-	char *pbuf = buffer;
-	long i=0;
-	for(i=0;i < count; i++){
-		if(ata_read_sector(sector+i,pbuf) == 0){
-			return 1; //RES_ERROR
-		}
-		pbuf+=512;
-	}
-	return 0; //RES_OK
-}
-int ata_write_sector_multi(long sector, char *buffer, long count){
-	char * pbuf = buffer;
-	long i=0;
-	for( i=0; i < count; i++){
-		if( ata_write_sector(sector+i,pbuf) == 0 ){
-			return 1; //RES_ERROR
-		}
-		pbuf += 512;
-	}
-	return 0; //RES_OK
+int ata_wait_not_busy()
+{
+    volatile uint32_t timeout = ATA_TIMEOUT;
+    do
+    {
+        uint8_t status = (*ATA_REG_STATUS);
+        if ((status & ATA_ST_BUSY) == 0)
+            return 0;
+    }
+    while (timeout--);
+    printf("ata_wait_not_busy: timeout\n");
+    return 1;
 }
 
-*/
+int ata_wait_for_data()
+{
+    volatile uint32_t timeout = ATA_TIMEOUT;
+    do
+    {
+        uint8_t status = (*ATA_REG_STATUS);
+        if ((status & ATA_ST_BUSY) == 0)
+            return 0;
+    }
+    while (timeout--);
+
+    printf("ata_wait_for_data: timeout\n");
+    return 1;
+}
+
+
+int ata_read_identity(void)
+{
+
+    printf("ata_read_identity: function entry\n");
+
+	if (ata_wait_not_busy())
+    {
+        printf("ata_read_identity: ata_wait_for_data (1) error\n");
+        return 1;
+    }
+
+	(*ATA_REG_SECTOR_COUNT) = 1;
+	(*ATA_REG_COMMAND) = ATA_CMD_IDENTIFY;
+	if (ata_wait_for_data())
+    {
+        printf("ata_read_identity: ata_wait_for_data (1) error\n");
+        return 1;
+    }
+
+	uint8_t status = (*ATA_REG_STATUS);
+	if (status & ATA_ST_ERROR)
+    {
+        printf("ata_read_identity: disk status error - status = %02X\n", status);
+        return 1;
+    }
+
+	if (ata_wait_not_busy())
+    {
+        printf("ata_read_identity: ata_wait_not_busy (2) error\n");
+        return 1;
+    }
+
+	printf("ata_read_identity: reading data....");
+	uint8_t drives[1024];
+    uint8_t *ptr8 = (uint8_t *)&drives;
+
+    for (int i = 0; i < 512; i++)
+    {
+        ptr8[i] = (*ATA_REG_DATA_BYTE);
+        ATA_WAIT();
+    }
+    for (int i = 0; i < 512; i += 2)
+    {
+        uint8_t tmp = ptr8[i];
+        ptr8[i]     = ptr8[i + 1];
+        ptr8[i + 1] = tmp;
+    }
+
+    
+    dump_memory((void *)ptr8, 512);
+    printf("done\n");
+	return 0;
+}
+

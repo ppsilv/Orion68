@@ -22,7 +22,7 @@ volatile __attribute__((section(".mram"))) unsigned int flg_system;
 
 #include "./tools/build_counter.h"
 
-
+void dump_memory(void * addr,int size);
 extern void xmodem_loader();
 extern uint32_t get_system_tick_nmi_safe(void);
 extern void listar_diretorio_raiz(void);
@@ -65,7 +65,7 @@ const char MsgOrionInit[] =
     "-----------------------------------------------\n\n";
 extern volatile unsigned char debug_pkt;
  
-extern void dump_memory(long addr);
+
 extern void liga_debug(); 
 extern int ata_detect(void);
 extern int ata_init(void);
@@ -81,6 +81,7 @@ void write_string(char * str){
 extern void ler_e_exibir_joblog(char * filename);
 extern void ler_comando(char *buffer) ;
 extern void processar_comando(char *cmd_line);
+extern int ata_read_identity(void);
 
 char buffer[64];
 void main() {
@@ -109,6 +110,7 @@ void main() {
     // uart3_init();
     // delay10ms(100);  //100ms    
 
+    ata_read_identity();    
 
     while(1) {
         clrscr();
@@ -163,7 +165,7 @@ menu:
                     //long resultado;
                     //resultado = strtol(arr, &ptr_fim, 10);
 
-                    dump_memory(0x82000);
+                    dump_memory((void*)0x82000,512);
                     break;
             case 3:
                     xmodem_loader();    

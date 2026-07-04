@@ -7,6 +7,12 @@
 
 #define NULL 0
 
+int tolower(int c);
+int toupper(int c);
+void tolower_str(char *str);
+void toupper_str(char *str);
+
+
 extern char * itoa (int value, char *str, int base); __attribute__((nonnull (1,2)));
 extern char * __itoa (int value, char *str, int base); __attribute__((nonnull (1,2)));
 extern char *  utoa (unsigned value, char *str,  int base) __attribute__((nonnull (1,2)));
@@ -26,6 +32,7 @@ extern unsigned long int strtoul (const char *__restrict __nptr, char **__restri
 extern long long int strtoll (const char *__restrict __nptr, char **__restrict __endptr, int __base) __attribute__((nonnull (1)));
 extern unsigned long long int strtoull (const char *__restrict __nptr, char **__restrict __endptr, int __base); __attribute__((nonnull (1)));
 
+extern int strcasecmp(const char *s1, const char *s2) __attribute__((nonnull (1,2)));
 extern uintmax_t strntoumax(const char *nptr, char **endptr, int base, unsigned int n) __attribute__((nonnull (1)));
 
 /* Allocate SIZE bytes of memory.  */
