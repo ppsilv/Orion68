@@ -272,19 +272,22 @@ void do_writemem(int argc, char *argv[])
     }
 }
 
-void do_dir(int argc, char *argv[])
+void do_ls(int argc, char *argv[])
 {
     FRESULT fr;
-    const char *path, *filename;
+    const char *filename;
     DIR fat_dir;
     FILINFO fat_file;
     uint16_t dir = 1;
-    //int i;
+    char path[128];
+    strcpy(path,syspath);    
 
-    if(argc == 0)
-        path = "";
-    else
-        path = argv[0];
+    if(argc > 0){
+        strcat(path,argv[0]);
+    }
+    if( path[0] >= 'A' && path[0] <= 'H'){
+        path[0] = 'A' - 0x41;
+    }
 
     fr = f_opendir(&fat_dir, path);
     if (fr != FR_OK)
@@ -361,26 +364,22 @@ void do_mkdir(int argc, char *argv[])
     FRESULT fr;
     char path[128];
     memset(path,0,128);
-    //int size = strlen(syspath);
-    //strcpy(path,&syspath[0]);
-    ////if( path[size-1] != '/'){
-    //path[strlen(path)]='/';
-    ////}
-    //strcat(path,argv[0]);
-    ////if( path[0] >= 'A' && path[0] <= 'I'){
-    ////    path[0] = path[0] - 0x11;
-    ////}
-    //
-
-
-    strcpy(path,"/teste");
+    int size = strlen(syspath);
+    strcpy(path,&syspath[0]);
+    if( path[size-1] != '/'){
+    path[strlen(path)]='/';
+    }
+    strcat(path,argv[0]);
+    if( path[0] >= 'A' && path[0] <= 'I'){
+        path[0] = path[0] - 0x11;
+    }
+    
     printf("path to mkdir %s\n",path);
     fr = f_mkdir(path);
 
-    if (fr != FR_OK)
-    {
-        printf("Error creating folder %s: ", path);
-       printerro(fr);
+    if (fr != RES_OK) {
+        printf("do_mkdir: Error creating folder %s: ", path);
+        printerro(fr);
     }
 }
 
@@ -411,7 +410,7 @@ void do_cd(int argc, char *argv[])
        printerro(fr);
 }
 
-void do_ls(int argc, char *argv[]){
+void do_dir(int argc, char *argv[]){
     listar_diretorio_raiz();
 }
 void do_shst(int argc, char *argv[]){
@@ -641,4 +640,36 @@ uint8_t basic_running = 0;
 void do_ehbasic(int argc, char *argv[])
 {
     //ehbasic();
+}
+
+int le_setor(int sector);
+int wr_setor(int sector);
+
+void do_readsect(int argc, char *argv[]) {
+    int sector = atoi(argv[0]);
+    printf("do_readsect: sector[%d]\n",sector);
+    le_setor(sector);
+}
+void do_writesect(int argc, char *argv[]){
+    int sector = atoi(argv[0]);
+    printf("do_writesect: sector[%d]\n",sector);
+    wr_setor(sector);
+}
+
+void do_writemem1(int argc, char *argv[]){
+    char text[64];
+    char * addr=NULL;
+    printf("argv[0]%s argv[1]%s\n",argv[0],argv[1]);
+    if(argc < 2){
+        printf("Usage: <address> <data>\n");
+        return;
+    }
+    memcpy(text,argv[0],strlen(argv[0]));
+    text[strlen(argv[0])]='\0';
+    int textsize=strlen(text);
+    addr = (char *)strtoul(argv[1],NULL,16);
+    printf("Writing [%s] to address[%x] %d bytes\n",text,(long)addr,textsize);
+    for(int i=0; i< strlen(text);i++){
+        *(addr+i)=text[i];
+    }
 }

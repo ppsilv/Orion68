@@ -145,7 +145,7 @@ void main() {
 #endif
 
 
-    fr = f_mount(&FatFs, "", 1);
+    fr = f_mount(&FatFs, "", 0);
     if (fr != FR_OK) {
         printf("PANIC: Erro ao montar FAT: %d\n", fr);
     }else{
@@ -166,3 +166,23 @@ void main() {
 
 }
 
+#ifdef BUCETON
+#include <stdint.h>
+
+typedef struct {
+    char     name[8];        /* 0x00: Nome do arquivo ou pasta (completado com espaços) */
+    char     ext[3];         /* 0x08: Extensão do arquivo (completado com espaços) */
+    uint8_t  attr;           /* 0x0B: Atributos (0x10 = Diretório, 0x20 = Arquivo/Archive, etc.) */
+    uint8_t  nt_res;         /* 0x0C: Reservado para o Windows NT (pode deixar 0) */
+    uint8_t  crt_time_tenth; /* 0x0D: Décimos de segundo da criação (0 a 199) */
+    uint16_t crt_time;       /* 0x0E: Hora de criação (formato MS-DOS compactado) */
+    uint16_t crt_date;       /* 0x10: Data de criação (formato MS-DOS compactado) */
+    uint16_t lst_acc_date;   /* 0x12: Data do último acesso (formato MS-DOS) */
+    uint16_t fst_clus_hi;    /* 0x14: Cluster inicial - Parte Alta (Sempre 0 na FAT16) */
+    uint16_t wrt_time;       /* 0x16: Hora da última modificação */
+    uint16_t wrt_date;       /* 0x18: Data da última modificação */
+    uint16_t fst_clus_lo;    /* 0x1A: Cluster inicial - Parte Baixa (Onde o arquivo começa) */
+    uint32_t file_size;      /* 0x1C: Tamanho do arquivo em bytes (0 para diretórios) */
+} __attribute__((packed)) FAT_DIR_ENTRY;
+
+#endif

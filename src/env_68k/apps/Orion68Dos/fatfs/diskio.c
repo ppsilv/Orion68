@@ -74,10 +74,15 @@ DRESULT disk_read (
     LBA_t sector, /* Start sector number (LBA) */
     UINT count    /* Number of sectors to read */
 ) {
-    if (pdrv != 0) return RES_PARERR;
+    if (pdrv != 0) {
+        printf("disk_write: [%d] this drive does not exist.\n",pdrv);
+        return RES_PARERR;
+    }
+    //printf("disk_read: pdrv[%d] sector[%ld]",pdrv,sector);
 
     // Soma a base da partição ativa que o seu MBR leu
     sector_t physical_sector = drives[0].parts[0].base + sector;
+    //printf(" physical_sector[%ld]\n",physical_sector);
 
     // Lê quantos setores a FatFs pedir
     for (UINT i = 0; i < count; i++) {
@@ -86,38 +91,7 @@ DRESULT disk_read (
         }
     }
     return RES_OK;
-}
-
-
-/*-----------------------------------------------------------------------*/
-/* Read Sector(s)                                                        */
-/*-----------------------------------------------------------------------*/
-/*
-DRESULT disk_read (
-	BYTE pdrv,		// Physical drive nmuber to identify the drive 
-	BYTE *buff,		// Data buffer to store read data 
-	LBA_t sector,	// Start sector in LBA 
-	UINT count		// Number of sectors to read
-)
-{
-	DRESULT res;
-	int result;
-
-	switch (pdrv) {
-	case DEV_MIDE :
-		result = ata_read_sector_multi(sector, buff, count);
-		return res;
-
-	case DEV_MMC :
-		return res;
-
-	case DEV_USB :
-		return res;
-	}
-
-	return RES_PARERR;
-}*/
- 
+} 
 
 
 /*-----------------------------------------------------------------------*/
@@ -125,18 +99,32 @@ DRESULT disk_read (
 /*-----------------------------------------------------------------------*/
 
 #if FF_FS_READONLY == 0
-
 DRESULT disk_write (
-	BYTE pdrv,			/* Physical drive nmuber to identify the drive */
-	const char *buff,	/* Data to be written */
-	LBA_t sector,		/* Start sector in LBA */
-	UINT count			/* Number of sectors to write */
+    BYTE pdrv,          /* Physical drive number to identify the drive */
+    const char *buff,   /* Data to be written */
+    LBA_t sector,       /* Start sector in LBA */
+    UINT count          /* Number of sectors to write */
 )
 {
-	DRESULT res=0;
+    if (pdrv != 0) {
+        printf("disk_write: [%d] this drive does not exist.\n",pdrv);
+        return RES_PARERR;
+    }
+    //printf("disk_write: pdrv[%d] sector[%ld] count[%d]", pdrv, sector, count);
 
-	res = ata_write_sector(sector, buff);
-	return res;
+    // Soma a base da partição ativa na escrita também!
+    sector_t physical_sector = drives[0].parts[0].base + sector;
+
+    //printf(" physical_sector[%ld]\n",physical_sector);
+
+    // Grava quantos setores a FatFs pedir (suportando o count)
+    for (UINT i = 0; i < count; i++) {
+        if (!ata_write_sector(physical_sector + i, buff + (i * 512))) {
+            return RES_ERROR; // Erro físico na escrita do CompactFlash
+        }
+    }
+    
+    return RES_OK;
 }
 
 #endif
@@ -189,6 +177,5 @@ DRESULT disk_ioctl (
 
 
 
-	return RES_PARERR;
+	return res;
 }
-

@@ -23,12 +23,12 @@ static void executar_type(char * filename){
     UINT bytes_lidos;
     char arquivo[16];
     sprintf(arquivo,"%s",filename);
-
-    res = f_mount(&FatFs, "", 1);
-    if (res != FR_OK) {
-        printf("Erro ao montar FAT: %d\n", res);
-        return;
-    }
+ 
+    //res = f_mount(&FatFs, "", 0);
+    //if (res != FR_OK) {
+    //    printf("Erro ao montar FAT: %d\n", res);
+    //    return;
+    //}
     // f_open(Objeto_File, Caminho, Modo_de_Acesso)
     // FA_READ: Abre o arquivo apenas para leitura
     memset(&Arq,0,sizeof(FIL));

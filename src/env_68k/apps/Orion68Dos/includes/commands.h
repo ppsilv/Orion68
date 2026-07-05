@@ -31,4 +31,8 @@ void do_notimplemented(int argc, char *argv[]);
 
 void do_ehbasic(int argc, char *argv[]);
 
+void do_readsect(int argc, char *argv[]);
+void do_writesect(int argc, char *argv[]);
+void do_writemem1(int argc, char *argv[]);
+
 #endif

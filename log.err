@@ -1,3 +1,18 @@
+2026-07-05
+Problema: A fatfs cria o diretorio mas ele não aparece na lista dir.
+
+levei o disco para um PC e ele leu criou diretorios normalmente e eu criei diretórios com os mesmos nomes que estava tentando criar com o m68k, quando voltei o disco para o m68k leu a arvore de diretorios normalmente com os novos diretorios aparecendo, e na primeira vez que li o setor 66 só tinha 3 entradas de diretorio, quando tentei criar um novo diretorio eu pensei como o que ele cria não aparece vou tentar criar com o mesmo nome, mas a fatfs não deixa dá erro 8, não é bem oque eu esperava mas não cria, tentei varios dos novos que criei no disco usando os PC, não deixou criar ai tentei criar um novo ele disse que criou e novamente não apareceu no comando dir, mas aconteceu um fato novo, que agora dá para entender oque está acontecendo, ele tem uma janela de somente 1 diretorio então ele acha o ultimo setor com as entradas de diretorio põe na memoria direitinho, porém na hora de gravar não sei porque ele grava no setor 66 que com certeza não é o setor que ele leu, por isso tudo que ele cria não aparece na lista de diretorio. entendeu se não entendeu pergunte.
+SOLVED as 18:00
+
+     sector_t physical_sector = drives[0].parts[0].base + sector; <--------------FALTAVA ISSO NA disk_write ele gravava sector e não physical_sector
+    printf(" physical_sector[%ld]\n",physical_sector);
+
+    // Grava quantos setores a FatFs pedir (suportando o count)
+    for (UINT i = 0; i < count; i++) {
+        if (!ata_write_sector(physical_sector + i, buff + (i * 512))) {
+    }
+
+
 2026/06/16
 Fase 1: O dump travava de forma inconsistente por culpa do loop de
         boot e da "amnésia" da UART 2.
@@ -41,5 +56,7 @@ segue a ordem cronológica não faz muito sentido.
 3 - Codigo vbug2.2 totalmente em assembler rodando a 8Mhz.
     - Tentativa de fazer um codigo muito mais limpo depois da experiência adquirida.
     - Travou a 8Mhz sem nenhum motivo aparente.
+
+
 
 

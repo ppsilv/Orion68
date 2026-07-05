@@ -30,6 +30,6 @@ int ata_disk_initialize(void);
 
 int ata_read_sector_multi (uint32_t sector, char *buffer, uint32_t count);
 int ata_write_sector_multi(uint32_t sector, char *buffer, uint32_t count);
-void dump_memory(void * addr,int size);
+
 
 #endif
