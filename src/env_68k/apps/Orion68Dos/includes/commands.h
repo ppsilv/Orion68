@@ -14,6 +14,7 @@ void do_dir(int argc, char *argv[]);
 void do_delete(int argc, char *argv[]);
 void do_exit(int argc, char *argv[]);
 void do_mkdir(int argc, char *argv[]);
+void do_rmdir(int argc, char *argv[]);
 void do_rename(int argc, char *argv[]);
 void do_cd(int argc, char *argv[]);
 void do_loadmem(int argc, char *argv[]);

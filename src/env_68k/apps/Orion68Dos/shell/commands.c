@@ -349,7 +349,7 @@ void do_delete(int argc, char *argv[])
 
     if (fr != FR_OK)
     {
-        printf("Error deleting file %s: ", path);
+       // printf("Error deleting file %s: ", path);
        printerro(fr);
     }
 }
@@ -382,7 +382,32 @@ void do_mkdir(int argc, char *argv[])
         printerro(fr);
     }
 }
+void do_rmdir(int argc, char *argv[]){
+FRESULT res;
+char path[128];
 
+    memset(path,0,128);
+    int size = strlen(syspath);
+    strcpy(path,&syspath[0]);
+    if( path[size-1] != '/'){
+        path[strlen(path)]='/';
+    }
+    strcat(path,argv[0]);
+    if( path[0] >= 'A' && path[0] <= 'I'){
+        path[0] = path[0] - 0x11;
+    }
+    res = f_rmdir(path);
+
+    if (res == FR_OK) {
+        printf("Diretorio removido com sucesso!\n");
+    } else if (res == FR_NO_PATH || res == FR_NO_FILE) {
+        printf("Erro: Diretorio nao encontrado.\n");
+    } else if (res == FR_DENIED) {
+        printf("Erro: O diretorio nao esta vazio ou e protegido.\n");
+    } else {
+        printf("Erro ao remover: %d\n", res);
+    }    
+}
 void do_rename(int argc, char *argv[])
 {
     FRESULT fr;
