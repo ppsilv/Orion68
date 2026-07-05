@@ -40,4 +40,7 @@
 #define DISABLE_INTERRUPTS()    __asm__ volatile("move.w %%sr, %%d0; ori.w #0x0700, %%d0; move.w %%d0, %%sr" : : : "d0");
 #define ENABLE_INTERRUPTS()     __asm__ volatile("move.w %%sr, %%d0; andi.w #0xF8FF, %%d0; move.w %%d0, %%sr" : : : "d0");
 
+
+#include "timers.h"
+
 #endif

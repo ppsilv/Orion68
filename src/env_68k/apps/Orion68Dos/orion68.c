@@ -129,7 +129,6 @@ void main() {
     printf("%s",MsgOrionInit);
 
     picovga_set_color(GREEN,BLACK);
-    unsigned int ch;
     print_capslock();
 
     delay10ms(100);  //10000ms    

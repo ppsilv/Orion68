@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <string.h>
 
+#include "orion68.h"
 #include "commands.h"
 #include "decodecmd.h"
 #include "ata.h"
@@ -13,17 +14,14 @@
 #include "ff.h"
 #include "srecord.h"
 #include "diskio.h"
-#include "orion68.h"
 #include "drv_uart.h"
-#include "ostimer.h"
 
-#include "drv_uart.h"
 
 extern FATFS FatFs;      // Objeto de controle do sistema de arquivos (Work area)
 extern char syspath[128];
 
-static DIR Dir;          // Objeto de diretório
-static FILINFO Fno;      // Estrutura que recebe os metadados do arquivo/pasta
+//static DIR Dir;          // Objeto de diretório
+//static FILINFO Fno;      // Estrutura que recebe os metadados do arquivo/pasta
 static __attribute__((aligned(2)))FIL Arq;               // Objeto de controle do arquivo (File Object)
 extern struct ata_drive drives[]; 
 
@@ -87,7 +85,6 @@ void do_srecord(int argc, char *argv[])
 {
     char *rec_buf = (char *)0x00300000;
     unsigned int timeout = 10000;
-    bool has_display = false;
 
     printf("Download for S-Record file, waiting for serial transfer\n");
 
@@ -281,6 +278,7 @@ void do_ls(int argc, char *argv[])
     uint16_t dir = 1;
     char path[128];
     strcpy(path,syspath);    
+    uint16_t total_files=0;
 
     if(argc > 0){
         strcat(path,argv[0]);
@@ -307,9 +305,14 @@ void do_ls(int argc, char *argv[])
             break;
         }
 
-        if (fat_file.fname[0] == 0) /* end of directory? */
+        if (fat_file.fname[0] == 0){ /* end of directory? */
+            if( total_files == 0 ){
+                printf("Empty directory\n");
+            }
             break;
-
+        }
+        total_files++;
+        
         filename = fat_file.fname;
 
         dir = fat_file.fattrib & AM_DIR;
@@ -377,7 +380,7 @@ void do_mkdir(int argc, char *argv[])
     printf("path to mkdir %s\n",path);
     fr = f_mkdir(path);
 
-    if (fr != RES_OK) {
+    if (fr != FR_OK) {
         printf("do_mkdir: Error creating folder %s: ", path);
         printerro(fr);
     }
@@ -399,13 +402,13 @@ char path[128];
     res = f_rmdir(path);
 
     if (res == FR_OK) {
-        printf("Diretorio removido com sucesso!\n");
+        printf("Directory remove succeded!\n");
     } else if (res == FR_NO_PATH || res == FR_NO_FILE) {
-        printf("Erro: Diretorio nao encontrado.\n");
+        printf("Erro: Directory not found.\n");
     } else if (res == FR_DENIED) {
-        printf("Erro: O diretorio nao esta vazio ou e protegido.\n");
+        printf("Erro: Empty directory or protected directory .\n");
     } else {
-        printf("Erro ao remover: %d\n", res);
+        printf("Remove error: %d\n", res);
     }    
 }
 void do_rename(int argc, char *argv[])

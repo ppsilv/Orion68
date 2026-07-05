@@ -13,10 +13,10 @@ void tolower_str(char *str);
 void toupper_str(char *str);
 
 
-extern char * itoa (int value, char *str, int base); __attribute__((nonnull (1,2)));
-extern char * __itoa (int value, char *str, int base); __attribute__((nonnull (1,2)));
-extern char *  utoa (unsigned value, char *str,  int base) __attribute__((nonnull (1,2)));
-extern char * __utoa (unsigned value, char *str,  int base) __attribute__((nonnull (1,2)));
+extern char * itoa (int value, char *str, int base)  __attribute__((nonnull (2)));
+extern char * __itoa (int value, char *str, int base) __attribute__((nonnull (2)));
+extern char *  utoa (unsigned value, char *str,  int base) __attribute__((nonnull (2)));
+extern char * __utoa (unsigned value, char *str,  int base) __attribute__((nonnull (2)));
 
 
 extern double atof (const char *__nptr) __attribute__((nonnull (1)));
@@ -26,19 +26,19 @@ extern long long int atoll (const char *__nptr) __attribute__((nonnull (1)));
 extern double strtod (const char *__restrict __nptr, char **__restrict __endptr) __attribute__((nonnull (1)));
 extern float strtof (const char *__restrict __nptr, char **__restrict __endptr) __attribute__((nonnull (1)));
 
-extern long double strtold (const char *__restrict __nptr, char **__restrict __endptr); __attribute__((nonnull (1)));
+extern long double strtold (const char *__restrict __nptr, char **__restrict __endptr) __attribute__((nonnull (1)));
 extern long int strtol (const char *__restrict __nptr,char **__restrict __endptr, int __base) __attribute__((nonnull (1)));
 extern unsigned long int strtoul (const char *__restrict __nptr, char **__restrict __endptr, int __base) __attribute__((nonnull (1)));
 extern long long int strtoll (const char *__restrict __nptr, char **__restrict __endptr, int __base) __attribute__((nonnull (1)));
-extern unsigned long long int strtoull (const char *__restrict __nptr, char **__restrict __endptr, int __base); __attribute__((nonnull (1)));
+extern unsigned long long int strtoull (const char *__restrict __nptr, char **__restrict __endptr, int __base) __attribute__((nonnull (1)));
 
 extern int strcasecmp(const char *s1, const char *s2) __attribute__((nonnull (1,2)));
 extern uintmax_t strntoumax(const char *nptr, char **endptr, int base, unsigned int n) __attribute__((nonnull (1)));
 
 /* Allocate SIZE bytes of memory.  */
-extern void *malloc (size_t __size)__attribute__ ((alloc_size (1)));
-extern void *calloc (size_t __nmemb, size_t __size) __attribute__ ((alloc_size (1,2)));
-extern void *realloc (void *__ptr, size_t __size) __attribute__ ((alloc_size (2)));
+extern void *malloc (size_t __size);
+extern void *calloc (size_t __nmemb, size_t __size);
+extern void *realloc (void *__ptr, size_t __size);
 extern void free (void *__ptr);
 
 extern int atoi (const char *__nptr) __attribute__((nonnull (1)));

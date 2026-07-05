@@ -1062,10 +1062,10 @@ static FRESULT sync_window (	/* Returns FR_OK or FR_DISK_ERR */
 
 
 	if (fs->wflag) {	/* Is the disk access window dirty? */
-		if (disk_write(fs->pdrv, fs->win, fs->winsect, 1) == RES_OK) {	/* Write it back into the volume */
+		if (disk_write(fs->pdrv, (const char *)fs->win, fs->winsect, 1) == RES_OK) {	/* Write it back into the volume */
 			fs->wflag = 0;	/* Clear window dirty flag */
 			if (fs->winsect - fs->fatbase < fs->fsize) {	/* Is it in the 1st FAT? */
-				if (fs->n_fats == 2) disk_write(fs->pdrv, fs->win, fs->winsect + fs->fsize, 1);	/* Reflect it to 2nd FAT if needed */
+				if (fs->n_fats == 2) disk_write(fs->pdrv, (const char *)fs->win, fs->winsect + fs->fsize, 1);	/* Reflect it to 2nd FAT if needed */
 			}
 		} else {
 			res = FR_DISK_ERR;
@@ -1126,7 +1126,7 @@ static FRESULT sync_fs (	/* Returns FR_OK or FR_DISK_ERR */
 				st_32(fs->win + FSI_Free_Count, fs->free_clst);	/* Number of free clusters */
 				st_32(fs->win + FSI_Nxt_Free, fs->last_clst);	/* Last allocated culuster */
 				st_32(fs->win + FSI_TrailSig, 0xAA550000);		/* Trailing signature */
-				disk_write(fs->pdrv, fs->win, fs->winsect = fs->volbase + 1, 1);	/* Write it into the FSInfo sector (Next to VBR) */
+				disk_write(fs->pdrv, (const char *)fs->win, fs->winsect = fs->volbase + 1, 1);	/* Write it into the FSInfo sector (Next to VBR) */
 			}
 #if FF_FS_EXFAT
 			else if (fs->fs_type == FS_EXFAT) {	/* exFAT: Update PercInUse field in BPB */
@@ -1698,7 +1698,7 @@ static FRESULT dir_clear (	/* Returns FR_OK or FR_DISK_ERR */
 #endif
 	{
 		ibuf = fs->win; szb = 1;	/* Use window buffer (many single-sector writes may take a time) */
-		for (n = 0; n < fs->csize && disk_write(fs->pdrv, ibuf, sect + n, szb) == RES_OK; n += szb) ;	/* Fill the cluster with 0 */
+		for (n = 0; n < fs->csize && disk_write(fs->pdrv,(const char *) ibuf, sect + n, szb) == RES_OK; n += szb) ;	/* Fill the cluster with 0 */
 	}
 	return (n == fs->csize) ? FR_OK : FR_DISK_ERR;
 }
@@ -4064,7 +4064,7 @@ FRESULT f_read (
 			if (fp->sect != sect) {			/* Load data sector if not in cache */
 #if !FF_FS_READONLY
 				if (fp->flag & FA_DIRTY) {		/* Write-back dirty sector cache */
-					if (disk_write(fs->pdrv, fp->buf, fp->sect, 1) != RES_OK) ABORT(fs, FR_DISK_ERR);
+					if (disk_write(fs->pdrv, (const char *)fp->buf, fp->sect, 1) != RES_OK) ABORT(fs, FR_DISK_ERR);
 					fp->flag &= (BYTE)~FA_DIRTY;
 				}
 #endif
@@ -4148,7 +4148,7 @@ FRESULT f_write (
 			if (fs->winsect == fp->sect && sync_window(fs) != FR_OK) ABORT(fs, FR_DISK_ERR);	/* Write-back sector cache */
 #else
 			if (fp->flag & FA_DIRTY) {		/* Write-back sector cache */
-				if (disk_write(fs->pdrv, fp->buf, fp->sect, 1) != RES_OK) ABORT(fs, FR_DISK_ERR);
+				if (disk_write(fs->pdrv, (const char *)fp->buf, fp->sect, 1) != RES_OK) ABORT(fs, FR_DISK_ERR);
 				fp->flag &= (BYTE)~FA_DIRTY;
 			}
 #endif
@@ -4160,7 +4160,7 @@ FRESULT f_write (
 				if (csect + cc > fs->csize) {	/* Clip at cluster boundary */
 					cc = fs->csize - csect;
 				}
-				if (disk_write(fs->pdrv, wbuff, sect, cc) != RES_OK) ABORT(fs, FR_DISK_ERR);
+				if (disk_write(fs->pdrv, (const char *)wbuff, sect, cc) != RES_OK) ABORT(fs, FR_DISK_ERR);
 #if FF_FS_MINIMIZE <= 2
 #if FF_FS_TINY
 				if (fs->winsect - sect < cc) {	/* Refill sector cache if it gets invalidated by the direct write */
@@ -4228,7 +4228,7 @@ FRESULT f_sync (
 		if (fp->flag & FA_MODIFIED) {	/* Is there any change to the file? */
 #if !FF_FS_TINY
 			if (fp->flag & FA_DIRTY) {	/* Write-back cached data if needed */
-				if (disk_write(fs->pdrv, fp->buf, fp->sect, 1) != RES_OK) LEAVE_FF(fs, FR_DISK_ERR);
+				if (disk_write(fs->pdrv, (const char *)fp->buf, fp->sect, 1) != RES_OK) LEAVE_FF(fs, FR_DISK_ERR);
 				fp->flag &= (BYTE)~FA_DIRTY;
 			}
 #endif
@@ -4696,7 +4696,7 @@ FRESULT f_lseek (
 #if !FF_FS_TINY
 #if !FF_FS_READONLY
 			if (fp->flag & FA_DIRTY) {			/* Write-back dirty sector cache */
-				if (disk_write(fs->pdrv, fp->buf, fp->sect, 1) != RES_OK) ABORT(fs, FR_DISK_ERR);
+				if (disk_write(fs->pdrv, (const char *)fp->buf, fp->sect, 1) != RES_OK) ABORT(fs, FR_DISK_ERR);
 				fp->flag &= (BYTE)~FA_DIRTY;
 			}
 #endif
@@ -5064,7 +5064,7 @@ FRESULT f_truncate (
 		fp->flag |= FA_MODIFIED;
 #if !FF_FS_TINY
 		if (res == FR_OK && (fp->flag & FA_DIRTY)) {
-			if (disk_write(fs->pdrv, fp->buf, fp->sect, 1) != RES_OK) {
+			if (disk_write(fs->pdrv,(const char *)fp->buf, fp->sect, 1) != RES_OK) {
 				res = FR_DISK_ERR;
 			} else {
 				fp->flag &= (BYTE)~FA_DIRTY;
