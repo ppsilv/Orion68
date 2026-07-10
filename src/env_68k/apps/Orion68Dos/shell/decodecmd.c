@@ -34,6 +34,8 @@ const cmd_entry_t g_cmd_table[] = {
     {"dump",        2,  2, &do_dump,        "Dump memory <from> <count>" },
     {"exit",        0,  0, &do_exit,        "Exit system in a clean way.." },
     {"help",	    0,  0, &do_help,	    "Show available commands" },
+    {"ideinit",     0,  0, &do_ideinit,     "Mount ide fatfs.." },
+    {"idemode",     1,  0, &do_idemode,     "Sets ide mode 0=8bits 1=16bits.." },
     {"loadmem",	    1,  2, &do_loadmem,	    "Load a file to the specified memory location <file> <mem>" },
     {"mkdir",	    1,  1, &do_mkdir,	    "Create the specified folder <dir>" },
     {"mv",          2,  2, &do_rename,      "Rename file <src> to <dest>" },

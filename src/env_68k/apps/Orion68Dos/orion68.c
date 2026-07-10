@@ -12,6 +12,7 @@
 #include "ff.h"
 #include "show_registers.h"
 #include "sysflags.h"
+#include "orion68.h"
 
 // Aqui a memória é alocada de verdade!
 SystemFlags sys_flags;
@@ -112,9 +113,15 @@ void display_prompt(void)
         printf("0:/> ");
     }
 }
-void main() {
-    FRESULT fr;
 
+void rtc_inicializar(void);
+unsigned char ler_segundo();
+uint8_t rtc_read_config_byte(uint16_t endereco);
+void rtc_write_config_byte(uint16_t endereco, uint8_t valor);
+
+
+void main() {
+    //FRESULT fr;
     // Inicializa os hardwares normalmente
     // 1. Direciona o console para a PicoVGA
     // Basta alterar o ponteiro!
@@ -143,19 +150,62 @@ void main() {
     ata_read_identity();    
 #endif
 
-
+    do_ideinit(0,NULL);
+    /*
     fr = f_mount(&FatFs, "", 0);
     if (fr != FR_OK) {
         printf("PANIC: Erro ao montar FAT: %d\n", fr);
     }else{
         printf("FAT montado com sucesso!\n");
     }
+    */
+
+    rtc_inicializar();
+/*   
+    printf(" Primeira vez [%d] TICK[%ld]\n",ler_segundo(),get_system_tick());
+    delay10ms(120);
+    printf(" Segunda vez [%d] TICK[%ld]\n",ler_segundo(),get_system_tick());
+    delay10ms(120);
+    printf(" Terceira vez [%d] TICK[%ld]\n",ler_segundo(),get_system_tick());
+
+    printf("Endereco 0x01 [%x] \n",rtc_read_config_byte(0x01));
+    printf("Endereco 0x03 [%x] \n",rtc_read_config_byte(0x03));
+
+    printf("Zerando posicao 0x01 e 0x03\n");
+    rtc_write_config_byte(0x01,0x00);
+    rtc_write_config_byte(0x03,0x00);
+    printf("Endereco 0x01 [%x] \n",rtc_read_config_byte(0x01));
+    printf("Endereco 0x03 [%x] \n",rtc_read_config_byte(0x03));
+
+    printf("Gravando posicao 0x01=1 e 0x03=1\n");
+    rtc_write_config_byte(0x01,0x01);
+    rtc_write_config_byte(0x03,0x01);
+    printf("Endereco 0x01 [%x] \n",rtc_read_config_byte(0x01));
+    printf("Endereco 0x03 [%x] \n",rtc_read_config_byte(0x03));
+
+    printf("Gravando posicao 0x01=2 e 0x03=2\n");
+    rtc_write_config_byte(0x01,0x02);
+    rtc_write_config_byte(0x03,0x02);
+    printf("Endereco 0x01 [%x] \n",rtc_read_config_byte(0x01));
+    printf("Endereco 0x03 [%x] \n",rtc_read_config_byte(0x03));
+
+    printf("Gravando posicao 0x01=4 e 0x03=4\n");
+    rtc_write_config_byte(0x01,0x04);
+    rtc_write_config_byte(0x03,0x04);
+    printf("Endereco 0x01 [%x] \n",rtc_read_config_byte(0x01));
+    printf("Endereco 0x03 [%x] \n",rtc_read_config_byte(0x03));
+
+    printf("Gravando posicao 0x01=8 e 0x03=8\n");
+    rtc_write_config_byte(0x01,0x08);
+    rtc_write_config_byte(0x03,0x08);
+    printf("Endereco 0x01 [%x] \n",rtc_read_config_byte(0x01));
+    printf("Endereco 0x03 [%x] \n",rtc_read_config_byte(0x03));
+*/
 
 
+    //********************************************************
+    //T H I S   M U S T   B E   T H E  L A S T    T H I N G 
     display_prompt();
-
-
-
     while (1){
         if (getline(g_cmd_buffer, LINELEN) != -1) {
             execute_cmd(g_cmd_buffer);

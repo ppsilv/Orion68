@@ -1,3 +1,10 @@
+2026-07-06
+Hoje eu decobri que muitos problemas iniciais com o endiam na leitura do MIDE era porque
+estava tratando os dados como lidos em 16bits, mas na verdade tanto a função
+ata_read_sector e ata_write_sector estavam configurando como leitura de 8bits, até que
+eu achei que o MIDE vem de fábrica assim em 8bitse ai tudo começou a funcionar,
+agora criei uma função para por em 8 ou 16bits.
+
 2026-07-05
 Problema: A fatfs cria o diretorio mas ele não aparece na lista dir.
 

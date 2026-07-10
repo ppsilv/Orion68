@@ -53,6 +53,31 @@ struct ata_drive drives[ATA_MAX_DRIVES];
 #define log_info   printf
 #define log_error  printf
 
+char ide_bus_mode=0;
+
+void set_ide_bus_mode(char mode){
+	if(mode > 1 || mode <0){
+		printf("This mode does not exist...[%d]\n",mode);
+		return;
+	}
+	ide_bus_mode=mode;
+}
+void go_8bits_mode()
+{
+	if(ide_bus_mode == 0){
+		// Set 8-bit mode
+		(*ATA_REG_FEATURE) = 0x01;
+		(*ATA_REG_COMMAND) = ATA_CMD_SET_FEATURE;
+		ATA_WAIT();
+	}
+	if(ide_bus_mode == 1){ // Ou a lógica que você usar para mudar para 16-bit
+		// Set 16-bit mode (Disable 8-bit PIO)
+		(*ATA_REG_FEATURE) = 0x81; 
+		(*ATA_REG_COMMAND) = ATA_CMD_SET_FEATURE;
+		ATA_WAIT();
+	}	
+}
+
 int ata_detect(void)
 {
 	uint8_t status;
@@ -97,10 +122,13 @@ int ata_read_sector(int sector, char *buffer)
 	(*ATA_REG_DRIVE_HEAD) = 0xE0;
 	//(*ATA_REG_DRIVE_HEAD) = 0xE0 | (uint8_t) ((sector >> 24) & 0x0F);
 
+	go_8bits_mode();
+	/*
 	// Set 8-bit mode
 	(*ATA_REG_FEATURE) = 0x01;
 	(*ATA_REG_COMMAND) = ATA_CMD_SET_FEATURE;
 	ATA_WAIT();
+	*/
 
 	// Read a sector
 	(*ATA_REG_CYL_HIGH) = (uint8_t) (sector >> 16);
@@ -120,22 +148,20 @@ int ata_read_sector(int sector, char *buffer)
 	ATA_WAIT();
 	ATA_WAIT_FOR_DATA();
 
-	for (int i = 0; i < 512; i++) {
-		//((uint16_t *) buffer)[i] = (*ATA_REG_DATA);
-		//asm volatile("rol.w	#8, %0\n" : "+g" (((uint16_t *) buffer)[i]));
-		buffer[i] = (*ATA_REG_DATA_BYTE);
+	if( ide_bus_mode == 0 ){
+		for (int i = 0; i < 512; i++ ) {
+			buffer[i] = (*ATA_REG_DATA_BYTE);
 
-		ATA_WAIT();
-		//ATA_DELAY(10);
+			ATA_WAIT();
+		}
+	}else{
+		for (int i = 0; i < 256; i++ ) {
+			((uint16_t *) buffer)[i] = (*ATA_REG_DATA);
+			asm volatile("rol.w	#8, %0\n" : "+g" (((uint16_t *) buffer)[i]));
+
+			ATA_WAIT();
+		}
 	}
-/*
-	// leitura de 16-bit (256 repetições)
-	for (int i = 0; i < 256; i++) {
-		((uint16_t *) buffer)[i] = (*ATA_REG_DATA);
-		asm volatile("rol.w   #8, %0\n" : "+g" (((uint16_t *) buffer)[i]));
-		ATA_WAIT();
-	}
-*/
 	UNLOCK(saved_status);
 	return 512;
 }
@@ -143,13 +169,16 @@ int ata_read_sector(int sector, char *buffer)
 int ata_write_sector(int sector, const char *buffer)
 {
 	short saved_status;
-
+return 512;
 	LOCK(saved_status);
 
+	go_8bits_mode();
+	/*
 	// Set 8-bit mode
 	(*ATA_REG_FEATURE) = 0x01;
 	(*ATA_REG_COMMAND) = ATA_CMD_SET_FEATURE;
 	ATA_WAIT();
+	*/
 
 	// Read a sector
 	(*ATA_REG_DRIVE_HEAD) = 0xE0;

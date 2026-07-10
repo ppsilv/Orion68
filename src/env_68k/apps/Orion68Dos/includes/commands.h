@@ -13,6 +13,8 @@ void do_ls(int argc, char *argv[]);
 void do_dir(int argc, char *argv[]);
 void do_delete(int argc, char *argv[]);
 void do_exit(int argc, char *argv[]);
+void do_ideinit(int argc, char *argv[]);
+void do_idemode(int argc, char *argv[]);
 void do_mkdir(int argc, char *argv[]);
 void do_rmdir(int argc, char *argv[]);
 void do_rename(int argc, char *argv[]);

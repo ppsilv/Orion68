@@ -1,0 +1,27 @@
+GAL16V8
+CHIP_U200
+
+;Pinagem
+; 1  2   3   4   5     6   7    8   9    10
+A8 A9 A10 A11 A12 A13 A14 A15 /IOCS GND
+;11  12  13  14  15  16  17   18  19   20
+IOCS1 AS NC NC NC NC CSRTC CSMIO CSKBD VCC
+
+
+
+/CSKBD = /AS * /IOCS * /IOCS1 * A15 * /A14 * /A13 * A12 * /A11 * /A10 * /A9 * /A8
+
+/CSMIO = /AS * /IOCS * /IOCS1 * A15 * /A14 * /A13 * A12 * /A11 * /A10 * /A9 * A8
+
+/CSRTC = /AS * /IOCS * /IOCS1 * A15 * /A14 * /A13 * A12 * /A11 * /A10 * A9 * /A8
+
+DESCRIPTION
+Modo simple.
+
+Sintese
+galette || galasm  picoVGA_U304.pld
+
+Use aquele que funcionar porque a sintaxe é a mesm
+
+Gravar
+minipro -p ATF16V8B -w MultiIO_U200.jed

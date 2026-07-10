@@ -207,6 +207,27 @@ void do_binmem(int argc, char *argv[])
     printf("\nWritten %d bytes to memory at 0x%06X\n", bytes_transferred, addr);
 }
 
+void do_ideinit(int argc, char *argv[])
+{
+    FRESULT fr;
+    fr = f_mount(&FatFs, "", 0);
+    if (fr != FR_OK) {
+        printf("PANIC: Erro ao montar FAT: %d\n", fr);
+    }else{
+        printf("FAT montado com sucesso!\n");
+    }
+}
+
+void do_idemode(int argc, char *argv[])
+{
+    char mode=0;
+    if(argc == 1){
+        mode = atoi(argv[0]);
+        printf("Setting ide mode to %d\n",mode);
+        set_ide_bus_mode(mode);
+    }
+}
+
 
 void do_run(int argc, char *argv[])
 {

@@ -1,0 +1,68 @@
+Aqui estão os principais projetos de computadores homebrew baseados no processador **Motorola MC68000** (e sua família) que são totalmente open-source e possuem repositórios ativos no GitHub:
+
+---
+
+### 1. rosco_m68k
+
+O projeto de ecossistema homebrew 68k mais famoso e ativo da atualidade. 
+É um computador modular baseado no MC68000 clássico projetado para ser 
+fácil de montar e programar.
+
+* **O que há no GitHub:** Arquivos de design de hardware (KiCad), firmware 
+nativo completo (ROM monitor chamado `ROBOS`), jogos portados e bibliotecas 
+de suporte para desenvolvimento em C e Assembly.
+* **Repositório:** `rosco-m68k/rosco_m68k`
+
+### 2. Mackerel-68k
+
+Uma série de computadores de placa única (SBC) construídos do zero com o 
+objetivo de rodar versões modernas do kernel Linux (uClinux mainline) em 
+processadores da linha 68k.
+
+* **O que há no GitHub:** Esquemas das placas (usando CPLDs/GALs para 
+decodificação de memória), código do bootloader customizado e os patches 
+necessários para compilar o Linux para o hardware. O projeto cobre desde 
+o MC68008 até o MC68040.
+* **Repositório:** `crmaykish/mackerel-68k`
+
+### 3. 68k-nano
+
+Um projeto minimalista focado em criar um computador funcional usando a 
+menor quantidade possível de componentes (apenas o processador 68HC000, 
+RAM, ROM, uma UART 16550 para comunicação serial e dois chips lógicos 
+simples).
+
+* **O que há no GitHub:** O mapeamento completo de memória, esquemáticos 
+fáceis de reproduzir até em protoboard e o código do firmware inicial 
+com suporte a upload de arquivos via Python.
+* **Repositório:** `74hc595/68k-nano`
+
+### 4. Computie
+
+Um projeto focado não apenas no hardware do MC68000, mas no desenvolvimento 
+de um sistema operacional completo do tipo Unix (escrito em C) feito sob 
+medida para rodar nessa placa customizada.
+
+* **O que há no GitHub:** Todo o código-fonte do sistema operacional 
+embarcado e os arquivos de layout de PCB do computador.
+* **Repositório:** `transistorfet/computie`
+
+
+
+
+A Contagem de Pinos no Pi Pico
+Se você emular o IDE de 8 bits direto nos pinos do Pico, a conta 
+fica linda e não precisa de multiplexação por Latch:
+
+8 pinos: Dados (D0-D7)
+
+3 pinos: Endereço (A0-A2) do 68k
+
+3 pinos: Controle (/CS0, /IOR, /IOW) do 68k
+
+4 pinos: Cartão SD (SPI Nativo)
+
+Total: 18 pinos!
+Sua conta fecha com 8 pinos de sobra no Pi Pico. Você elimina os 
+chips 74HC573 de Latch e só precisa dos seus 74LVC245 para fazer o
+ casamento de tensão (5V do barramento 68k para os 3.3V do Pico).

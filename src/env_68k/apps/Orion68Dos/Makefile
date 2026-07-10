@@ -20,6 +20,7 @@ SRCS = orion68.c vectors.c console.c \
 ./shell/decodecmd.c \
 ./shell/srecord.c \
 ./kbd/drv_kbd.c \
+./rtc/rp5c01a.c \
 ./picoVga/drv_picoVga.c \
 ./xmodem/xmodem.c \
 ./uarts/drv_uart0.c \

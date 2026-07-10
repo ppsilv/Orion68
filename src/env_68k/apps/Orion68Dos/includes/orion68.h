@@ -43,4 +43,36 @@
 
 #include "timers.h"
 
+void set_ide_bus_mode(char mode);
+void do_ideinit(int argc, char *argv[]);
+int rtc_detectar(void);
+
+
+//IDE
+//#define ATA_REG_BASE 0x00FF4400
+//UARTS
+//#define DRV_UART0_BASE 0xFF4000
+//#define DRV_UART1_BASE 0xFF4100
+//#define DRV_UART2_BASE 0xFF4200
+//#define DRV_UART3_BASE 0xFF4300
+//PicoVGA
+//FF8000
+//!Y1 = !AS * !IOWR * !IOCS * !IOCS1 * A15 * !A14 * !A13 * !A12 * !A11 * !A10 * !A09 * !A08
+//Keyboard PS2
+//FF9000
+//!CSKBD = !AS * !IOCS * !IOCS1 * A15 * !A14 * !A13 * A12 * !A11 * !A10 * !A09 * !A08
+//Super MultiIO
+//FF9100
+//!CSMIO = !AS * !IOCS * !IOCS1 * A15 * !A14 * !A13 * A12 * !A11 * !A10 * !A09 *  A08
+//RTC RP5C01A da Ricoh
+//FF9200
+//!CSRTC = !AS * !IOCS * !IOCS1 * A15 * !A14 * !A13 * A12 * !A11 * !A10 *  A09 * !A08
+
+
+
+
+
+
+
+
 #endif
