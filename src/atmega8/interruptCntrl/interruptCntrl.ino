@@ -2,6 +2,11 @@
 #include <util/atomic.h>
 #include <util/delay.h>
 
+/*
+  minipro -p  ATMEGA8@DIP28 -w interruptCntrl.ino.with_bootloader.bin
+*/
+
+
 //When cpu say FC0,FC1 and FC2  = 1,1,1 but no interrupt active.
 #define CPU_INT_ACK_WRONG     0x80
 //When arrive a irq resquest but we have one active irq in curse

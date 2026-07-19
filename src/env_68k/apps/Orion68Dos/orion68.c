@@ -149,17 +149,10 @@ void main() {
 #ifdef DEBUG_ON
     ata_read_identity();    
 #endif
-
+    printf("Initializing IDE\n");
     do_ideinit(0,NULL);
-    /*
-    fr = f_mount(&FatFs, "", 0);
-    if (fr != FR_OK) {
-        printf("PANIC: Erro ao montar FAT: %d\n", fr);
-    }else{
-        printf("FAT montado com sucesso!\n");
-    }
-    */
 
+    printf("Initializing  RTC\n");
     rtc_inicializar();
 /*   
     printf(" Primeira vez [%d] TICK[%ld]\n",ler_segundo(),get_system_tick());

@@ -47,9 +47,10 @@ const cmd_entry_t g_cmd_table[] = {
   /*  {"trap",        3,  3, &do_traptest,    "Test the trap function <command> <value> <string>" }, */
     {"uptime",      0,  0, &do_uptime,      "Display the time the system has been running" },
     {"writemem",    2,  0, &do_writemem,    "Write memory <addr> [byte ...]" },
-    {"rs",    1,    0, &do_readsect,    "Read a sector X from disk..." },
+    {"rs",          1,  0, &do_readsect,    "Read a sector X from disk..." },
     {"writesect",   1,  0, &do_writesect,   "Write a sector X from disk..." },
-    {"writemem1",    2,  0, &do_writemem1,    "Write a memory location" },
+    {"writemem1",   2,  0, &do_writemem1,   "Write a memory location" },
+    {"tstkbd",      0,  0, &do_tstkbd,      "Testa conversa com o picow..." },
 
     {0, 0, 0, 0, 0 }
 };

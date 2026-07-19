@@ -3,7 +3,7 @@ MEMORY {
     ROM (rx)  : ORIGIN = 0x00000000, LENGTH = 64K
 
     /* Região da sua Shadow RAM alta para variáveis e pilha */
-    RAM (rwx) : ORIGIN = 0x00080000, LENGTH = 512K
+    RAM (rwx) : ORIGIN = 0x00080004, LENGTH = 512K
 }
 
 SECTIONS {

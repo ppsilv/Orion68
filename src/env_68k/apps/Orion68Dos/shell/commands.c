@@ -637,6 +637,14 @@ void do_time(int argc, char *argv[])
     printf("Setting the date and time to %02d/%02d/%04d %02d:%02d:%02d\n", date.tm_day, date.tm_mon, date.tm_year, date.tm_hour, date.tm_min, date.tm_sec);
   //  rtc_set_time(&date);
 }
+extern void main_teste_teclado(void); 
+extern char teste01();
+extern uint16_t receber_arquivo_do_pico(uint8_t *destino_ram);
+void do_tstkbd(int argc, char *argv[])
+{
+    uint16_t res = receber_arquivo_do_pico((uint8_t *)0x82000);
+    printf("receber_arquivo_do_pico retornou[%d]\n",res); 
+}
 unsigned long get_system_tick(void) ;
 void do_uptime(int argc, char *argv[])
 {

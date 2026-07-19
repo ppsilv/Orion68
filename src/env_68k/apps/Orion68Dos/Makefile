@@ -15,11 +15,15 @@ ASMS = ./xmodem/xmodem_asm.S vectors_asm.S
 SRCS = orion68.c vectors.c console.c \
 ./dump/mem_dump.c \
 ./shell/io.c \
+./shell/picow.c \
 ./shell/printerro.c \
 ./shell/commands.c \
 ./shell/decodecmd.c \
 ./shell/srecord.c \
 ./kbd/drv_kbd.c \
+./kbd/keycodes_ps2.c \
+./kbd/kbdps2.c \
+./kbd/ringbuffer.c \
 ./rtc/rp5c01a.c \
 ./picoVga/drv_picoVga.c \
 ./xmodem/xmodem.c \

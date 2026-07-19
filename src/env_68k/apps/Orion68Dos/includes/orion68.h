@@ -46,6 +46,8 @@
 void set_ide_bus_mode(char mode);
 void do_ideinit(int argc, char *argv[]);
 int rtc_detectar(void);
+bool init_keyboard();
+uint8_t keyboard_get_key();
 
 
 //IDE
@@ -59,7 +61,7 @@ int rtc_detectar(void);
 //FF8000
 //!Y1 = !AS * !IOWR * !IOCS * !IOCS1 * A15 * !A14 * !A13 * !A12 * !A11 * !A10 * !A09 * !A08
 //Keyboard PS2
-//FF9000
+#define PS2_BASE 0xFF9000
 //!CSKBD = !AS * !IOCS * !IOCS1 * A15 * !A14 * !A13 * A12 * !A11 * !A10 * !A09 * !A08
 //Super MultiIO
 //FF9100
