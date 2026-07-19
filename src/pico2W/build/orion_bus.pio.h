@@ -13,30 +13,34 @@
 // --------- //
 
 #define orion_bus_wrap_target 0
-#define orion_bus_wrap 7
+#define orion_bus_wrap 11
 #define orion_bus_pio_version 1
 
 static const uint16_t orion_bus_program_instructions[] = {
             //     .wrap_target
-    0x2032, //  0: wait   0 pin, 18
-    0x00c5, //  1: jmp    pin, 5
+    0x2012, //  0: wait   0 gpio, 18
+    0x00c4, //  1: jmp    pin, 4
     0x4004, //  2: in     pins, 4
-    0xa0e0, //  3: mov    osr, pins
-    0x0007, //  4: jmp    7
-    0x4004, //  5: in     pins, 4
-    0x6008, //  6: out    pins, 8
-    0x20b2, //  7: wait   1 pin, 18
+    0x0009, //  3: jmp    9
+    0x4004, //  4: in     pins, 4
+    0x8080, //  5: pull   noblock
+    0xa02b, //  6: mov    x, ~null
+    0xa061, //  7: mov    pindirs, x
+    0x6008, //  8: out    pins, 8
+    0x2092, //  9: wait   1 gpio, 18
+    0xa0e3, // 10: mov    osr, null
+    0xa067, // 11: mov    pindirs, osr
             //     .wrap
 };
 
 #if !PICO_NO_HARDWARE
 static const struct pio_program orion_bus_program = {
     .instructions = orion_bus_program_instructions,
-    .length = 8,
+    .length = 12,
     .origin = -1,
     .pio_version = orion_bus_pio_version,
 #if PICO_PIO_VERSION > 0
-    .used_gpio_ranges = 0x0
+    .used_gpio_ranges = 0x2
 #endif
 };
 
@@ -49,40 +53,38 @@ static inline pio_sm_config orion_bus_program_get_default_config(uint offset) {
 #include "hardware/clocks.h"
 static inline void orion_bus_program_init(PIO pio, uint sm, uint offset) {
     pio_sm_config c = orion_bus_program_get_default_config(offset);
-    // 1. Configuração dos Pinos de DADOS (GPIO 0 a 7)
-    // OUT pins: Define o pino base (0) e a quantidade (8) para a instrução OUT
-    sm_config_set_out_pins(&c, 0, 8);
-    // Configura os caminhos do GPIO para serem controlados pela PIO
+    // 1. Pinos de DADOS (GPIO 0 a 7)
+    sm_config_set_out_pins(&c, 0, 8); // Destino da instrução OUT
+    // CONFIGURAÇÃO CRUCIAL: Diz que a instrução 'set pindirs' controla as direções de GPIO 0 a 7 (8 pinos)
+   // sm_config_set_set_pins(&c, 0, 8); 
     for(int i = 0; i < 8; i++) {
         pio_gpio_init(pio, i);
     }
-    // 2. Configuração dos Pinos de ENDEREÇO (GPIO 8 a 11)
-    // IN pins: Define o pino base (8) para as instruções IN (A1-A4)
+    // 2. Pinos de ENDEREÇO (GPIO 8 a 11)
     sm_config_set_in_pins(&c, 8);
     for(int i = 8; i < 12; i++) {
         pio_gpio_init(pio, i);
     }
-    // 3. Configuração dos Pinos de CONTROLE (/WR no 12, /CS no 18)
-    pio_gpio_init(pio, 12); // /WR
-    pio_gpio_init(pio, 18); // /CS
-    // Define o pino de JUMP condicional para o /WR (GPIO 12)
+    // 3. Pinos de CONTROLE (/WR no 12, /CS no 18) como ENTRADAS puras no chip
+    gpio_init(12);
+    gpio_init(18);
+    gpio_set_dir(12, GPIO_IN);
+    gpio_set_dir(18, GPIO_IN);
+    gpio_pull_up(12);
+    gpio_pull_up(18);
+    pio_gpio_init(pio, 12);
+    pio_gpio_init(pio, 18);
+    // Mapeia o pino de JUMP para o /WR (GPIO 12)
     sm_config_set_jmp_pin(&c, 12);
-    // 4. Configuração dos Shifters de Entrada e Saída (FIFO)
-    // In: Auto-push DESATIVADO, shift para a DIREITA, tamanho 32
-    sm_config_set_in_shift(&c, true, false, 32);
-    // Out: Auto-pull DESATIVADO, shift para a DIREITA, tamanho 32
-    sm_config_set_out_shift(&c, true, false, 32);
-    // 5. Ajuste de Direção Inicial dos Pinos no Hardware
-    // Inicialmente, dados (0-7), endereço (8-11) e controle (12, 18) são ENTRADAS (0)
-    // A PIO mudará os pinos 0-7 para saída dinamicamente usando 'out pindirs'
+    // 4. Shifters e FIFOs
+    sm_config_set_in_shift(&c, true, true, 4);  // Autopush ATIVADO em 4 bits
+    sm_config_set_out_shift(&c, true, false, 32); // Autopull desativado (usamos pull noblock)
+    // 5. Estado Inicial do Hardware: Tudo como ENTRADA
     uint32_t pin_mask = (0xFF << 0) | (0x0F << 8) | (1 << 12) | (1 << 18);
     pio_sm_set_pindirs_with_mask(pio, sm, 0, pin_mask);
-    // 6. Define a velocidade de execução da PIO (Clock Máximo)
-    // Rodando na velocidade nativa do sistema para responder o m68k instantaneamente
+    // 6. Clock máximo para responder o m68k no tempo dele
     sm_config_set_clkdiv(&c, 1.0f);
-    // Carrega as configurações na Máquina de Estados e reinicia o ponteiro de execução
     pio_sm_init(pio, sm, offset, &c);
-    // Liga a máquina de estados!
     pio_sm_set_enabled(pio, sm, true);
 }
 

@@ -226,6 +226,8 @@ void start_tcp_server() {
 int main() {
     stdio_init_all();
     
+    sleep_ms(5000);
+
     // --- CONFIGURAÇÃO DA PIO PARA O BARRAMENTO M68K ---
     PIO pio_barramento = pio0; // Escolhe o bloco PIO 0
     uint sm_m68k = 0;          // Escolhe a State Machine 0
@@ -235,6 +237,12 @@ int main() {
     
     // Chama a nossa função auxiliar de inicialização que configurou os pinos
     orion_bus_program_init(pio_barramento, sm_m68k, offset_programa);
+    // --- CORREÇÃO DE SEGURANÇA NO BOOT ---
+    // Desliga o SM temporariamente, limpa as FIFOs de lixo elétrico e religa
+    pio_sm_set_enabled(pio_barramento, sm_m68k, false);
+    pio_sm_clear_fifos(pio_barramento, sm_m68k);
+    pio_sm_set_enabled(pio_barramento, sm_m68k, true);
+
     
     printf("PIO Inicializada! Aguardando ciclos de barramento do m68k...\n");
 

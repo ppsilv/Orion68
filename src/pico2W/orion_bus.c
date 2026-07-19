@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
 #include "orion_bus.pio.h" // Cabeçalho gerado automaticamente pelo pioasm
@@ -12,7 +13,7 @@ extern uint32_t ponteiro_leitura;
 void gerenciar_barramento_m68k(PIO pio, uint sm) {
     // Verifica se a PIO nos enviou um pedido de endereço (RX FIFO não está vazio)
     if (!pio_sm_is_rx_fifo_empty(pio, sm)) {
-        
+        printf("Algo chhegou pela pio\n");
         // Pega o valor enviado pela instrução 'in pins, 4' (Pinos A4-A1)
         uint32_t reg_selecionado = pio_sm_get(pio, sm);
         
@@ -43,6 +44,7 @@ void gerenciar_barramento_m68k(PIO pio, uint sm) {
         }
 
         // Devolve a resposta instantaneamente para o TX FIFO da PIO cuspir no barramento
+        printf("Enviando para o m68k[%02x]\n",byte_resposta);
         pio_sm_put(pio, sm, byte_resposta);
     }
 }

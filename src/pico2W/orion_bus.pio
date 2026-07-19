@@ -1,42 +1,36 @@
 .program orion_bus
 
-; Configurações presumidas:
-; - IN PINS: mapeados a partir do GPIO8 (A1-A4)
-; - WAIT PIN: mapeado para monitorar o /CS (GPIO18)
-; - JUMP PIN: mapeado para monitorar o /WR (GPIO12)
-
 .wrap_target
 espera_cs:
-    wait 0 pin 18         ; Trava aqui até o /CS ir para nível BAIXO (m68k selecionou o Pico)
+    wait 0 gpio 18        ; Trava até /CS=0 (m68k selecionou o Pico)
     
-    ; O m68k selecionou o Pico. Agora verificamos se é Escrita ou Leitura.
-    ; Se /WR for 0, é uma ESCRITA do m68k no Pico. Se for 1, é uma LEITURA.
-    jmp pin m68k_leitura  ; Se pino /WR (GPIO12) for 1, pula para o bloco de leitura
+    jmp pin m68k_leitura  ; Se /WR (GPIO12) for 1, pula para leitura
 
 m68k_escrita:
-    ; O m68k está escrevendo dados no Pico
-    in pins, 4            ; Captura os 4 bits de endereço (A1-A4) para identificar o "registro"
-    mov osr, pins         ; Pega os pinos de dados temporariamente
-    ; Lógica de amostragem de dados de escrita aqui...
+    in pins, 4            ; Captura os 4 bits de endereço (A1-A4) -> Dispara Autopush
     jmp fim_ciclo
 
 m68k_leitura:
-    ; O m68k quer LER um byte do arquivo que está na RAM do Pico
-    in pins, 4            ; Lê os 4 bits de endereço (A1-A4) e joga no FIFO RX
+in pins, 4            ; Envia os 4 bits de endereço para o FIFO RX
     
-    ; Aqui a PIO avisa o braço C do Pico (via FIFO) qual endereço foi pedido.
-    ; O código em C injeta o byte correspondente no TX FIFO da PIO.
+    pull noblock          ; Puxa o byte do C para o OSR
     
-    out pins, 8           ; Descarrega 8 bits do TX FIFO diretamente nos pinos GPIO0-GPIO7
+    ; --- PRIMEIRO CHAVEIA A DIREÇÃO USANDO O REGISTRADOR X (Deixa o OSR intacto) ---
+    mov x, ~ null         ; X = 0xFFFFFFFF
+    mov pindirs, x        ; Ativa a SAÍDA nos pinos mapeados em OUT (GPIO0-GPIO7)
     
-    ; Ativa os buffers de saída se necessário (reconfigurando a direção dos pinos)
+    ; --- AGORA SIM, DESPEJA O DADO NOS PINOS JÁ CONFIGURADOS COMO SAÍDA ---
+    out pins, 8           ; Cospe os 8 bits do OSR direto nas linhas físicas
+    ; -------------------------------------
 
 fim_ciclo:
-    wait 1 pin 18         ; Espera o m68k terminar o ciclo (quando /CS volta para 1)
-    ; Limpa as direções dos pinos de dados para modo Entrada (Alta impedância) para não travar o barramento
+    wait 1 gpio 18        ; Segura o dado no barramento até o m68k terminar (/CS=1)
+    
+    ; --- VOLTA PARA ENTRADA ---
+    mov osr, null         ; Joga 0x00000000 no OSR
+    mov pindirs, osr      ; Move para as direções: VOLTA PARA ENTRADA (Alta Impedância)
+    ; --------------------------
 .wrap
-
-; --- (Código assembly orion_bus que fizemos antes fica aqui) ---
 
 % c-sdk {
 #include "hardware/clocks.h"
@@ -44,90 +38,48 @@ fim_ciclo:
 static inline void orion_bus_program_init(PIO pio, uint sm, uint offset) {
     pio_sm_config c = orion_bus_program_get_default_config(offset);
 
-    // 1. Configuração dos Pinos de DADOS (GPIO 0 a 7)
-    // OUT pins: Define o pino base (0) e a quantidade (8) para a instrução OUT
-    sm_config_set_out_pins(&c, 0, 8);
-    // Configura os caminhos do GPIO para serem controlados pela PIO
+    // 1. Pinos de DADOS (GPIO 0 a 7)
+    sm_config_set_out_pins(&c, 0, 8); // Destino da instrução OUT
+    
+    // CONFIGURAÇÃO CRUCIAL: Diz que a instrução 'set pindirs' controla as direções de GPIO 0 a 7 (8 pinos)
+   // sm_config_set_set_pins(&c, 0, 8); 
+    
     for(int i = 0; i < 8; i++) {
         pio_gpio_init(pio, i);
     }
 
-    // 2. Configuração dos Pinos de ENDEREÇO (GPIO 8 a 11)
-    // IN pins: Define o pino base (8) para as instruções IN (A1-A4)
+    // 2. Pinos de ENDEREÇO (GPIO 8 a 11)
     sm_config_set_in_pins(&c, 8);
     for(int i = 8; i < 12; i++) {
         pio_gpio_init(pio, i);
     }
 
-    // 3. Configuração dos Pinos de CONTROLE (/WR no 12, /CS no 18)
-    pio_gpio_init(pio, 12); // /WR
-    pio_gpio_init(pio, 18); // /CS
+    // 3. Pinos de CONTROLE (/WR no 12, /CS no 18) como ENTRADAS puras no chip
+    gpio_init(12);
+    gpio_init(18);
+    gpio_set_dir(12, GPIO_IN);
+    gpio_set_dir(18, GPIO_IN);
+    gpio_pull_up(12);
+    gpio_pull_up(18);
+    
+    pio_gpio_init(pio, 12);
+    pio_gpio_init(pio, 18);
 
-    // Define o pino de JUMP condicional para o /WR (GPIO 12)
+    // Mapeia o pino de JUMP para o /WR (GPIO 12)
     sm_config_set_jmp_pin(&c, 12);
 
-    // 4. Configuração dos Shifters de Entrada e Saída (FIFO)
-    // In: Auto-push DESATIVADO, shift para a DIREITA, tamanho 32
-    sm_config_set_in_shift(&c, true, false, 32);
-    // Out: Auto-pull DESATIVADO, shift para a DIREITA, tamanho 32
-    sm_config_set_out_shift(&c, true, false, 32);
+    // 4. Shifters e FIFOs
+    sm_config_set_in_shift(&c, true, true, 4);  // Autopush ATIVADO em 4 bits
+    sm_config_set_out_shift(&c, true, false, 32); // Autopull desativado (usamos pull noblock)
 
-    // 5. Ajuste de Direção Inicial dos Pinos no Hardware
-    // Inicialmente, dados (0-7), endereço (8-11) e controle (12, 18) são ENTRADAS (0)
-    // A PIO mudará os pinos 0-7 para saída dinamicamente usando 'out pindirs'
+    // 5. Estado Inicial do Hardware: Tudo como ENTRADA
     uint32_t pin_mask = (0xFF << 0) | (0x0F << 8) | (1 << 12) | (1 << 18);
     pio_sm_set_pindirs_with_mask(pio, sm, 0, pin_mask);
 
-    // 6. Define a velocidade de execução da PIO (Clock Máximo)
-    // Rodando na velocidade nativa do sistema para responder o m68k instantaneamente
+    // 6. Clock máximo para responder o m68k no tempo dele
     sm_config_set_clkdiv(&c, 1.0f);
 
-    // Carrega as configurações na Máquina de Estados e reinicia o ponteiro de execução
     pio_sm_init(pio, sm, offset, &c);
-    
-    // Liga a máquina de estados!
     pio_sm_set_enabled(pio, sm, true);
 }
 %}
-
-/*
-Para o Orion68DOS ler o arquivo, nós não podemos simplesmente jogar os 8029 bytes de uma vez na 
-linha de dados. O m68k precisa ler "por partes". Usando os pinos A1-A4, você tem 16 registradores 
-internos que pode simular dentro do Pico!Podemos desenhar a seguinte tabela de mapeamento para o m68k:
-
-+-----------------+--------------------+---------------------------------------------------------+
-|Endereço m68k    |        Pinos A4-A1 |      Função no Orion68DOS                               |
-+-----------------+--------------------+---------------------------------------------------------+
-|0xFF9100         |        0000        |      Data Register: Toda vez que o m68k lê aqui, ele    |
-|                 |                    |      pega o próximo byte do arquivo e o Pico avança     |
-|                 |                    |      o ponteiro na RAM automaticamente.                 |
-+-----------------+--------------------+---------------------------------------------------------+
-|0xFF9102         |        0001        |      Status Register: Bit 0 indica se há dados          |
-|                 |                    |      disponíveis (1 = tem arquivo pronto na RAM,        |
-|                 |                    |      0 = vazio). Bit 1 indica se a transmissão acabou.  |
-+-----------------+--------------------+---------------------------------------------------------+
-|0xFF9104         |        0010        |      Size High Byte: Tamanho do arquivo (Byte Alto).    |
-+-----------------+--------------------+---------------------------------------------------------+
-|0xFF9106         |        0011        |      Size Low Byte: Tamanho do arquivo (Byte Baixo).    |
-+-----------------+--------------------+---------------------------------------------------------+
-
-Codigo do orion para ler o aquivo
-
-WAIT_READY:
-    MOVE.B  ($FF9100), D0    ; Lê o Registrador de Status do Pico
-    CMPI.B  #$01, D0         ; É igual a 1 (Pronto)?
-    BNE     WAIT_READY       ; Se não for, fica em loop esperando o Linux enviar
-
-    LEA     ($4000), A0      ; Endereço da memória RAM do Orion68 onde vai salvar o arquivo
-READ_LOOP:
-    MOVE.B  ($FF9100), D0    ; Verifica o Status novamente
-    CMPI.B  #$02, D0         ; Chegou no fim do arquivo (0x02)?
-    BEQ     LOAD_DONE        ; Se sim, terminou o carregamento!
-
-    MOVE.B  ($FF9102), (A0)+ ; Lê o byte do Reg. de Dados do Pico e salva na RAM do m68k
-    BRA     READ_LOOP        ; Volta para ler o próximo byte
-
-LOAD_DONE:
-    JMP     ($4000)          ; Executa o programa baixado via rede!
-
-*/
