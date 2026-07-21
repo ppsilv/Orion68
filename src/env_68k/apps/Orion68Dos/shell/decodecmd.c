@@ -50,7 +50,7 @@ const cmd_entry_t g_cmd_table[] = {
     {"rs",          1,  0, &do_readsect,    "Read a sector X from disk..." },
     {"writesect",   1,  0, &do_writesect,   "Write a sector X from disk..." },
     {"writemem1",   2,  0, &do_writemem1,   "Write a memory location" },
-    {"tstkbd",      0,  0, &do_tstkbd,      "Testa conversa com o picow..." },
+    {"tst",         1,  1, &do_tstkbd,      "Testa conversa com o picow..." },
 
     {0, 0, 0, 0, 0 }
 };

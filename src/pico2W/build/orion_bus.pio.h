@@ -13,30 +13,34 @@
 // --------- //
 
 #define orion_bus_wrap_target 0
-#define orion_bus_wrap 11
+#define orion_bus_wrap 15
 #define orion_bus_pio_version 1
 
 static const uint16_t orion_bus_program_instructions[] = {
             //     .wrap_target
     0x2012, //  0: wait   0 gpio, 18
-    0x00c4, //  1: jmp    pin, 4
-    0x4004, //  2: in     pins, 4
-    0x0009, //  3: jmp    9
-    0x4004, //  4: in     pins, 4
-    0x8080, //  5: pull   noblock
-    0xa02b, //  6: mov    x, ~null
-    0xa061, //  7: mov    pindirs, x
-    0x6008, //  8: out    pins, 8
-    0x2092, //  9: wait   1 gpio, 18
-    0xa0e3, // 10: mov    osr, null
-    0xa067, // 11: mov    pindirs, osr
+    0xa242, //  1: nop                           [2]
+    0x00c6, //  2: jmp    pin, 6
+    0x4004, //  3: in     pins, 4
+    0x8000, //  4: push   noblock
+    0x000c, //  5: jmp    12
+    0x4004, //  6: in     pins, 4
+    0x8000, //  7: push   noblock
+    0x80a0, //  8: pull   block
+    0xa02b, //  9: mov    x, ~null
+    0xa061, // 10: mov    pindirs, x
+    0x6008, // 11: out    pins, 8
+    0xbf42, // 12: nop                           [31]
+    0x2092, // 13: wait   1 gpio, 18
+    0xa0e3, // 14: mov    osr, null
+    0xa067, // 15: mov    pindirs, osr
             //     .wrap
 };
 
 #if !PICO_NO_HARDWARE
 static const struct pio_program orion_bus_program = {
     .instructions = orion_bus_program_instructions,
-    .length = 12,
+    .length = 16,
     .origin = -1,
     .pio_version = orion_bus_pio_version,
 #if PICO_PIO_VERSION > 0
@@ -66,8 +70,6 @@ static inline void orion_bus_program_init(PIO pio, uint sm, uint offset) {
         pio_gpio_init(pio, i);
     }
     // 3. Pinos de CONTROLE (/WR no 12, /CS no 18) como ENTRADAS puras no chip
-    gpio_init(12);
-    gpio_init(18);
     gpio_set_dir(12, GPIO_IN);
     gpio_set_dir(18, GPIO_IN);
     gpio_pull_up(12);
@@ -77,7 +79,7 @@ static inline void orion_bus_program_init(PIO pio, uint sm, uint offset) {
     // Mapeia o pino de JUMP para o /WR (GPIO 12)
     sm_config_set_jmp_pin(&c, 12);
     // 4. Shifters e FIFOs
-    sm_config_set_in_shift(&c, true, true, 4);  // Autopush ATIVADO em 4 bits
+    sm_config_set_in_shift(&c, false, false, 4);  // Autopush ATIVADO em 4 bits
     sm_config_set_out_shift(&c, true, false, 32); // Autopull desativado (usamos pull noblock)
     // 5. Estado Inicial do Hardware: Tudo como ENTRADA
     uint32_t pin_mask = (0xFF << 0) | (0x0F << 8) | (1 << 12) | (1 << 18);

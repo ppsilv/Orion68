@@ -5,6 +5,7 @@
 #include "pico/cyw43_arch.h"
 #include "lwip/tcp.h"
 #include "orion_bus.pio.h" // Cabeçalho gerado automaticamente pelo pioasm
+//#include "orion_status.pio.h"
 
 
 #define WIFI_SSID "OpenSoftware4"
@@ -66,6 +67,9 @@ typedef struct {
 
 // Variáveis globais de controle do arquivo vindo do Wi-Fi
 uint8_t *arquivo_buffer = NULL;
+uint8_t arquivo_tamh=0x26;
+uint8_t arquivo_tamL=0xCC;
+uint8_t arquivo_ok=1;
 uint32_t arquivo_tamanho = 0;
 uint32_t ponteiro_leitura = 0;
 bool arquivo_pronto = false;
@@ -222,26 +226,46 @@ void start_tcp_server() {
     tcp_accept(listen_pcb, tcp_server_accept);
     printf("TCP Server listening on port %d...\n", PORT);
 }
+#include "hardware/vreg.h"
 
+extern void configurar_dma_pico(PIO pio, uint sm) ;
 int main() {
     stdio_init_all();
-    
-    sleep_ms(5000);
+    gpio_init(19); 
+    gpio_set_dir(19, GPIO_OUT);
+
+    // 1. Aumenta a tensão do núcleo para suportar o overclock (ex: VREG_VOLTAGE_1_20V ou 1_30V)
+    vreg_set_voltage(VREG_VOLTAGE_1_30);
+    sleep_ms(2); // Dá um tempo para a tensão estabilizar
+    set_sys_clock_khz(250000, true);
+
+    sleep_ms(2500);
 
     // --- CONFIGURAÇÃO DA PIO PARA O BARRAMENTO M68K ---
     PIO pio_barramento = pio0; // Escolhe o bloco PIO 0
     uint sm_m68k = 0;          // Escolhe a State Machine 0
+    uint sm_status = 1;          // Escolhe a State Machine 0
     
     // Tenta carregar o programa assembly na memória de instruções da PIO
     uint offset_programa = pio_add_program(pio_barramento, &orion_bus_program);
-    
+
+
     // Chama a nossa função auxiliar de inicialização que configurou os pinos
     orion_bus_program_init(pio_barramento, sm_m68k, offset_programa);
+    // pio0, SM1 (status), SM0 (dados), GPIO0 (D0-D7), GPIO18 (/CS_STATUS)
+//    status_barramento_init(pio_barramento, sm_status, sm_m68k, 0, 19);
+
+
     // --- CORREÇÃO DE SEGURANÇA NO BOOT ---
     // Desliga o SM temporariamente, limpa as FIFOs de lixo elétrico e religa
     pio_sm_set_enabled(pio_barramento, sm_m68k, false);
     pio_sm_clear_fifos(pio_barramento, sm_m68k);
     pio_sm_set_enabled(pio_barramento, sm_m68k, true);
+
+  //  configurar_dma_pico(pio_barramento, sm_m68k);
+//    pio_sm_set_enabled(pio_barramento, sm_status, false);
+//    pio_sm_clear_fifos(pio_barramento, sm_status);
+//    pio_sm_set_enabled(pio_barramento, sm_status, true);
 
     
     printf("PIO Inicializada! Aguardando ciclos de barramento do m68k...\n");
@@ -257,23 +281,23 @@ int main() {
     printf("Connecting to Wi-Fi...\n");
 
     // Connect to your local network using standard timeout settings
-    if (cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, 30000)) {
-        printf("Wi-Fi connection failed\n");
-        return -1;
-    }
-    printf("Connected! IP Address: %s\n", ip4addr_ntoa(netif_ip4_addr(netif_default)));
+ //   if (cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, 30000)) {
+ //       printf("Wi-Fi connection failed\n");
+ //       return -1;
+ //   }
+ //   printf("Connected! IP Address: %s\n", ip4addr_ntoa(netif_ip4_addr(netif_default)));
 
     // Launch the socket setup
-    start_tcp_server();
+//    start_tcp_server();
 
     // Main background execution loop
     while (true) {
         // Keep the Wi-Fi architecture driver responsive (polls for network events)
-        cyw43_arch_poll();
+       // cyw43_arch_poll();
 
         // Atende a PIO o mais rápido possível caso o m68k tenha pedido algo
         gerenciar_barramento_m68k(pio_barramento, sm_m68k);
 
-        sleep_ms(1);
+       
     }
 }

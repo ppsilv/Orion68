@@ -1,3 +1,30 @@
+2026-07-21
+Está tudo funcionando agora, o dado pedido é o dado recebido. SIMPLES ASSIM. o problema
+todo era a dupla leitura antiga e obsoleta do m68k uma vez que eu não ficava olhando para
+o codigo dele, resolveu isso foi fácil achar o problema de sincronismo.
+Agora finalmente desmascarado o problema, lembra que ontem falei 2 fantasmas e que 1 a
+gente achou mas o outro estava escondido?
+O fantasma escondido era a segunda leitura feita pelo m68k que no passado fazia sentido
+e o sentido se perdeu e ela ficou la perturbando, no futuro observar o código como um todo
+não só no lugar onde achamos que está o problema.
+Pontuando:
+1 - uma leitura de estatus que não mais era usada, ela não deveria causar erro mas escodia
+o verdadeiro erro pois eu achava que existia uma leitura escondida
+2 - o dtack não estava no momento correto, quando ele ocorria o dado nem estava lá ainda ou
+seja o m68k estava mais rápido que o pico2w.
+Lembrando uma leitura de I/O pelo m68k
+/DTACK -> 1
+/AS -> 0
+/CS -> 0
+/wr -> 0 ou 1 conforme a leitura ou escrita
+pico trabalha
+pico fica aguardando /CS=1
+/DTACK -> 0   m68k lê
+/AS -> 1
+/CS -> 1
+pico tira os dados põe bus em 3state
+pico aguarda novo comando.
+
 2026-07-06
 Hoje eu decobri que muitos problemas iniciais com o endiam na leitura do MIDE era porque
 estava tratando os dados como lidos em 16bits, mas na verdade tanto a função

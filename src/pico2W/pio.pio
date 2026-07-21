@@ -2,32 +2,37 @@
 
 .wrap_target
 espera_cs:
-    wait 0 gpio 18        ; Trava até /CS=0
-    nop [2]               ; Atraso minúsculo só pra estabilizar os sinais
+    wait 0 gpio 18        ; Trava até /CS=0 (m68k selecionou o Pico)
+    nop [31]
     jmp pin m68k_leitura  ; Se /WR (GPIO12) for 1, pula para leitura
 
 m68k_escrita:
-    in pins, 4            
-    push noblock          ; <-- Envia os 4 bits pro C na escrita
+    in pins, 4            ; Captura os 4 bits de endereço (A1-A4) -> Dispara Autopush
     jmp fim_ciclo
 
 m68k_leitura:
-    in pins, 4            
-    push noblock          ; <-- Envia os 4 bits pro C na leitura
-    
-    
-    pull block            ; Espera o C processar
+    in pins, 4            ; Envia os 4 bits de endereço para o FIFO RX
+    ; --- PRIMEIRO CHAVEIA A DIREÇÃO USANDO O REGISTRADOR X (Deixa o OSR intacto) ---
+    mov x, ~ null         ; X = 0xFFFFFFFF
+    mov pindirs, x        ; Ativa a SAÍDA nos pinos mapeados em OUT (GPIO0-GPIO7)
 
-    mov x, ~ null         
-    mov pindirs, x        ; Ativa SAÍDA no barramento
+    pull block          ; Puxa o byte do C para o OSR
 
-    out pins, 8           ; Cospe os 8 bits
-    
+    ; --- AGORA SIM, DESPEJA O DADO NOS PINOS JÁ CONFIGURADOS COMO SAÍDA ---
+;;    mov osr, ~ null
+    out pins, 8           ; Cospe os 8 bits do OSR direto nas linhas físicas
+
+    ; -------------------------------------
+
 fim_ciclo:
-    nop[31]
-    wait 1 gpio 18        ; Segura até o /CS=1
-    mov osr, null         
-    mov pindirs, osr      ; Volta para ENTRADA
+    wait 1 gpio 18        ; Segura o dado no barramento até o m68k terminar (/CS=1)
+    ; --- VOLTA PARA ENTRADA ---
+    mov osr, null         ; Joga 0x00000000 no OSR
+    mov pindirs, osr      ; Move para as direções: VOLTA PARA ENTRADA (Alta Impedância)
+    ; --------------------------
+    mov osr, null
+    out pins, 8           ; Cospe os 8 bits do OSR direto nas linhas físicas
+
 .wrap
 
 % c-sdk {
@@ -38,10 +43,10 @@ static inline void orion_bus_program_init(PIO pio, uint sm, uint offset) {
 
     // 1. Pinos de DADOS (GPIO 0 a 7)
     sm_config_set_out_pins(&c, 0, 8); // Destino da instrução OUT
-    
+
     // CONFIGURAÇÃO CRUCIAL: Diz que a instrução 'set pindirs' controla as direções de GPIO 0 a 7 (8 pinos)
-   // sm_config_set_set_pins(&c, 0, 8); 
-    
+   // sm_config_set_set_pins(&c, 0, 8);
+
     for(int i = 0; i < 8; i++) {
         pio_gpio_init(pio, i);
     }
@@ -53,10 +58,13 @@ static inline void orion_bus_program_init(PIO pio, uint sm, uint offset) {
     }
 
     // 3. Pinos de CONTROLE (/WR no 12, /CS no 18) como ENTRADAS puras no chip
+    gpio_init(12);
+    gpio_init(18);
     gpio_set_dir(12, GPIO_IN);
     gpio_set_dir(18, GPIO_IN);
     gpio_pull_up(12);
     gpio_pull_up(18);
+
     pio_gpio_init(pio, 12);
     pio_gpio_init(pio, 18);
 
@@ -64,7 +72,7 @@ static inline void orion_bus_program_init(PIO pio, uint sm, uint offset) {
     sm_config_set_jmp_pin(&c, 12);
 
     // 4. Shifters e FIFOs
-    sm_config_set_in_shift(&c, false, false, 4);  // Autopush ATIVADO em 4 bits
+    sm_config_set_in_shift(&c, true, true, 4);  // Autopush ATIVADO em 4 bits
     sm_config_set_out_shift(&c, true, false, 32); // Autopull desativado (usamos pull noblock)
 
     // 5. Estado Inicial do Hardware: Tudo como ENTRADA

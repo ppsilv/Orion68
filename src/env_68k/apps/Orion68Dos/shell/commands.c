@@ -639,11 +639,12 @@ void do_time(int argc, char *argv[])
 }
 extern void main_teste_teclado(void); 
 extern char teste01();
-extern uint16_t receber_arquivo_do_pico(uint8_t *destino_ram);
+extern uint16_t receber_arquivo_do_pico(uint8_t *destino_ram,uint8_t reg);
 void do_tstkbd(int argc, char *argv[])
 {
-    uint16_t res = receber_arquivo_do_pico((uint8_t *)0x82000);
-    printf("receber_arquivo_do_pico retornou[%d]\n",res); 
+    uint8_t count =(uint8_t ) strtoul((const char *)argv[0], NULL, 16);
+    uint16_t res = receber_arquivo_do_pico((uint8_t *)0x82000,count);
+    printf("receber_arquivo_do_pico retornou[%04x]\n",res); 
 }
 unsigned long get_system_tick(void) ;
 void do_uptime(int argc, char *argv[])
