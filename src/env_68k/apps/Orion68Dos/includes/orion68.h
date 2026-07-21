@@ -48,6 +48,8 @@ void do_ideinit(int argc, char *argv[]);
 int rtc_detectar(void);
 bool init_keyboard();
 uint8_t keyboard_get_key();
+void crc32_init(void);
+uint32_t crc32_calculate(const uint8_t *buffer, size_t length);
 
 
 //IDE

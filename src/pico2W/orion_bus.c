@@ -10,15 +10,7 @@ extern uint8_t arquivo_tamh;
 extern uint8_t arquivo_tamL;
 extern uint32_t arquivo_tamanho;
 extern uint32_t ponteiro_leitura;
-
-#define REG_DATA_PREPARE        0x0
-#define REG_STATE_PREPARE       0x1
-#define REG_SHIGH_PREPARE       0x3
-#define REG_SLOW_PREPARE        0x5
-#define REG_DATA_READ           0x7
-#define REG_STATE_READ          0x9
-#define REG_SHIGH_READ          0xB
-#define REG_SLOW_READ           0xD
+extern uint32_t arquivo_crc32;
 
 // Definições de bits para o status_registro (Reg 0x01)
 #define STATUS_BUSY 0x00
@@ -31,11 +23,12 @@ void __not_in_flash_func(gerenciar_barramento_m68k)(PIO pio, uint sm){
 
         uint32_t reg = pio_sm_get_blocking(pio, sm);
         pio_sm_clear_fifos(pio, sm);
-       // printf("reg [%08x]\n",reg);
-        
+/* testes 
+       // printf("reg [%08x]\n",reg);        
         switch(reg){
             case 0x00:
-                        pio_sm_put_blocking(pio, sm, 0xA5);
+                        byte_resposta = arquivo_buffer[ponteiro_leitura];
+                        ponteiro_leitura++; // Avança o ponteiro do arquivo
                         break;
             case 0x01:
                         pio_sm_put_blocking(pio, sm, arquivo_ok);
@@ -51,11 +44,14 @@ void __not_in_flash_func(gerenciar_barramento_m68k)(PIO pio, uint sm){
         } 
         sio_hw->gpio_clr = (1 << 19);
         return;
-
-
-
+*/
         uint8_t byte_resposta = 0x0;
-
+        if ( arquivo_pronto == 0){
+            byte_resposta = 0x0;
+        }else if ( ponteiro_leitura >= arquivo_tamanho ) {
+            ponteiro_leitura = 0;
+            arquivo_pronto = 0;
+        }
         switch (reg) {
             case 0x00: // --- m68k leu 0xFF9101: REGISTRADOR DE DADOS ---
                 //if (arquivo_pronto && ponteiro_leitura < arquivo_tamanho) {
@@ -85,11 +81,23 @@ void __not_in_flash_func(gerenciar_barramento_m68k)(PIO pio, uint sm){
                     byte_resposta = (uint8_t)(arquivo_tamanho & 0xFF);
                 //}
                 break;
-
+            case 0x04:
+                byte_resposta = (arquivo_crc32 >> 24)& 0xFF;
+                break;
+            case 0x05:
+                byte_resposta = (arquivo_crc32 >> 16)& 0xFF;
+                break;
+            case 0x06:
+                byte_resposta = (arquivo_crc32 >> 8 )& 0xFF;
+                break;
+            case 0x07:
+                byte_resposta = arquivo_crc32 & 0xFF;
+                break;
             default:
                 byte_resposta = 0xFF;
                 break;
         }
+
         pio_sm_put(pio, sm, byte_resposta);
         sio_hw->gpio_clr = (1 << 19);
 

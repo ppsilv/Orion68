@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
+#include <stddef.h>
 #include "pico/stdlib.h"
 #include "pico/cyw43_arch.h"
 #include "lwip/tcp.h"
@@ -11,44 +13,6 @@
 #define WIFI_SSID "OpenSoftware4"
 #define WIFI_PASSWORD "santos@info09"
 #define PORT 4242
-
-//OLD tcp_server_recv
-// Callback when data is received on an active connection
-//static err_t tcp_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err) {
-//    if (!p) {
-//        // A null pbuf indicates the client closed the connection
-//        printf("Client disconnected\n");
-//        tcp_close(tpcb);
-//        return ERR_OK;
-//    }
-//
-//    // Acknowledge receipt of the data packet
-//    tcp_recved(tpcb, p->tot_len);
-//
-//    // Echo the data back to the client
-//    // p->payload points directly to the incoming data buffer
-//    err_t write_err = tcp_write(tpcb, p->payload, p->len, TCP_WRITE_FLAG_COPY);
-//    if (write_err == ERR_OK) {
-//        tcp_output(tpcb); // Force send the output buffer immediately
-//    }
-//
-//    pbuf_free(p); // Free the packet buffer to prevent memory leaks
-//    return ERR_OK;
-//}
-
-//OLD tcp_server_accept
-// Callback when a client successfully connects to our port
-//static err_t tcp_server_accept(void *arg, struct tcp_pcb *newpcb, err_t err) {
-//    if (err != ERR_OK || newpcb == NULL) {
-//        return ERR_VAL;
-//    }
-//    printf("Client connected!\n");
-//
-//    // Assign the receive callback function for this specific client
-//    tcp_recv(newpcb, tcp_server_recv);
-//    return ERR_OK;
-//}
-
 
 // 1. ESTRUTURA PARA CONTROLE DA MÁQUINA DE ESTADOS
 typedef enum {
@@ -63,21 +27,67 @@ typedef struct {
     uint32_t bytes_recebidos;
     char nome_arquivo[13]; // Formato 8.3 + \0
     uint8_t *buffer_ram;
+    uint32_t crc32;
 } conexao_estado_t;
 
 // Variáveis globais de controle do arquivo vindo do Wi-Fi
 uint8_t *arquivo_buffer = NULL;
-uint8_t arquivo_tamh=0x26;
-uint8_t arquivo_tamL=0xCC;
-uint8_t arquivo_ok=1;
+uint8_t arquivo_tamh=0;
+uint8_t arquivo_tamL=0;
+uint8_t arquivo_ok=0;
 uint32_t arquivo_tamanho = 0;
 uint32_t ponteiro_leitura = 0;
+uint32_t arquivo_crc32 = 0;
 bool arquivo_pronto = false;
 
 // Cabeçalho fixo de 16 bytes: 4 bytes (tamanho) + 12 bytes (nome)
 #define TAMANHO_CABECALHO 16
 
 extern void gerenciar_barramento_m68k(PIO pio, uint sm);
+
+//crc32 **********************************************************
+// Tabela de 1 KB gerada em tempo de execução
+static uint32_t crc32_table[256];
+
+// Polinômio padrão IEEE 802.3 (Refletido)
+#define CRC32_POLYNOMIAL 0xEDB88320UL
+
+/**
+ * Inicializa a tabela de busca do CRC-32.
+ * Chame esta função UMA VEZ no início do programa (main).
+ */
+void crc32_init(void) {
+    for (uint32_t i = 0; i < 256; i++) {
+        uint32_t c = i;
+        for (int k = 0; k < 8; k++) {
+            c = (c & 1) ? (CRC32_POLYNOMIAL ^ (c >> 1)) : (c >> 1);
+        }
+        crc32_table[i] = c;
+    }
+}
+
+/**
+ * Atualiza o CRC a cada bloco ou byte recebido.
+ * Pode ser chamado iterativamente se você receber o arquivo em partes.
+ */
+uint32_t crc32_update(uint32_t crc, const uint8_t *buffer, size_t length) {
+    for (size_t i = 0; i < length; i++) {
+        crc = crc32_table[(crc ^ buffer[i]) & 0xFF] ^ (crc >> 8);
+    }
+    return crc;
+}
+
+/**
+ * Função para calcular o CRC-32 final de um buffer completo.
+ */
+uint32_t crc32_calculate(const uint8_t *buffer, size_t length) {
+    // Inicia com 0xFFFFFFFF e faz o XOR final com 0xFFFFFFFF
+    return crc32_update(0xFFFFFFFFUL, buffer, length) ^ 0xFFFFFFFFUL;
+}
+
+
+
+
 
 
 // Callback de recepção modificado com a Máquina de Estados
@@ -169,6 +179,9 @@ static err_t tcp_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, er
         arquivo_buffer = es->buffer_ram; 
         arquivo_tamanho = es->tamanho_total;
         ponteiro_leitura = 0;             // Reseta o índice de leitura do m68k
+
+        arquivo_crc32 = crc32_calculate((const uint8_t *)arquivo_buffer, arquivo_tamanho);
+        printf("CRC32 do arquivo %s %08X\n",es->nome_arquivo, arquivo_crc32);
         arquivo_pronto = true;            // Libera o Status para o m68k ver 0x01!
         
         printf("Orion68DOS: Arquivo liberado para o barramento.\n");
@@ -233,7 +246,7 @@ int main() {
     stdio_init_all();
     gpio_init(19); 
     gpio_set_dir(19, GPIO_OUT);
-
+    crc32_init();
     // 1. Aumenta a tensão do núcleo para suportar o overclock (ex: VREG_VOLTAGE_1_20V ou 1_30V)
     vreg_set_voltage(VREG_VOLTAGE_1_30);
     sleep_ms(2); // Dá um tempo para a tensão estabilizar
@@ -244,16 +257,12 @@ int main() {
     // --- CONFIGURAÇÃO DA PIO PARA O BARRAMENTO M68K ---
     PIO pio_barramento = pio0; // Escolhe o bloco PIO 0
     uint sm_m68k = 0;          // Escolhe a State Machine 0
-    uint sm_status = 1;          // Escolhe a State Machine 0
-    
+  
     // Tenta carregar o programa assembly na memória de instruções da PIO
     uint offset_programa = pio_add_program(pio_barramento, &orion_bus_program);
 
-
     // Chama a nossa função auxiliar de inicialização que configurou os pinos
     orion_bus_program_init(pio_barramento, sm_m68k, offset_programa);
-    // pio0, SM1 (status), SM0 (dados), GPIO0 (D0-D7), GPIO18 (/CS_STATUS)
-//    status_barramento_init(pio_barramento, sm_status, sm_m68k, 0, 19);
 
 
     // --- CORREÇÃO DE SEGURANÇA NO BOOT ---
@@ -261,12 +270,6 @@ int main() {
     pio_sm_set_enabled(pio_barramento, sm_m68k, false);
     pio_sm_clear_fifos(pio_barramento, sm_m68k);
     pio_sm_set_enabled(pio_barramento, sm_m68k, true);
-
-  //  configurar_dma_pico(pio_barramento, sm_m68k);
-//    pio_sm_set_enabled(pio_barramento, sm_status, false);
-//    pio_sm_clear_fifos(pio_barramento, sm_status);
-//    pio_sm_set_enabled(pio_barramento, sm_status, true);
-
     
     printf("PIO Inicializada! Aguardando ciclos de barramento do m68k...\n");
 
@@ -281,19 +284,18 @@ int main() {
     printf("Connecting to Wi-Fi...\n");
 
     // Connect to your local network using standard timeout settings
- //   if (cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, 30000)) {
- //       printf("Wi-Fi connection failed\n");
- //       return -1;
- //   }
- //   printf("Connected! IP Address: %s\n", ip4addr_ntoa(netif_ip4_addr(netif_default)));
-
-    // Launch the socket setup
-//    start_tcp_server();
+    if (cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, 30000)) {
+        printf("Wi-Fi connection failed\n");
+        return -1;
+    }
+    printf("Connected! IP Address: %s\n", ip4addr_ntoa(netif_ip4_addr(netif_default)));
+    //Launch the socket setup
+    start_tcp_server();
 
     // Main background execution loop
     while (true) {
         // Keep the Wi-Fi architecture driver responsive (polls for network events)
-       // cyw43_arch_poll();
+        cyw43_arch_poll();
 
         // Atende a PIO o mais rápido possível caso o m68k tenha pedido algo
         gerenciar_barramento_m68k(pio_barramento, sm_m68k);

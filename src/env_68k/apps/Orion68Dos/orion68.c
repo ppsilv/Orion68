@@ -145,7 +145,7 @@ void main() {
     // delay10ms(100);  //100ms    
     // uart3_init();
     // delay10ms(100);  //100ms    
-
+    crc32_init();
 #ifdef DEBUG_ON
     ata_read_identity();    
 #endif

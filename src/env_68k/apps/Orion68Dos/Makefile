@@ -20,6 +20,7 @@ SRCS = orion68.c vectors.c console.c \
 ./shell/commands.c \
 ./shell/decodecmd.c \
 ./shell/srecord.c \
+./shell/crc32.c \
 ./kbd/drv_kbd.c \
 ./kbd/keycodes_ps2.c \
 ./kbd/kbdps2.c \
