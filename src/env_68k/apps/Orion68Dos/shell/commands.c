@@ -63,6 +63,32 @@ void do_notimplemented(int argc, char *argv[])
     printf("This command is currently not implemented\n");
 }
 
+void do_runelf_fromhd(int argc, char *argv[]){
+    const char *filename = argv[0] ;
+    uint32_t entry = carregar_elf32_fatfs(filename);
+
+    if (entry != 0) {
+        // Salta e executa o programa no m68k
+        void (*app)(void) = (void (*)(void))entry;
+        app();
+    } else {
+        // Tratar erro (arquivo não encontrado ou desalinhado)
+    }
+}
+
+void do_runelf(int argc, char *argv[]){
+    // Retorna o endereço da primeira instrução
+    uint8_t * buffer_elf_recebido = (uint8_t * )argv[0];
+    uint8_t * mem_addr = (uint8_t *)argv[1];
+    uint32_t entry_point = carregar_elf32(buffer_elf_recebido, mem_addr);
+
+    if (entry_point != 0) {
+        // Executa o binário a partir do entry point obtido
+        void (*executar)(void) = (void (*)(void))entry_point;
+        executar();
+    }
+}
+
 void do_dump(int argc, char *argv[]){
     unsigned long start, count;
 

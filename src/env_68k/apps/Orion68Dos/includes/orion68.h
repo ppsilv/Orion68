@@ -43,13 +43,15 @@
 
 #include "timers.h"
 
-void set_ide_bus_mode(char mode);
-void do_ideinit(int argc, char *argv[]);
-int rtc_detectar(void);
-bool init_keyboard();
-uint8_t keyboard_get_key();
-void crc32_init(void);
-uint32_t crc32_calculate(const uint8_t *buffer, size_t length);
+extern void set_ide_bus_mode(char mode);
+extern void do_ideinit(int argc, char *argv[]);
+extern int rtc_detectar(void);
+extern bool init_keyboard();
+extern uint8_t keyboard_get_key();
+extern void crc32_init(void);
+extern uint32_t crc32_calculate(const uint8_t *buffer, size_t length);
+extern uint32_t carregar_elf32(const uint8_t *elf_buf, uint8_t *ram_destino);
+extern uint32_t carregar_elf32_fatfs(const char *caminho);
 
 
 //IDE

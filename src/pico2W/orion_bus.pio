@@ -3,78 +3,78 @@
 .wrap_target
 espera_cs:
     wait 0 gpio 18        ; Trava até /CS=0
-    nop [2]               ; Atraso minúsculo só pra estabilizar os sinais
-    jmp pin m68k_leitura  ; Se /WR (GPIO12) for 1, pula para leitura
+    //nop [2]               ; Atraso de estabilização
+    jmp pin m68k_leitura  ; Se /WR (GPIO15) for 1, pula para leitura
 
 m68k_escrita:
-    in pins, 4            
-    push noblock          ; <-- Envia os 4 bits pro C na escrita
+    set x, 0              ; Flag 0x0 = ESCRITA (2 bits: 00)
+    in x, 2               ; Injeta flag no LSB (será empurrada para os bits 15:14)
+    nop [31]
+    in pins, 14           ; Injeta 6 bits Endereço (13:8) + 8 bits Dados (7:0)
+    push noblock          ; Envia pacote de 16 bits exatos pro C
     jmp fim_ciclo
 
 m68k_leitura:
-    in pins, 4            
-    push noblock          ; <-- Envia os 4 bits pro C na leitura
-    
-    
-    pull block            ; Espera o C processar
+    set x, 1              ; Flag 0x1 = LEITURA (2 bits: 01)
+    in x, 2               ; Injeta flag no LSB (será empurrada para os bits 15:14)
+    in pins, 14           ; Injeta 6 bits Endereço (13:8) + 8 bits Dados (7:0)
+    push noblock          ; Envia pacote de 16 bits exatos pro C
 
-    mov x, ~ null         
-    mov pindirs, x        ; Ativa SAÍDA no barramento
+    pull block            ; Espera o C entregar o dado de resposta
 
-    out pins, 8           ; Cospe os 8 bits
-    
+    mov x, ~ null
+    mov pindirs, x        ; Ativa SAÍDA no barramento (D0-D7)
+
+    out pins, 8           ; Coloca o dado no barramento
+
 fim_ciclo:
     nop[31]
-    wait 1 gpio 18        ; Segura até o /CS=1
-    mov osr, null         
-    mov pindirs, osr      ; Volta para ENTRADA
+    wait 1 gpio 18        ; Segura até /CS=1
+    mov osr, null
+    mov pindirs, osr      ; Volta D0-D7 para ENTRADA (Tri-state)
 .wrap
 
 % c-sdk {
 #include "hardware/clocks.h"
 
+
 static inline void orion_bus_program_init(PIO pio, uint sm, uint offset) {
     pio_sm_config c = orion_bus_program_get_default_config(offset);
 
-    // 1. Pinos de DADOS (GPIO 0 a 7)
-    sm_config_set_out_pins(&c, 0, 8); // Destino da instrução OUT
-    
-    // CONFIGURAÇÃO CRUCIAL: Diz que a instrução 'set pindirs' controla as direções de GPIO 0 a 7 (8 pinos)
-   // sm_config_set_set_pins(&c, 0, 8); 
-    
-    for(int i = 0; i < 8; i++) {
+    // 1. DADOS (GPIO 0 a 7)
+    sm_config_set_out_pins(&c, 0, 8);
+
+    // 2. BASE DE ENTRADA: GPIO 0 (cobre GPIO 0 a 13 para os 14 bits)
+    sm_config_set_in_pins(&c, 0);
+
+    for(int i = 0; i < 14; i++) {
         pio_gpio_init(pio, i);
     }
 
-    // 2. Pinos de ENDEREÇO (GPIO 8 a 11)
-    sm_config_set_in_pins(&c, 8);
-    for(int i = 8; i < 12; i++) {
-        pio_gpio_init(pio, i);
-    }
-
-    // 3. Pinos de CONTROLE (/WR no 12, /CS no 18) como ENTRADAS puras no chip
-    gpio_set_dir(12, GPIO_IN);
+    // 3. CONTROLE (/WR no GPIO 15, /CS no GPIO 18)
+    gpio_set_dir(15, GPIO_IN);
     gpio_set_dir(18, GPIO_IN);
-    gpio_pull_up(12);
+    gpio_pull_up(15);
     gpio_pull_up(18);
-    pio_gpio_init(pio, 12);
+    pio_gpio_init(pio, 15);
     pio_gpio_init(pio, 18);
 
-    // Mapeia o pino de JUMP para o /WR (GPIO 12)
-    sm_config_set_jmp_pin(&c, 12);
+    sm_config_set_jmp_pin(&c, 15);
 
-    // 4. Shifters e FIFOs
-    sm_config_set_in_shift(&c, false, false, 4);  // Autopush ATIVADO em 4 bits
-    sm_config_set_out_shift(&c, true, false, 32); // Autopull desativado (usamos pull noblock)
+    // 4. SHIFTER: Shift para ESQUERDA (false), sem autopush, 16 bits
+    sm_config_set_in_shift(&c, false, false, 16);
+    sm_config_set_out_shift(&c, true, false, 32);
 
-    // 5. Estado Inicial do Hardware: Tudo como ENTRADA
-    uint32_t pin_mask = (0xFF << 0) | (0x0F << 8) | (1 << 12) | (1 << 18);
+    // 5. Estado inicial: tudo entrada
+    uint32_t pin_mask = (0xFF << 0) | (0x3F << 8) | (1 << 15) | (1 << 18);
     pio_sm_set_pindirs_with_mask(pio, sm, 0, pin_mask);
 
-    // 6. Clock máximo para responder o m68k no tempo dele
     sm_config_set_clkdiv(&c, 1.0f);
 
     pio_sm_init(pio, sm, offset, &c);
     pio_sm_set_enabled(pio, sm, true);
 }
+
+
+
 %}

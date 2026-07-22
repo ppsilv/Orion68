@@ -16,6 +16,7 @@ SRCS = orion68.c vectors.c console.c \
 ./dump/mem_dump.c \
 ./shell/io.c \
 ./shell/picow.c \
+./shell/elf_loader.c \
 ./shell/printerro.c \
 ./shell/commands.c \
 ./shell/decodecmd.c \
