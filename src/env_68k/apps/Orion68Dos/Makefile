@@ -28,7 +28,6 @@ SRCS = orion68.c vectors.c console.c \
 ./kbd/ringbuffer.c \
 ./rtc/rp5c01a.c \
 ./picoVga/drv_picoVga.c \
-./xmodem/xmodem.c \
 ./uarts/drv_uart0.c \
 ./ide/ata.c \
 ./fatfs/ff.c \

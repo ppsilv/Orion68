@@ -13,7 +13,7 @@
 // -------- //
 
 #define bus_read_wrap_target 0
-#define bus_read_wrap 4
+#define bus_read_wrap 5
 #define bus_read_pio_version 1
 
 #define bus_read_LAST_DATA_GPIO 12
@@ -22,17 +22,18 @@
 static const uint16_t bus_read_program_instructions[] = {
             //     .wrap_target
     0x200d, //  0: wait   0 gpio, 13
-    0x400d, //  1: in     pins, 13
-    0xe001, //  2: set    pins, 1
-    0x208d, //  3: wait   1 gpio, 13
-    0xe300, //  4: set    pins, 0                [3]
+    0xe001, //  1: set    pins, 1
+    0xbf42, //  2: nop                           [31]
+    0x400d, //  3: in     pins, 13
+    0x208d, //  4: wait   1 gpio, 13
+    0xe300, //  5: set    pins, 0                [3]
             //     .wrap
 };
 
 #if !PICO_NO_HARDWARE
 static const struct pio_program bus_read_program = {
     .instructions = bus_read_program_instructions,
-    .length = 5,
+    .length = 6,
     .origin = -1,
     .pio_version = bus_read_pio_version,
 #if PICO_PIO_VERSION > 0

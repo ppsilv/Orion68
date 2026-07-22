@@ -7,14 +7,12 @@
     ; AGUARDA o GPIO CS chegar em nível 0 (LOW) antes de começar
 .wrap_target
     wait 0 gpio CS
-
+    set pins, 1   ; Liga o LED (GPIO 25)
+    nop [31]
     ; --- NOVA PARTE: LER GPIO 0 A LAST_DATA_GPIO ---
     in pins, TOTAL_PINS     ; Lê TOTAL_PINS pinos (0 a LAST_DATA_GPIO) e joga no ISR (Input Shift Register)
     ;push noblock    ; Envia o que foi lido para a FIFO (o C vai ler daqui) noBlock = não blocante
     ; -----------------------------------
-
-    set pins, 1   ; Liga o LED (GPIO 25)
-
     wait 1 gpio CS
     set pins, 0 [3] ; Desliga o LED
 .wrap

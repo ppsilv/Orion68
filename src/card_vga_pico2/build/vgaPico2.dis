@@ -39,11 +39,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
  17 .comment      00000045  00000000  00000000  0000bbc4  2**0
                   CONTENTS, READONLY
- 18 .debug_info   000354a9  00000000  00000000  0000bc09  2**0
+ 18 .debug_info   000354ab  00000000  00000000  0000bc09  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_abbrev 00008473  00000000  00000000  000410b2  2**0
+ 19 .debug_abbrev 00008473  00000000  00000000  000410b4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .debug_loclists 000168de  00000000  00000000  00049525  2**0
+ 20 .debug_loclists 000168de  00000000  00000000  00049527  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  21 .debug_aranges 00001170  00000000  00000000  0005fe08  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -51,11 +51,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  23 .debug_line   0001ea58  00000000  00000000  000656ab  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 24 .debug_str    000080e2  00000000  00000000  00084103  2**0
+ 24 .debug_str    000080e3  00000000  00000000  00084103  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  25 .debug_frame  000032ac  00000000  00000000  0008c1e8  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 26 .debug_line_str 0000027f  00000000  00000000  0008f494  2**0
+ 26 .debug_line_str 00000280  00000000  00000000  0008f494  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 /home/pdsilva/project/Orion68/src/card_vga_pico2/build/vgaPico2.elf:     file format elf32-littlearm
@@ -695,7 +695,7 @@ Disassembly of section .text:
 10000662:	9304      	str	r3, [sp, #16]
 10000664:	ac02      	add	r4, sp, #8
 10000666:	f10d 0c18 	add.w	ip, sp, #24
-1000066a:	1d2a      	adds	r2, r5, #4
+1000066a:	1d6a      	adds	r2, r5, #5
 1000066c:	01ef      	lsls	r7, r5, #7
 1000066e:	ea47 3702 	orr.w	r7, r7, r2, lsl #12
 10000672:	e894 000f 	ldmia.w	r4, {r0, r1, r2, r3}
