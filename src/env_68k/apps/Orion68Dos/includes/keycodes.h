@@ -24,7 +24,7 @@
 #define PS2_TAB				0x09
 #define PS2_ENTER			0x0D
 #define PS2_LINEFEED        0x0A
-#define PS2_BACKSPACE		0x7F
+#define PS2_BACKSPACE		0x08
 #define PS2_ESC				0x1B
 #define PS2_INSERT			0x00
 #define PS2_DELETE			0x7F

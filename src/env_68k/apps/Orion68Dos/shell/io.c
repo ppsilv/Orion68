@@ -5,10 +5,12 @@
 uint8_t get_key()
 {
     uint8_t key = 0xFF;
+    uint16_t key1 = 0xFF;
 
     while (key == 0xFF)
     {
         key = uart0_read();
+        //key1 = get_char(); //Teclado USB do orion68
     }
 
     return key;

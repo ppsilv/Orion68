@@ -68,8 +68,13 @@ int getline(char *line, int linesize)
     if (count < linesize - 1)
     {
         uint8_t ch = get_key();
+       // printf("%02X",ch);
         switch(ch)
         {
+            case PS2_BACKSPACE:
+                          putchar('\b');
+                          count--;
+                          break;  
             case PS2_TAB: break;
             case PS2_ENTER:
                 putchar('\n');
@@ -77,7 +82,7 @@ int getline(char *line, int linesize)
 
             case PS2_ESC: break;
             case PS2_INSERT: break;
-
+/*
             case PS2_DELETE:
                 if (count > 0)
                 {
@@ -88,7 +93,7 @@ int getline(char *line, int linesize)
                     --count;
                 }
                 break;
-
+*/
             case PS2_HOME: break;
             case PS2_END: break;
             case PS2_PAGEUP: break;
