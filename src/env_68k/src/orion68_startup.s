@@ -99,7 +99,7 @@ FIND_RAM:
 /* Clear the entire SRAM */
         /* 1. Limpa a RAM (bss) */
         LEA     0x080000,%A0
-        LEA     0x100000,%A1
+        MOVE.L  %A4,%A1
         MOVE.L  #0x0,%D0
 .ClearLoop:
         MOVE.L  %D0,(%A0)+

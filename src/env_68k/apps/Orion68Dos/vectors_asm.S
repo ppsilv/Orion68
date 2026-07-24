@@ -19,6 +19,7 @@
 .extern systemTick
 .extern cconin
 .extern cconout
+.extern trata_int3_handler
 
 /* =========================================================================
    1. EXCEÇÕES E INTERRUPÇÕES QUE NÃO FAZEM NADA (STUBS)
@@ -36,7 +37,6 @@ SvcLineF:
 bad_exception:
 SpuriousHandler:
 Int1Handler:
-Int3Handler:
 Int4Handler:
 Int5Handler:
 Int6Handler:
@@ -77,6 +77,12 @@ Int2Handler:
         /* Restaura e sai com RTE */
         move.l  (%sp)+,%a0
         move.l  (%sp)+,%d0
+        rte
+Int3Handler:
+        movem.l %d0-%d7/%a0-%a6,-(%sp)
+
+        jsr     trata_int3_handler
+        movem.l (%sp)+,%d0-%d7/%a0-%a6
         rte
 
 /* =========================================================================

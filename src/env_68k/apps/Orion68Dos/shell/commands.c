@@ -134,8 +134,8 @@ void do_srecord(int argc, char *argv[])
 
     printf("\nData recieved, processing S-Record file\n");
     rec_buf = (char *)0x00300000;
-    if (read_srecord(rec_buf))
-        printf("SRecord load failed\n");
+//    if (read_srecord(rec_buf))
+//        printf("SRecord load failed\n");
 }
 
 void do_binfile(int argc, char *argv[])

@@ -380,6 +380,7 @@ set(CMAKE_MAKEFILE_PRODUCTS
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/pds200Pico2.dir/DependInfo.cmake"
   "CMakeFiles/pds200Pico2_orion_bus_pio_h.dir/DependInfo.cmake"
+  "CMakeFiles/pds200Pico2_ps2_keyboard_pio_h.dir/DependInfo.cmake"
   "pico-sdk/src/rp2350/boot_stage2/CMakeFiles/bs2_default.dir/DependInfo.cmake"
   "pico-sdk/src/rp2350/boot_stage2/CMakeFiles/bs2_default_bin.dir/DependInfo.cmake"
   "pico-sdk/src/rp2350/boot_stage2/CMakeFiles/bs2_default_library.dir/DependInfo.cmake"

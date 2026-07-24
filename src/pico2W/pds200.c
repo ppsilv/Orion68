@@ -5,9 +5,11 @@
 #include <stddef.h>
 #include "pico/stdlib.h"
 #include "pico/cyw43_arch.h"
+#include "pico/multicore.h"
 #include "lwip/tcp.h"
 #include "orion_bus.pio.h" // Cabeçalho gerado automaticamente pelo pioasm
-//#include "orion_status.pio.h"
+#include "ringbuffer.h"
+
 
 
 #define WIFI_SSID "OpenSoftware4"
@@ -84,11 +86,6 @@ uint32_t crc32_calculate(const uint8_t *buffer, size_t length) {
     // Inicia com 0xFFFFFFFF e faz o XOR final com 0xFFFFFFFF
     return crc32_update(0xFFFFFFFFUL, buffer, length) ^ 0xFFFFFFFFUL;
 }
-
-
-
-
-
 
 // Callback de recepção modificado com a Máquina de Estados
 static err_t tcp_server_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err) {
@@ -242,10 +239,9 @@ void start_tcp_server() {
 #include "hardware/vreg.h"
 
 extern void configurar_dma_pico(PIO pio, uint sm) ;
+extern void core1_entry(void);
 int main() {
     stdio_init_all();
-    gpio_init(19); 
-    gpio_set_dir(19, GPIO_OUT);
     crc32_init();
     // 1. Aumenta a tensão do núcleo para suportar o overclock (ex: VREG_VOLTAGE_1_20V ou 1_30V)
     vreg_set_voltage(VREG_VOLTAGE_1_30);
@@ -253,6 +249,9 @@ int main() {
     set_sys_clock_khz(250000, true);
 
     sleep_ms(2500);
+
+    // --- DISPARA O CORE 1 PARA CUIDAR DO PS/2 ---
+    multicore_launch_core1(core1_entry);
 
     // --- CONFIGURAÇÃO DA PIO PARA O BARRAMENTO M68K ---
     PIO pio_barramento = pio0; // Escolhe o bloco PIO 0
@@ -299,7 +298,5 @@ int main() {
 
         // Atende a PIO o mais rápido possível caso o m68k tenha pedido algo
         gerenciar_barramento_m68k(pio_barramento, sm_m68k);
-
-       
     }
 }

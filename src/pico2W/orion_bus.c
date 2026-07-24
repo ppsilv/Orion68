@@ -2,6 +2,7 @@
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
 #include "orion_bus.pio.h" // Cabeçalho gerado automaticamente pelo pioasm
+#include "ringbuffer.h"
 
 extern uint8_t *arquivo_buffer;
 extern bool arquivo_pronto;
@@ -20,7 +21,7 @@ extern uint32_t arquivo_crc32;
 
 void __not_in_flash_func(gerenciar_barramento_m68k)(PIO pio, uint sm){
     if (!pio_sm_is_rx_fifo_empty(pio, sm)) {
-        sio_hw->gpio_set = (1 << 19);
+        //sio_hw->gpio_set = (1 << 19);
 
         uint16_t pacote = pio_sm_get_blocking(pio, sm);
         uint8_t operacao  = (pacote >> 14) & 0x03; // Bits 15:14 (0x0 = Escrita, 0x1 = Leitura)
@@ -81,14 +82,20 @@ void __not_in_flash_func(gerenciar_barramento_m68k)(PIO pio, uint sm){
                 arquivo_pronto = 0x0;
                 byte_resposta = 0x0;
                 break;
+            case 0x09:
+                if(kb_available()){
+                    kb_get(&byte_resposta);
+                }else{
+                    byte_resposta=0xFF;
+                }
+                break;    
             default:
                 byte_resposta = 0xFF;
                 break;
         }
         if( operacao == OPER_LEITURA )
             pio_sm_put(pio, sm, byte_resposta);
-        sio_hw->gpio_clr = (1 << 19);
-
+        //sio_hw->gpio_clr = (1 << 19);
     }
 }
 

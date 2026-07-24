@@ -4,6 +4,9 @@ OBJCOPY = m68k-elf-objcopy
 
 CFLAGS = -Wall -O0 -I ./includes -I../../include -ffreestanding -nostdlib
 CFLAGS += -DCHIP_$(CHIP_TYPE) -DROM_SIZE_BYTES=$(ROM_SIZE)
+CFLAGS += -fomit-frame-pointer
+
+
 
 LDFLAGS = -T ./orion68.ld -L../../lib -nostdlib  -Map=orion68.map
 LDLIBS = -lc68k
@@ -20,8 +23,8 @@ SRCS = orion68.c vectors.c console.c \
 ./shell/printerro.c \
 ./shell/commands.c \
 ./shell/decodecmd.c \
-./shell/srecord.c \
 ./shell/crc32.c \
+./shell/ringbuffer.c \
 ./kbd/drv_kbd.c \
 ./kbd/keycodes_ps2.c \
 ./kbd/kbdps2.c \
@@ -35,6 +38,8 @@ SRCS = orion68.c vectors.c console.c \
 ./fatfs/diskio.c \
 ./tst_fat/tstfat.c \
 timers.c interrupt.c
+
+#./shell/srecord.c \
 
 
 #./fatfs/diskio.c \

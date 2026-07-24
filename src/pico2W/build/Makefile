@@ -143,6 +143,19 @@ pds200Pico2_orion_bus_pio_h/fast:
 .PHONY : pds200Pico2_orion_bus_pio_h/fast
 
 #=============================================================================
+# Target rules for targets named pds200Pico2_ps2_keyboard_pio_h
+
+# Build rule for target.
+pds200Pico2_ps2_keyboard_pio_h: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 pds200Pico2_ps2_keyboard_pio_h
+.PHONY : pds200Pico2_ps2_keyboard_pio_h
+
+# fast build rule for target.
+pds200Pico2_ps2_keyboard_pio_h/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pds200Pico2_ps2_keyboard_pio_h.dir/build.make CMakeFiles/pds200Pico2_ps2_keyboard_pio_h.dir/build
+.PHONY : pds200Pico2_ps2_keyboard_pio_h/fast
+
+#=============================================================================
 # Target rules for targets named bs2_default
 
 # Build rule for target.
@@ -4559,6 +4572,78 @@ pds200.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pds200Pico2.dir/build.make CMakeFiles/pds200Pico2.dir/pds200.c.s
 .PHONY : pds200.c.s
 
+pds200_1.o: pds200_1.c.o
+.PHONY : pds200_1.o
+
+# target to build an object file
+pds200_1.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pds200Pico2.dir/build.make CMakeFiles/pds200Pico2.dir/pds200_1.c.o
+.PHONY : pds200_1.c.o
+
+pds200_1.i: pds200_1.c.i
+.PHONY : pds200_1.i
+
+# target to preprocess a source file
+pds200_1.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pds200Pico2.dir/build.make CMakeFiles/pds200Pico2.dir/pds200_1.c.i
+.PHONY : pds200_1.c.i
+
+pds200_1.s: pds200_1.c.s
+.PHONY : pds200_1.s
+
+# target to generate assembly for a file
+pds200_1.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pds200Pico2.dir/build.make CMakeFiles/pds200Pico2.dir/pds200_1.c.s
+.PHONY : pds200_1.c.s
+
+ps2_keyboard.o: ps2_keyboard.c.o
+.PHONY : ps2_keyboard.o
+
+# target to build an object file
+ps2_keyboard.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pds200Pico2.dir/build.make CMakeFiles/pds200Pico2.dir/ps2_keyboard.c.o
+.PHONY : ps2_keyboard.c.o
+
+ps2_keyboard.i: ps2_keyboard.c.i
+.PHONY : ps2_keyboard.i
+
+# target to preprocess a source file
+ps2_keyboard.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pds200Pico2.dir/build.make CMakeFiles/pds200Pico2.dir/ps2_keyboard.c.i
+.PHONY : ps2_keyboard.c.i
+
+ps2_keyboard.s: ps2_keyboard.c.s
+.PHONY : ps2_keyboard.s
+
+# target to generate assembly for a file
+ps2_keyboard.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pds200Pico2.dir/build.make CMakeFiles/pds200Pico2.dir/ps2_keyboard.c.s
+.PHONY : ps2_keyboard.c.s
+
+ringbuffer.o: ringbuffer.c.o
+.PHONY : ringbuffer.o
+
+# target to build an object file
+ringbuffer.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pds200Pico2.dir/build.make CMakeFiles/pds200Pico2.dir/ringbuffer.c.o
+.PHONY : ringbuffer.c.o
+
+ringbuffer.i: ringbuffer.c.i
+.PHONY : ringbuffer.i
+
+# target to preprocess a source file
+ringbuffer.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pds200Pico2.dir/build.make CMakeFiles/pds200Pico2.dir/ringbuffer.c.i
+.PHONY : ringbuffer.c.i
+
+ringbuffer.s: ringbuffer.c.s
+.PHONY : ringbuffer.s
+
+# target to generate assembly for a file
+ringbuffer.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pds200Pico2.dir/build.make CMakeFiles/pds200Pico2.dir/ringbuffer.c.s
+.PHONY : ringbuffer.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -4570,6 +4655,7 @@ help:
 	@echo "... bs2_default_bin"
 	@echo "... cyw43_driver_picow_cyw43_bus_pio_spi_pio_h"
 	@echo "... pds200Pico2_orion_bus_pio_h"
+	@echo "... pds200Pico2_ps2_keyboard_pio_h"
 	@echo "... pico_status_led_ws2812_pio_h"
 	@echo "... bs2_default"
 	@echo "... bs2_default_library"
@@ -5118,6 +5204,15 @@ help:
 	@echo "... pds200.o"
 	@echo "... pds200.i"
 	@echo "... pds200.s"
+	@echo "... pds200_1.o"
+	@echo "... pds200_1.i"
+	@echo "... pds200_1.s"
+	@echo "... ps2_keyboard.o"
+	@echo "... ps2_keyboard.i"
+	@echo "... ps2_keyboard.s"
+	@echo "... ringbuffer.o"
+	@echo "... ringbuffer.i"
+	@echo "... ringbuffer.s"
 .PHONY : help
 
 

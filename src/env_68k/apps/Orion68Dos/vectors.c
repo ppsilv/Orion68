@@ -1,11 +1,12 @@
-#include "stdio.h"
+#include <stdio.h>
 #include "io.h"
 #include "keyboard.h"
 #include "interrupt.h"
+#include "drv_ps2.h"
 
-extern volatile unsigned char rx_head;
-extern volatile unsigned char rx_tail;
-extern volatile char rx_buffer[RX_BUFFER_SIZE];
+//extern volatile unsigned char rx_head;
+//extern volatile unsigned char rx_tail;
+//extern volatile char rx_buffer[RX_BUFFER_SIZE];
 
 // A variável do tick agora é perfeitamente acessível pelo Assembly
 extern volatile long systemTick; 
@@ -51,7 +52,15 @@ unsigned long get_system_tick(void) {
     return tick;
 }
 
+void trata_int3_handler(){
+    //temque ler os dado do teclado e por no buffer circular
+    // 1. Lê o byte (essa leitura DEVE limpar a linha INT3 no Pico/Hardware)
+    uint8_t tecla = PICO_PS2_DATA_REG;
 
+    if ( kb_available() ) { // Se não estiver cheio
+       kb_put(tecla);
+    }    
+}
 
 /*
 #include "io.h"

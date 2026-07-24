@@ -37,9 +37,10 @@ project(pds200Pico2 C CXX ASM)
 pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
-add_executable(pds200Pico2 pds200.c orion_bus.c )
+add_executable(pds200Pico2 pds200.c pds200_1.c orion_bus.c ps2_keyboard.c ringbuffer.c)
 
 pico_generate_pio_header(pds200Pico2 ${CMAKE_CURRENT_SOURCE_DIR}/orion_bus.pio)
+pico_generate_pio_header(pds200Pico2 ${CMAKE_CURRENT_SOURCE_DIR}/ps2_keyboard.pio)
 
 pico_set_program_name(pds200Pico2 "pds200Pico2")
 pico_set_program_version(pds200Pico2 "0.1")

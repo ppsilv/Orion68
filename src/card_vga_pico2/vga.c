@@ -240,3 +240,91 @@ int main(){
 
 
 } // end main
+
+#include <string.h>
+#include <stdint.h>
+
+#define VBUFFER_SIZE     153600
+#define SCREEN_LINES     400
+#define BYTES_PER_LINE   (VBUFFER_SIZE / SCREEN_LINES) // 384 bytes por linha gráfica
+
+// Ajuste FONT_HEIGHT para a altura do seu caractere em pixels (ex: 16 pixels para 80x25)
+#define FONT_HEIGHT      16
+#define BYTES_PER_ROW    (BYTES_PER_LINE * FONT_HEIGHT) // 6.144 bytes por linha de texto
+
+extern uint8_t vga_video_data_array0[VBUFFER_SIZE];
+
+void scroll_up_graphics(void) {
+    // 1. Quantidade de bytes do framebuffer que sobem (153.600 - 6.144 = 147.456 bytes)
+    size_t bytes_para_copiar = VBUFFER_SIZE - BYTES_PER_ROW;
+
+    // 2. DMA copia da 2ª linha de texto em diante para o início do buffer
+    dma_memcpy(vga_video_data_array0,
+               vga_video_data_array0 + BYTES_PER_ROW,
+               bytes_para_copiar,
+               true);
+
+    // 3. Limpa a última linha de texto na parte inferior da tela (preenche com 0x00 = preto)
+    memset(vga_video_data_array0 + bytes_para_copiar, 0x00, BYTES_PER_ROW);
+}
+
+void __not_in_flash_func(dma_memcpy)(void *dest, const void *src, size_t num, bool block) {
+    if (num == 0) return;
+    if (num < DMA_MIN_XFER) {
+        // memmove, not memcpy: some callers (VRAM copy Esc[Z4, scrolls)
+        // pass overlapping ranges, which the incrementing DMA handled
+        // correctly for src > dest; memmove is safe for all overlaps.
+        memmove(dest, src, num);
+        return;
+    }
+
+    uint8_t *d = (uint8_t *)dest;
+    const uint8_t *s = (const uint8_t *)src;
+
+    dma_channel_config c = dma_channel_get_default_config(memcpy_dma_chan);
+    channel_config_set_read_increment(&c, true);
+    channel_config_set_write_increment(&c, true);
+
+    // Mismatched alignment: word-mode would corrupt — single byte DMA.
+    // Works for both blocking and non-blocking (src is caller-owned).
+    if ((((uintptr_t)d ^ (uintptr_t)s) & 3) != 0) {
+        channel_config_set_transfer_data_size(&c, DMA_SIZE_8);
+        dma_channel_configure(memcpy_dma_chan, &c, d, s, num, true);
+        if (block) dma_channel_wait_for_finish_blocking(memcpy_dma_chan);
+        return;
+    }
+
+    // Head: CPU-copy 0-3 bytes until both pointers are 4-byte aligned.
+    while (num > 0 && ((uintptr_t)d & 3) != 0) {
+        *d++ = *s++;
+        num--;
+    }
+    if (num == 0) return;
+
+    size_t words = num >> 2;
+    size_t tail = num & 3;
+
+    if (block) {
+        // Synchronous: word-DMA the bulk (if any), then CPU-copy the tail.
+        if (words > 0) {
+            channel_config_set_transfer_data_size(&c, DMA_SIZE_32);
+            dma_channel_configure(memcpy_dma_chan, &c, d, s, words, true);
+            dma_channel_wait_for_finish_blocking(memcpy_dma_chan);
+            size_t bulk = words << 2;
+            d += bulk;
+            s += bulk;
+        }
+        while (tail > 0) {
+            *d++ = *s++;
+            tail--;
+        }
+    } else if (tail == 0) {
+        // Async fast path: pure word DMA (num >= 4 guaranteed here).
+        channel_config_set_transfer_data_size(&c, DMA_SIZE_32);
+        dma_channel_configure(memcpy_dma_chan, &c, d, s, words, true);
+    } else {
+        // Async with tail bytes: single byte DMA covers the whole range.
+        channel_config_set_transfer_data_size(&c, DMA_SIZE_8);
+        dma_channel_configure(memcpy_dma_chan, &c, d, s, num, true);
+    }
+}
