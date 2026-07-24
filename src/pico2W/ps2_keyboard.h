@@ -18,8 +18,7 @@
 //enum ps2_pins {PA0=0, PA1, PA2, PA3, PA4, PA5, PA6, PS2_DATA_PIN=15, PS2_CLK_PIN, PIRQ=27};
 
 void initPS2(void);
-//unsigned char ps2GetChar(bool auto_print);
-//unsigned char ps2GetCharBlk(bool auto_print);
-void ps2Task(bool auto_print);
+void kbd_int_on();
+void kbd_int_off();
 
 #endif // P2_KEYBOARD_H_

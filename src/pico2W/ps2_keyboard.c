@@ -27,6 +27,8 @@ static bool shift;   // Shift indication
 static bool cntl;    // Control indication
 static bool caps;    // Caps Lock
 
+static bool bkd_int=false;
+
 void initPS2(void) {
     ps2_pio = pio1;
     ps2_pio_irq = PIO1_IRQ_1;
@@ -58,16 +60,30 @@ void initPS2(void) {
     // Now the GPIO pins for the Keyboard data to the VIA chip
     // GPIO pin setup
     //Initialize Interrupt request
-    //gpio_init(PIRQ);
-    //gpio_set_dir(PIRQ, GPIO_OUT);
-    //gpio_pull_down(PIRQ);
-    //gpio_put(PIRQ, 1);
+    gpio_init(PIRQ);
+    gpio_set_dir(PIRQ, GPIO_OUT);
+    gpio_pull_up(PIRQ);
+    printf("Settinf PIRQ to 1\n");
+    gpio_put(PIRQ, 1);
 
     pio_sm_clear_fifos(ps2_pio, ps2_sm);
     release = shift = cntl = caps = 0;
     printf("PS2 iniciado\n");
 }
 // clang-format off
+
+void kbd_int_on(){
+    if( bkd_int == false){
+        gpio_put(PIRQ, 0);
+        bkd_int = true;
+    }
+}
+void kbd_int_off(){
+    if( bkd_int == true){
+        gpio_put(PIRQ, 1);
+        bkd_int = false;
+    }
+}
 
 // SPECIAL CASE:
 //   Left Arrow:  scancode 107 -> Ascii 0x14   Esc[D
@@ -165,6 +181,7 @@ void ps2_ihandler(void) {
                 }
                 if (ascii) {
                     kb_put(ascii);
+                    kbd_int_on();
                 }
             }
             release = 0;

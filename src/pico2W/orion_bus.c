@@ -3,6 +3,7 @@
 #include "hardware/pio.h"
 #include "orion_bus.pio.h" // Cabeçalho gerado automaticamente pelo pioasm
 #include "ringbuffer.h"
+#include "ps2_keyboard.h"
 
 extern uint8_t *arquivo_buffer;
 extern bool arquivo_pronto;
@@ -83,6 +84,7 @@ void __not_in_flash_func(gerenciar_barramento_m68k)(PIO pio, uint sm){
                 byte_resposta = 0x0;
                 break;
             case 0x09:
+                kbd_int_off();
                 if(kb_available()){
                     kb_get(&byte_resposta);
                 }else{
