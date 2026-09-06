@@ -1,0 +1,8 @@
+*.zip
+insumos
+*.o
+*.elf
+*.lst
+*.map
+*.bin
+

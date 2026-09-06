@@ -1,0 +1,29 @@
+
+
+                                GAL20V8
+
+                          -------\___/-------
+                       NC |  1           24 | VCC
+                          |                 |
+                   CSSMIO |  2           23 | NC
+                          |                 |
+                   DTAUTO |  3           22 | DTACK
+                          |                 |
+                   DTSMIO |  4           21 | NC
+                          |                 |
+                   DTPVGA |  5           20 | NC
+                          |                 |
+                   CSPVGA |  6           19 | NC
+                          |                 |
+                  DTDUART |  7           18 | NC
+                          |                 |
+                  CSDUART |  8           17 | NA
+                          |                 |
+                       NC |  9           16 | NC
+                          |                 |
+                       NC | 10           15 | NC
+                          |                 |
+                       NC | 11           14 | NC
+                          |                 |
+                      GND | 12           13 | NC
+                          -------------------

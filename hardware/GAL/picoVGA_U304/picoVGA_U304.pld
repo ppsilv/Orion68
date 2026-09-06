@@ -1,0 +1,56 @@
+GAL16V8
+CHIP_U304_V2
+
+;Pinagem OLD
+; 1  2   3   4   5     6   7    8   9    10
+;A15 A10 A09 A08 IOCS1 A11 IOWR  AS IOCS GND
+;11  12  13  14  15  16  17   18  19   20
+;A14  UDS A13 A12  NC  Y4  Y3   Y2  Y1  VCC
+
+;Pinagem NEW V2 04/08/2026
+;acrescentado A16~A19 e trocado AS de pin 12 to pin 17 em 27/08/2026
+;1 2  3   4   5   6   7   8   9    10
+A8 A9 A10 A11 A12 A13 A14 A15 IOCS GND
+;11   12 13   14  15  16  17   18  19   20
+IOCS1 NC A16  A17 A18 A19 AS   Y2  Y1   VCC
+
+
+
+
+
+;FF80
+/Y1 = /AS * /IOCS * /IOCS1 * A15 * /A14 * /A13 * /A12 * /A11 * /A10 * /A9 * /A8
+;;faixa de 0xFE0000 a 0xFEFFFF, bloco de 64 KB).
+/Y2 = /AS * /IOCS  * A19 * A18 * A17 * /A16
+;;FFA0
+;;/Y3 =  /IOWR * /IOCS * /IOCS1 * A15 * /A14 *  A13 * /A12 * /A11 * /A10 * /A09 * /A08
+;;FFB0
+;;/Y4 =  /IOWR * /IOCS * /IOCS1 * A15 * /A14 *  A13 *  A12 * /A11 * /A10 * /A09 * /A08
+
+DESCRIPTION
+Modo simple.
+
+Sintese
+galasm picoVGA_U304.pld
+
+Gravar
+minipro -p GAL16V8D -w picoVGA_U304.jed
+
+23 22 21 20  19 18 17 16  15 14 13 12  11 10 09 08  07 06 05 04  03 02 01 00
+ 1  1  1  1   1  1  1  1   1  0  0  0   0  0  0  0   0  0  0  0   0  0  0  0
+ F            F            8            0            0            0
+ 1  1  1  1   1  1  1  1   1  0  0  1   0  0  0  0   0  0  0  0   0  0  0  0
+ F            F            9            0            0            0
+ 1  1  1  1   1  1  1  1   1  0  1  0   0  0  0  0   0  0  0  0   0  0  0  0
+ F            F            A            0            0            0
+ 1  1  1  1   1  1  1  1   1  0  1  1   0  0  0  0   0  0  0  0   0  0  0  0
+ F            F            B            0            0            0
+
+;FF8
+/Y1 =  /AS * /LDS * /CPUWR * /IOCS * A19 * A18 * A17 * A16 * A15 * /A14 * /A13 * /A12
+;FF9
+/Y2 =  /AS * /LDS * /CPUWR * /IOCS * A19 * A18 * A17 * A16 * A15 * /A14 * /A13 *  A12
+;FFA
+/Y3 =  /AS * /LDS * /CPUWR * /IOCS * A19 * A18 * A17 * A16 * A15 * /A14 *  A13 * /A12
+;FFB
+/Y4 =  /AS * /LDS * /CPUWR * /IOCS * A19 * A18 * A17 * A16 * A15 * /A14 *  A13 *  A12

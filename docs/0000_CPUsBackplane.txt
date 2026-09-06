@@ -1,0 +1,15 @@
+O Panteão do Backplane Orion
+1 - Motorola 68000: 16 bits nativo, linear, o rei atual do sistema.
+2 - Intel 80C286: 16 bits, o monstro que vai herdar suas placas de RAM lineares.
+3 - TMS9900 (TI): 16 bits puro, mas com o mapa compacto de 64KB e organização Even/Odd.
+4 - Intel 8086: 16 bits legítimo, barramento multiplexado e segmentação de memória por segmentos de 64KB.
+5 - Intel 8088: O irmão "pobre" do 8086, com alma de 16 bits por dentro, mas barramento externo de 8 bits (perfeito para
+    conversar com o Soquete 2 do seu Bloco 1).
+6 - Zilog Z80: 8 bits clássico, linhas /RD e /WR separadas, sinais de /MREQ e /IORQ.
+7 - Zilog Z180: Uma evolução fantástica do Z80! Ele tem uma MMU (Memory Management Unit)
+    interna que permite que essa CPU de 8 bits consiga endereçar até 1 Megabyte de RAM
+    física nativamente. Ele vai adorar seus blocos de memória extras!
+8 - MOS 6502 (ou 6508): 8 bits, barramento síncrono com o clock $\Phi_2$ e aquela linha
+    única R//W (em vez de /RD e /WR separados) que você já sabe como decodificar na ponta
+    dos dedos.
+9 - E o vovô Intel 8080 de 1980 na fila de espera!

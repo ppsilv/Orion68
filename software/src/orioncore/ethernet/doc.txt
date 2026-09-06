@@ -1,0 +1,67 @@
+O Mapa Mental do Socket do W5100O W5100 tem 4 sockets (0 a 3). Cada um tem seus próprios registradores em uma base específica:Socket 0: Base $0400Socket 1: Base $0500Socket 2: Base $0600Socket 3: Base $0700Para qualquer operação que formos fazer abaixo, usaremos estes offsets básicos dos registradores de socket:RegistradorOffsetFunçãoSn_MR$0000Modo (TCP, UDP, etc.)Sn_CR$0001Comando (OPEN, CONNECT, SEND, etc.)Sn_SR$0003Status Atual do SocketSn_PORT$0004Porta de Origem (2 bytes)Sn_DIPR$000CIP de Destino (4 bytes)Sn_DPORT$0010Porta de Destino (2 bytes)Passo a Passo: Estabelecendo uma Conexão TCP (Cliente)1.Abrir o Socket:Configura o modo de operação inicial.Diga ao chip que o Socket 0 será um socket TCP e atribua uma porta local de origem (por exemplo, a porta temporária $C000, que é 49152 em decimal).C#define S0_BASE 0x0400
+
+// 1. Configura Socket 0 para modo TCP
+W51_write(S0_BASE + 0x0000, 0x01); // Sn_MR = TCP (0x01)
+
+// 2. Define a porta local de origem (ex: 49152 -> 0xC0 e 0x00)
+W51_write(S0_BASE + 0x0004, 0xC0); // Sn_PORT MSB
+W51_write(S0_BASE + 0x0005, 0x00); // Sn_PORT LSB
+
+// 3. Envia o comando OPEN
+W51_write(S0_BASE + 0x0001, 0x01); // Sn_CR = OPEN (0x01)
+
+// 4. Aguarda o status mudar para SOCK_INIT (0x13)
+while (W51_read(S0_BASE + 0x0003) != 0x13);
+2.Conectar ao Servidor:Define o destino e inicia o handshake TCP.Agora, configure o IP e a porta do servidor ao qual o OrionDOS quer se conectar (por exemplo, o IP 192.168.1.100 na porta 80).C// 1. Define o IP de destino (192.168.1.100)
+W51_write(S0_BASE + 0x000C, 192); // Sn_DIPR
+W51_write(S0_BASE + 0x000D, 168);
+W51_write(S0_BASE + 0x000E, 1);
+W51_write(S0_BASE + 0x000F, 100);
+
+// 2. Define a porta de destino (80 -> 0x00 e 0x50)
+W51_write(S0_BASE + 0x0010, 0x00); // Sn_DPORT MSB
+W51_write(S0_BASE + 0x0011, 0x50); // Sn_DPORT LSB
+
+// 3. Envia o comando CONNECT
+W51_write(S0_BASE + 0x0001, 0x04); // Sn_CR = CONNECT (0x04)
+
+// 4. Aguarda estabelecer a conexão (SOCK_ESTABLISHED = 0x17)
+// O W5100 cuidará de todo o handshake TCP de 3 vias em segundo plano!
+while (W51_read(S0_BASE + 0x0003) != 0x17) {
+    if (W51_read(S0_BASE + 0x0003) == 0x00) {
+        // Se voltar para SOCK_CLOSED (0x00), a conexão falhou
+        return ERRO_CONEXAO;
+    }
+}
+3.Enviar Dados:Escreve na memória física de TX do chip.Com a conexão estabelecida (0x17), você pode enviar dados (como um comando HTTP GET / HTTP/1.1\r\n\r\n).O segredo aqui é que você não escreve os dados nos registradores, você os escreve na memória de transmissão (TX Buffer) dedicada do Socket 0, que fica mapeada fisicamente a partir do endereço $4000 do W5100.Como escrever dados no Buffer de Transmissão (TX Buffer)Escrever no buffer do W5100 exige ler o Ponteiro de Escrita (Sn_TX_WR) do chip, copiar os dados a partir daquela posição física e depois atualizar o ponteiro para avisar o chip que o dado está pronto para ser enviado pelo cabo.Aqui está a rotina prática em C para enviar uma string de dados:Cvoid S0_enviar(unsigned char *dados, unsigned int tamanho) {
+    unsigned int ptr;
+    unsigned int offset;
+    unsigned int p_destino;
+
+    // 1. Lê o ponteiro de escrita atual do Socket 0 (são 2 bytes)
+    ptr = W51_read(S0_BASE + 0x0024) << 8; // Sn_TX_WR MSB
+    ptr |= W51_read(S0_BASE + 0x0025);     // Sn_TX_WR LSB
+
+    // 2. Calcula o deslocamento físico dentro do buffer circular de 2KB
+    // O W5100 usa buffers circulares. O tamanho padrão do S0 TX é 2KB (máscara 0x07FF)
+    // A base física do buffer de transmissão do Socket 0 é 0x4000
+    for(unsigned int i = 0; i < tamanho; i++) {
+        offset = (ptr + i) & 0x07FF;       // Garante que o ponteiro dê a volta se estourar 2KB
+        p_destino = 0x4000 + offset;       // Endereço absoluto na memória do W5100
+        
+        W51_write(p_destino, dados[i]);    // Grava o byte direto no hardware!
+    }
+
+    // 3. Atualiza o ponteiro de escrita no chip somando o tamanho enviado
+    ptr += tamanho;
+    W51_write(S0_BASE + 0x0024, (ptr & 0xFF00) >> 8);
+    W51_write(S0_BASE + 0x0025, (ptr & 0x00FF));
+
+    // 4. Envia o comando SEND para despachar o pacote físico
+    W51_write(S0_BASE + 0x0001, 0x20); // Sn_CR = SEND (0x20)
+
+    // 5. Aguarda o chip terminar de transmitir (o comando limpa para 0x00)
+    while(W51_read(S0_BASE + 0x0001) != 0x00);
+}
+E para fechar a conexão?Quando terminar de transmitir ou receber seus dados, basta enviar o comando de desconexão amigável do TCP (Disconnect):CW51_write(S0_BASE + 0x0001, 0x08); // Sn_CR = DISCON (0x08)
+O W5100 vai negociar o encerramento do canal com o servidor de forma limpa. Se o servidor demorar ou não responder, você força o fechamento absoluto com o comando CLOSE (0x10).

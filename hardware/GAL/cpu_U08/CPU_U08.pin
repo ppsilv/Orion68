@@ -1,0 +1,25 @@
+
+
+ Pin # | Name     | Pin Type
+-----------------------------
+   1   | A17      | Input
+   2   | A20      | Input
+   3   | A21      | Input
+   4   | A22      | Input
+   5   | A23      | Input
+   6   | AS       | Input
+   7   | RW       | Input
+   8   | A18      | Input
+   9   | BOOTIN   | Input
+  10   | GND      | GND
+  11   | A19      | Input
+  12   | TST      | Output
+  13   | CPURD    | Output
+  14   | NC       | NC
+  15   | NC       | NC
+  16   | KILLBT   | Output
+  17   | NC       | NC
+  18   | RAMCS    | Output
+  19   | ROMCS    | Output
+  20   | VCC      | VCC
+

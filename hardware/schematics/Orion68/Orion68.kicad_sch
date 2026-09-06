@@ -1,0 +1,380 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "c7ab032b-c937-44de-ab42-c91dee57f0a8")
+	(paper "A4")
+	(lib_symbols)
+	(text "2026-03-14"
+		(exclude_from_sim no)
+		(at 212.852 193.548 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "28e8e7f5-96c8-44a4-9cad-2f8bc87a6148")
+	)
+	(text "Orion68 Project"
+		(exclude_from_sim no)
+		(at 190.246 169.164 0)
+		(effects
+			(font
+				(size 2 2)
+			)
+		)
+		(uuid "33934b7d-4f99-47ab-bcc4-4cb0986ee0a2")
+	)
+	(text "Orion68 Project"
+		(exclude_from_sim no)
+		(at 199.136 189.738 0)
+		(effects
+			(font
+				(size 2 2)
+			)
+		)
+		(uuid "79b083b4-3b1b-4b7b-931d-92a17869ebf5")
+	)
+	(sheet
+		(at 19.304 103.378)
+		(size 32.258 4.572)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "1442d4b3-66d6-41f9-bdb6-3593017f1fe0")
+		(property "Sheetname" "Ogion68-IOsupport"
+			(at 19.304 102.6664 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "io_support.kicad_sch"
+			(at 19.304 108.5346 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Orion68"
+				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8"
+					(page "8")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 19.05 77.47)
+		(size 32.385 6.35)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "1bdbcacb-159b-4ff3-87ae-5293e1e37caa")
+		(property "Sheetname" "Orion68-CPU_nmos"
+			(at 19.05 76.7584 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "cpu2.kicad_sch"
+			(at 19.05 84.4046 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Orion68"
+				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 19.05 115.57)
+		(size 32.258 4.572)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "5455728c-12b6-4d1f-a689-04b2dec68816")
+		(property "Sheetname" "Ogion68-PSUcontrol"
+			(at 19.05 114.8584 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "ide.kicad_sch"
+			(at 19.05 120.7266 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Orion68"
+				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 19.05 65.405)
+		(size 32.385 5.08)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "6c2d668a-a194-44c2-860c-16ce1cfea6c2")
+		(property "Sheetname" "Orion68-VID"
+			(at 19.05 64.6934 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "orion68vid.kicad_sch"
+			(at 19.05 71.0696 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Orion68"
+				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 19.05 36.83)
+		(size 32.385 6.35)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "70b7defe-43f8-4fe6-9382-ae901438ae75")
+		(property "Sheetname" "Orion68-MEM"
+			(at 19.05 36.1184 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "orion68mem.kicad_sch"
+			(at 19.05 43.7646 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Orion68"
+				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 19.05 91.44)
+		(size 32.385 4.445)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "9ea1fc6c-f3d0-4278-b5d2-ecc48a15664e")
+		(property "Sheetname" "Orion68-serial"
+			(at 19.05 90.7284 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "orion68_serial.kicad_sch"
+			(at 19.05 96.4696 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Orion68"
+				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8"
+					(page "7")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 19.685 50.8)
+		(size 31.75 7.62)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "a3cb64b8-9a58-4dca-a498-ee5e38308bd0")
+		(property "Sheetname" "Orion68-IO"
+			(at 19.685 50.0884 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "orion68io.kicad_sch"
+			(at 19.685 59.0046 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Orion68"
+				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 19.05 23.495)
+		(size 32.385 5.715)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "d92fcd44-da66-430f-987f-be7edff43e49")
+		(property "Sheetname" "Orion68-CPU_cmos"
+			(at 19.05 22.7834 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "orion68cpu2.kicad_sch"
+			(at 19.05 29.7946 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "Orion68"
+				(path "/c7ab032b-c937-44de-ab42-c91dee57f0a8"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
+)

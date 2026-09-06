@@ -1,0 +1,19 @@
+
+MC68000
+https://github.com/ddraig68k?tab=repositories
+https://jabberwocky.ca/projects/computie/
+
+68katy
+disassembler
+https://www.bigmessowires.com/68katy-files/monitor.asm
+uClinux-20040218.tar.gz – This is my modified version of uClinux. It includes code for kernels 2.0, 2.4, and 2.6, but I only ported kernel 2.0 for 68 Katy. Search the code for “68KATY” to find my changes.
+m68k-elf-tools-20030314 – You’ll need a 68K cross compiler and other tools in order to build the uClinux source code. I used m68k toolchain 20030314. It’s supposed to be a self-extracting shell script, but that didn’t work for me. I had to extract it manually, like this:
+user@ubuntu$ tail -n +43 m68k-elf-tools-20030314.sh | gunzip > tools.tar
+user@ubuntu$ tar xvf tools.tar
+
+
+286:
+https://github.com/open-watcom/open-watcom-v2/releases/tag/Current-build
+https://www.rehsdonline.com/post/using-c-c-with-my-286
+
+
