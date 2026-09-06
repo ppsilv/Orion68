@@ -1,2 +1,2 @@
 # Orion68
-Orion68 pequeno sistema para o mc68000
+Orion68 a litle system for mc68000

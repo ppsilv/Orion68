@@ -270,12 +270,12 @@ void start_tcp_server() {
 #include "hardware/pio.h"
 #include "orion_bus.pio.h" // Cabeçalho gerado automaticamente pelo pioasm
 
-extern void init_kbd();
 
 extern void ch9350_shut_up();
-extern int get_char_nonblocking(void);
-extern void kbd_poll(void);
-extern void kbd_int_on();
+//extern void init_kbd();
+//extern int get_char_nonblocking(void);
+//extern void kbd_poll(void);
+//extern void kbd_int_on();
 // ============================================================================
 // --- FUNÇÃO EXECUTADA NO CORE 1 (DEDICADO EXCLUSIVAMENTE AO TECLADO PS/2) ---
 // ============================================================================
@@ -302,18 +302,17 @@ void core1_entry(void) {
     start_tcp_server();
 
     char ch;
-    init_kbd();
+//    init_kbd();
 
     while (true) {
         cyw43_arch_poll();
-        kbd_poll();                    /* nunca bloqueia -- consome o que a UART tiver */
-
-        int ch = get_char_nonblocking();
-        if (ch >= 0) {
-            printf("%c", (char)ch);
-            pio_sm_put(pio0, 0, (char)ch);
-            kbd_int_on();
-        }
+//      kbd_poll();                    /* nunca bloqueia -- consome o que a UART tiver */
+//      int ch = get_char_nonblocking();
+//      if (ch >= 0) {
+//          printf("%c", (char)ch);
+//          pio_sm_put(pio0, 0, (char)ch);
+//          kbd_int_on();
+//      }
         tight_loop_contents();
     }
 }

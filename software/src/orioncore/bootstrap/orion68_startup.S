@@ -281,18 +281,39 @@ bootstrap_string:
         .byte   13, 10, 0
 .align 2        /* <--- CRÍTICO: Garante que o PRÓXIMO arquivo linkado comece em endereço PAR */
 
-/*
-        MEMORY ADDRESS
-
-0x00000000      TO      0x00000002      =       RESET VECTOR
-0x00000004      TO      0x0000003E      =       INTERRUPT VECTORS
-0x00000040      TO      0x0000007E      =       TRAP VECTORS
-
-*/
-/*        MOVE.L %A4,0x80000*/
-        /*; 2. Alinha o endereço (Garante que é múltiplo de 4)*/
-        /*; Se A0 terminar em um endereço ímpar ou não alinhado a 32 bits,*/
-        /*; esta operação arredonda o valor para baixo (área segura da RAM).*/
-/*        MOVE.L  %A4,%D0 */
-/*        ANDI.L  #0xFFFFFFFC,%D0*/    /*; Limpa os 2 bits menos significativos (alinha a 4 bytes)*/
-/*        MOVE.L  %D0,%A7 */           /*; Seta o Stack Pointer (A7 / SP) com o valor seguro*/
+SvcBusError:
+Svcaddress_err:
+SvcIllegalIns:
+SvcDiv0_handler:
+SvcChkIns:
+SvcTrapvIns:
+SvcPrivViolation:
+SvcTrace:
+SvcLineA:
+SvcLineF:
+bad_exception:
+SpuriousHandler:
+Int1Handler:
+Int2Handler:
+Int3Handler:
+Int4Handler:
+Int5Handler:
+Int6Handler:
+Int7Handler:
+Trap0Handler:
+Trap1Handler:
+Trap2Handler:
+Trap3Handler:
+Trap4Handler:
+Trap5Handler:
+Trap6Handler:
+Trap7Handler:
+Trap8Handler:
+Trap9Handler:
+TrapAHandler:
+TrapBHandler:
+TrapCHandler:
+TrapDHandler:
+TrapEHandler:
+TrapFHandler:
+        rte         /* Só retorna sem quebrar nada */

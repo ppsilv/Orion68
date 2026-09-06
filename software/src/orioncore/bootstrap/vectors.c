@@ -28,11 +28,9 @@ unsigned long TRAP14_Handler(unsigned long d0_val, unsigned long d1_val) {
             break;
         case 3: 
             ch = uart0_read_timeout(); 
-            printf("TRAP14_Handler: Retornando com ch... [%02x]\n", ch);
             retorno_final = (unsigned long)ch; // Garante os 32 bits limpos aqui
             break;
         default:
-            printf("\n\nQUE MERDA É ESSA: D1 era %ld\n\n\n\n", d1_val);
             break;
     }
     
@@ -59,7 +57,6 @@ void trata_int3_handler(uint8_t tecla){
     if(tecla >0x00)
         kb_put(tecla);
 //    kb_put('X');
-//    printf("%02x",tecla);
 }
 */
 /*

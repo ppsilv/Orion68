@@ -281,6 +281,9 @@ void kbd_poll(void)
             break;
 
         case KBD_WAIT_CMD:
+            //if (c != 0x82) {
+            //    printf("[KBD CMD=0x%02X]\n", c); 
+            //}
             if (c == 0x81) {
                 kbd_state = KBD_81_WAIT_TYPE;
             } else if (c == 0x82) {

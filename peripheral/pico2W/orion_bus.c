@@ -26,11 +26,13 @@ int i=0,j=0;
 uint32_t crc32_calculate(const uint8_t *buffer, size_t length) ;
 
 void __not_in_flash_func(gerenciar_barramento_m68k)(PIO pio, uint sm){
-    if (!pio_sm_is_rx_fifo_empty(pio, sm)) {
 
+    if (!pio_sm_is_rx_fifo_empty(pio, sm)) {
+        printf(".");
         kbd_int_off();
 
-        uint16_t pacote = pio_sm_get_blocking(pio, sm);
+        //uint16_t pacote = pio_sm_get_blocking(pio, sm);
+        uint16_t pacote = pio_sm_get(pio, sm);
         uint8_t operacao  = (pacote >> 14) & 0x03; // Bits 15:14 (0x0 = Escrita, 0x1 = Leitura)
         uint8_t reg       = (pacote >> 8)  & 0x3F; // Bits 13:8  (Endereço A1-A6: 0x00 a 0x3F)
         uint8_t dado_m68k = pacote & 0xFF;        // Bits 7:0   (Dado D0-D7)

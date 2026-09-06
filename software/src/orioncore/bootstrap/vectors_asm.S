@@ -142,9 +142,6 @@ Int2Handler:
 .action_200:
     move.b  #0x08,0xFF901F        
     clr.w   tick_count   
-    move.w  #0x2700, %sr  /*Desable all interrupts supervisor mode*/       
-    jsr     do_save2
-    move.w  #0x2000, %sr  /*Enable all interrupts supervisor mode*/    
     movem.l (%sp)+,%d0-%d7/%a0-%a6
     rte
 

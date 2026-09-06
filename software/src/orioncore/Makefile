@@ -3,50 +3,38 @@ LD = m68k-elf-ld
 OBJCOPY = m68k-elf-objcopy
 VASM = vasmm68k_mot 
 
-CFLAGS = -Wall -O0 -I ./includes -I../include -ffreestanding -nostdlib
+CFLAGS = -Wall -Os -I ./includes -I../include -ffreestanding -nostdlib
 CFLAGS += -DCHIP_$(CHIP_TYPE) -DROM_SIZE_BYTES=$(ROM_SIZE)
 CFLAGS += -fomit-frame-pointer
 
 VASMFLAGS = -Felf -m68000 -quiet -I ./includes -I../include
 
 LDFLAGS = -T ./orioncore.ld -L../lib -nostdlib  -Map=orioncore.map
-LDLIBS = -lfileio -lc68k -lvideo
-
+LDLIBS = -lc68k 
 # 1. ADICIONADO: Lista de arquivos em Assembly (.S)
-ASMS = ./bootstrap/orion68_startup.S ./bootstrap/vectors_asm.S \
-./sys/traps/trap2_asm.S \
-./sys/traps/trap4_asm.S \
-./sys/traps/trap12_asm.S \
-./duart/duartasm.S 
+ASMS = ./bootstrap/orion68_startup.S \
+./drivers_raw/duart/duartasm.S 
 
 
 VASMS =
 
 # Lista de arquivos C
-SRCS = orioncore.c timers.c interrupt.c \
-./dump/mem_dump.c \
-./shell/io.c \
-./shell/picow.c \
-./shell/elf_loader.c \
-./shell/printerro.c \
-./shell/commands.c \
-./shell/decodecmd.c \
-./shell/crc32.c \
-./shell/cmd_repeat.c \
-./shell/vid_ram_bios.c \
-./shell/shell_history.c \
-./kbd/ringbuffer.c \
-./rtc/i2cbb.c \
-./uarts/drv_uart0.c \
-./duart/duart.c \
-./sys/traps/trap12.c \
-./bootstrap/vectors.c \
-./sys/console/console.c \
-./sys/ethernet/dhcp_client.c \
-./picoVga/drv_picoVga.c \
-./ide/ata.c \
-./ide/diskio.c
+SRCS = orioncore.c ./corelibs/printf.c \
+./drivers_raw/kbd/ringbuffer.c \
+./drivers_raw/duart/duart.c \
+./drivers_raw/picoVga/drv_picoVga.c \
+./drivers_raw/ide/ata.c \
+./drivers_raw/ide/diskio.c \
+./drivers_raw/ethernet/dhcp_client.c \
+./drivers_raw/picow.c \
+../libs/libc/libfileio/src/fatfs/ff.c \
+../libs/libc/libfileio/src/fatfs/ffsystem.c \
+../libs/libc/libfileio/src/fatfs/ffunicode.c \
+./shell/elf_loader.c ./shell/shell.c ./shell/commands.c  ./shell/printerro.c ./shell/shell_history.c 
 
+
+
+#./sys/ethernet/dhcp_client.c \
 #./tst_fat/tstfat.c
 #./picoVga/drv_picoVga.c \
 

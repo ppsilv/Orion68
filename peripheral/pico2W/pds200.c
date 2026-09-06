@@ -24,6 +24,12 @@ extern void sdtest(void);
 #define SYSINFO_BASE   0x40000000UL
 #define CHIP_ID_REG    (*(volatile uint32_t *)(SYSINFO_BASE + 0x00))
 
+extern void init_kbd();
+extern int get_char_nonblocking(void);
+extern void kbd_poll(void);
+extern void kbd_int_on();
+
+
 int get_chip_id(void)
 {
     uint32_t id = CHIP_ID_REG;
@@ -102,6 +108,7 @@ int main() {
 //    start_tcp_server();
 
     kb_init();
+    init_kbd();
     initPS2();
     init_sdcard();
     // Main background execution loop
@@ -111,5 +118,15 @@ int main() {
         // Atende a PIO o mais rápido possível caso o m68k tenha pedido algo
         gerenciar_barramento_m68k(pio_barramento, sm_m68k);
         //gerenciar_barramento_m68k(pio_barramento, sm_m68k1);
+        
+        kbd_poll();                    /* nunca bloqueia -- consome o que a UART tiver */
+
+        int ch = get_char_nonblocking();
+        if (ch >= 0) {
+            printf("%c,%x", (char)ch,(char)ch);
+            pio_sm_put(pio0, 0, (char)ch);
+            kbd_int_on();
+        }
+
     }
 }
