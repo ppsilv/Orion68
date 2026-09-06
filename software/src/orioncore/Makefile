@@ -19,7 +19,7 @@ ASMS = ./bootstrap/orion68_startup.S \
 VASMS =
 
 # Lista de arquivos C
-SRCS = orioncore.c ./corelibs/printf.c \
+SRCS = orioncore.c ./corelibs/printf.c ./bootstrap/jumptable.c \
 ./drivers_raw/kbd/ringbuffer.c \
 ./drivers_raw/duart/duart.c \
 ./drivers_raw/picoVga/drv_picoVga.c \

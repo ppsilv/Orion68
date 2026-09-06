@@ -5,7 +5,7 @@ OBJCOPY = m68k-elf-objcopy
 CFLAGS = -Wall -Os -Wa,-adhln=w5100.lst -I../../include -ffreestanding -nostdlib -D __68000__ -D ALIGN_MEMORY
 #CFLAGS = -Wall -Os -I../include -ffreestanding -nostdlib -Dmain=main_with_exit
 LDFLAGS = -T ./linker.ld -L../../lib -nostdlib -L../../lib
-LDLIBS = -lfileio -lc68k -lvideo -lrtc
+LDLIBS =  -lc68k 
 
 SRCS = $(wildcard *.c)
 OBJS = $(SRCS:.c=.o)
@@ -20,7 +20,7 @@ all: receiver.bin
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Regra específica para cada arquivo para evitar problemas com $<
-receiver.elf: $(OBJS)  ../../libc/obj/crt0.o ../../libc/obj/startup.o
+receiver.elf: $(OBJS)  ../../libs/libc/obj/libc/src/crt0.o
 	$(LD) $(LDFLAGS) $(OBJS) -o $@ $(LDLIBS)
 	@echo "Linked: $@"
 
