@@ -7,7 +7,7 @@ ROOT_DIR=../../../
 APP = ob
 
 CFLAGS = -Wall -O0 -Wa,-adhln=$(APP).lst -I$(ROOT_DIR)/include -ffreestanding -nostdlib -D __68000__ -D ALIGN_MEMORY
-LDFLAGS = -T ./linker.ld -L../../libc/lib -nostdlib
+LDFLAGS = -T ../linker.ld -L../../libc/lib -nostdlib
 LDLIBS = -lc68bios
 SRCS = ob.c \
 ../apps_libs/fatfs/ff.c \

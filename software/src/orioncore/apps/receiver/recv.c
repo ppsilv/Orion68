@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <fileio.h>
+#include "../../../include/fatfs/ff.h"
+
+
+FATFS FatFs;
 
 #define W5100_BASE       0xFE0000UL
 #define W5100_REG(off)   ((volatile uint8_t *)(W5100_BASE + ((off) * 2) + 1))
@@ -44,12 +48,19 @@
 
 #define PICO_VGA_BASE 0x00FF8000
 #define WRITE_SCREEN   (*((volatile unsigned char *)(PICO_VGA_BASE + 0x01)))
-void picovga_putchar( char ch){
-    WRITE_SCREEN = ch;
-}
+
 
 static uint32_t tamanho_total = 0;
 
+void vputc(char ch){
+    WRITE_SCREEN = ch;
+}
+
+void vputs(const char *s){
+    while (*s) {
+        vputc(*s++);
+    }
+}
 
 void w5100_write(uint16_t reg, uint8_t val) {
     *W5100_REG(reg) = val;
@@ -264,9 +275,21 @@ void saving_file(){
     }
     printf("\n");
 }
-
+static void ideinit()
+{
+    FRESULT fr;
+    fr = f_mount(&FatFs, "", 0);
+    if (fr != FR_OK) {
+        printf("PANIC: Erro ao montar FAT\n");
+    }else{
+        printf(": FAT success mounted!\n");
+    }
+}
 int main(){
     printf("Receiver V1-NOPIC\nInitialing w5100\n");
+    vputs("Calling ideinit\n");
+    ideinit();
+    vputs("Calling w5100_init\n");
     w5100_init();
     printf("Calling w5100_getter_loop()\n");
     char resp= w5100_getter_loop();
