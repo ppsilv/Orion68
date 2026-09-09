@@ -10,7 +10,7 @@ static uint32_t tamanho_total = 0;
 
 #define W5100_BASE       0xFE0000UL
 #define W5100_REG(off)   ((volatile uint8_t *)(W5100_BASE + ((off) * 2) + 1))
-#define BUFFER_ARQUIVO   ((uint8_t *)0x00092000UL)
+#define BUFFER_ARQUIVO   ((uint8_t *)0x00082000UL)
 
 /* Tabela de registradores comuns */
 #define W5100_MR    0x0000 /* Mode Register */
@@ -290,7 +290,7 @@ static void ideinit()
 }
 
 int main(){
-    printf("Receiver V1-NOPIC\nInitialing w5100\n");
+    printf("Receiver V1orioncor-NOPIC\nInitialing w5100\n");
     vputs("Calling ideinit\n");
     ideinit();
     vputs("Calling w5100_init\n");

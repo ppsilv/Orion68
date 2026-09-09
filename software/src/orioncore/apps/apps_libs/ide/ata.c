@@ -377,7 +377,7 @@ int ata_init(void)
 
 	go_8bits_mode();   // <-- adicionar aqui, uma vez só
 
-	char *buffer=( char *)0x82000;
+	char buffer[1024];//=( char *)chbuf; //0x82000;
 
 	ata_read_sector(0, buffer);
 	read_partition_table(buffer, drives[0].parts);

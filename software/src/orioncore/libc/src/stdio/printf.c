@@ -2,7 +2,6 @@
 #include <stdarg.h>
 #include <string.h>
 
-
 /*
  *
     printf("=== Sistema MC68000 ===\n");
@@ -39,12 +38,8 @@
  *
  */
 
-// Função strlen simples
-//int strlen(const char *str) {
-//    int len = 0;
-//    while (*str++) len++;
-//    return len;
-//}
+extern void picovga_putchar(char x);
+extern void vputs(char *x);
 
 // Conversão de hexadecimal usando shifts (sem divisão)
 char *itox(unsigned int value, char *str) {
@@ -223,7 +218,7 @@ int printf(const char *format, ...) {
             switch (*format) {
                 case 'c': {
                     char c = (char)va_arg(args, int);
-                    putchar(c);
+                    picovga_putchar(c);
                     chars_printed++;
                     break;
                 }
@@ -235,7 +230,7 @@ int printf(const char *format, ...) {
                     if (zero_pad && width > 0) {
                         pad_zeros(buffer, width);
                     }
-                    puts(buffer);
+                    vputs(buffer);
                     chars_printed += strlen(buffer);
                     break;
                 }
@@ -246,7 +241,7 @@ int printf(const char *format, ...) {
                     if (zero_pad && width > 0) {
                         pad_zeros(buffer, width);
                     }
-                    puts(buffer);
+                    vputs(buffer);
                     chars_printed += strlen(buffer);
                     break;
                 }
@@ -254,7 +249,7 @@ int printf(const char *format, ...) {
                 case 'f':
                 case 'F': {
                     // Ignorar floats
-                    puts("[float]");
+                    vputs("[float]");
                     chars_printed += 7;
                     va_arg(args, double);
                     break;
@@ -263,10 +258,10 @@ int printf(const char *format, ...) {
                 case 's': {
                     char *str = va_arg(args, char*);
                     if (str) {
-                        puts(str);
+                        vputs(str);
                         chars_printed += strlen(str);
                     } else {
-                        puts("(null)");
+                        vputs("(null)");
                         chars_printed += 6;
                     }
                     break;
@@ -279,7 +274,7 @@ int printf(const char *format, ...) {
                     if (zero_pad && width > 0) {
                         pad_zeros(buffer, width);
                     }
-                    puts(buffer);
+                    vputs(buffer);
                     chars_printed += strlen(buffer);
                     break;
                 }
@@ -290,31 +285,31 @@ int printf(const char *format, ...) {
                     if (zero_pad && width > 0) {
                         pad_zeros(buffer, width);
                     }
-                    puts(buffer);
+                    vputs(buffer);
                     chars_printed += strlen(buffer);
                     break;
                 }
 
                 case '%': {
-                    putchar('%');
+                    picovga_putchar('%');
                     chars_printed++;
                     break;
                 }
 
                 default:
                     char num_str[10]={0};
-                    putchar('%');
-                    if (zero_pad) putchar('0');
+                    picovga_putchar('%');
+                    if (zero_pad) picovga_putchar('0');
                     if (width > 0) {
                         itodec(width, num_str);
-                        puts(num_str);
+                        vputs(num_str);
                     }
-                    putchar(*format);
+                    picovga_putchar(*format);
                     chars_printed += 2 + (width > 0 ? strlen(num_str) : 0);
                     break;
             }
         } else {
-            putchar(*format);
+            picovga_putchar(*format);
             chars_printed++;
         }
 

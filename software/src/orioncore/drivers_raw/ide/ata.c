@@ -390,8 +390,9 @@ int ata_init(void)
 		//log_info("ata: device detected\n");
 	}
 
-	char *buffer=( char *)0x82000;
-
+	//char *buffer=( char *)0x82000;
+    char buffer[1024];//=( char *)chbuf; //0x82000;
+                  //
 	ata_read_sector(0, buffer);
 	read_partition_table(buffer, drives[0].parts);
 
