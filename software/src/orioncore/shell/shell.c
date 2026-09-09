@@ -5,20 +5,53 @@
 #include <fileio.h>
 
 #include "decodecmd.h"
-#include "commands.h"
 #include "elf.h"
 #include "keycodes.h"
+#include "../drivers_raw/kbd/ringbuffer.h"
 
 #define MAXARGS 40
+#define DEBUG_ELF 1
 
 void printerro(int eno);
 
-extern char getkbd();
+
 extern void picovga_putchar(char c);
 #define HEADER_EXAMINE_SIZE 4 /* number of bytes we need to load to determine the file type */
 const uint8_t g_elf_header_bytes[4]  = { 0x7F, 0x45, 0x4c, 0x46 };
 extern bool kb_get(uint8_t *data);
 extern void readline_with_history(char *buf);
+
+void do_help(int argc, char *argv[]);
+void do_binfile(int argc, char *argv[]);
+void do_binmem(int argc, char *argv[]);
+void do_copyfile(int argc, char *argv[]);
+void do_cat(int argc, char *argv[]);
+void do_cd(int argc, char *argv[]);
+void do_dir(int argc, char *argv[]);
+void do_delete(int argc, char *argv[]);
+void do_dump(int argc, char *argv[]);
+void do_exit(int argc, char *argv[]);
+void do_ideinit(int argc, char *argv[]);
+void do_idemode(int argc, char *argv[]);
+void do_ls(int argc, char *argv[]);
+void do_loadmem(int argc, char *argv[]);
+void do_mkdir_shel(int argc, char *argv[]);
+void do_notimplemented(int argc, char *argv[]);
+void do_rename_shel(int argc, char *argv[]);
+void do_rmdir(int argc, char *argv[]);
+void do_run(int argc, char *argv[]);
+void do_save(int argc, char *argv[]);
+void do_save2(int argc, char *argv[]);
+void do_shst(int argc, char *argv[]);
+void do_time(int argc, char *argv[]);
+void do_tstkbd(int argc, char *argv[]);
+void do_uptime(int argc, char *argv[]);
+void do_writemem(int argc, char *argv[]);
+void do_writemem1(int argc, char *argv[]);
+void do_int2ON(int argc, char *argv[]);
+void do_receiver(int argc, char *argv[]);
+void do_orionbur(int argc, char *argv[]);
+void do_ascii(int argc, char *argv[]);
 
 const cmd_entry_t g_cmd_table[] = {
     // name         min max function
@@ -37,107 +70,30 @@ const cmd_entry_t g_cmd_table[] = {
     {"rm",          1,  1, &do_delete,	    "Delete file <file>" },
     {"rmdir",	    1,  1, &do_rmdir,	    "Delete the specified folder <dir>" },
     {"run",         1,  1, &do_run,         "Run code at address <addr>" },
-    {"save",        2,  2, &do_save,        "Saves file from 82000 to disk save <filename> <filesize>" },
+    {"save",        3,  3, &do_save,        "Saves file from <ADDR> to disk save <filename> <filesize>" },
     {"shst",        0,  0, &do_shst,        "Show systemtick" },
     {"time",        0,  6, &do_time,        "Display or set the current time and date (time ? for help)" },
     {"uptime",      0,  0, &do_uptime,      "Display the time the system has been running" },
     {"writemem",    2,  0, &do_writemem,    "Write memory <addr> [byte ...]" },
     {"writemem1",   2,  0, &do_writemem1,   "Write a memory location" },
+    {"int2on",      0,  0, &do_int2ON,      "Turn on int3" },
+    {"receiver",    0,  0, &do_receiver,    "Program to receiver file from PC's sender2" },
+    {"orionbur",    0,  0, &do_orionbur,    "Program to burn firmware into eeprom" },
+    {"ascii",       0,  0, &do_ascii,       "Print hex code of keyboard key" },
 
     {0, 0, 0, 0, 0 }
 };
  
 #define NUM_FILE_EXTENSIONS     2
 static const char *orion_extensions[NUM_FILE_EXTENSIONS] = {".elf", ".bat" };
-/*
-extern uint8_t keyboard_handler(uint8_t scancode);
-int getline(char *line, int linesize)
-{
-	static int count = 0;
-	int ret = -1;
 
-
-    if (count < linesize - 1)
-    {
-        uint8_t ch;
-        
-        ch = getkbd(); //Chamando getkbd  
-        switch(ch)
-        {
-            case PS2_BACKSPACE:
-                          picovga_putchar('\b');
-                          count--;
-                          break;  
-            case PS2_TAB: break;
-            case PS2_ENTER:
-                picovga_putchar('\n');
-                break;
-
-            case PS2_ESC: break;
-            case PS2_INSERT: break;
-
-//            case PS2_DELETE:
-//                if (count > 0)
-//                {
-//                    picovga_putchar(PS2_DELETE);
-//                    uart0_write('\b');
-//                    uart0_write(' ');
-//                    uart0_write('\b');
-//                    --count;
-//                }
-//                break;
-
-            case PS2_HOME: break;
-            case PS2_END: break;
-            case PS2_PAGEUP: break;
-            case PS2_PAGEDOWN: break;
-            case PS2_UPARROW: break;
-            case PS2_LEFTARROW: break;
-            case PS2_DOWNARROW: break;
-            case PS2_RIGHTARROW: break;
-            case PS2_F1: break;
-            case PS2_F2: break;
-            case PS2_F3: break;
-            case PS2_F4: break;
-            case PS2_F5: break;
-            case PS2_F6: break;
-            case PS2_F7: break;
-            case PS2_F8: break;
-            case PS2_F9: break;
-            case PS2_F10: break;
-            case PS2_F11: break;
-            case PS2_F12: break;
-            case PS2_SCROLL: break;
-            default:
-                if (ch >= ' '){
-                    line[count++] = ch;
-                    picovga_putchar(ch);
-                }
-                break;
-        }
-
-        if (ch == PS2_ENTER)
-        {
-			line[count] = 0;
-			ret = count;
-			count = 0;
-        }
-	}
-    else
-    {
-			line[count] = 0;
-			ret = count;
-			count = 0;
-    }
-
-	return ret;
-}
-*/
 int process_command_builtin(int argc, char *argv[])
 {
     const cmd_entry_t *cmd;
     FRESULT fr;
-
+#ifdef DEBUG_ELF  
+    printf("process_command_builtin\n");
+#endif
     if (argc == 1 && argv[0][1] == ':')
     {
         // Change current drive
@@ -330,7 +286,9 @@ int process_command_executable(int argc, char *argv[])
     FRESULT fr;
     char buffer[HEADER_EXAMINE_SIZE];
     unsigned int br;
-
+#ifdef DEBUG_ELF    
+    printf("process_command_executable\n");
+#endif
     //for(int i=0; i < argc; i++){
     //    printf("process_command_executable: argc=[%d] argv[%s]\n",argc,argv[i]);
     //}
@@ -380,8 +338,13 @@ void process_command(char *argv[], int argc)
 {
     if (argc > 0)
     {
-        if (!process_command_builtin(argc, argv) && !process_command_executable(argc, argv))
+        if (process_command_builtin(argc, argv) ){
+            return;
+        }else if (process_command_executable(argc, argv)){
+            return;
+        }else{
             printf("%s: Unknown command.  Try 'help'.\n", argv[0]);
+        }
     }
 }
 

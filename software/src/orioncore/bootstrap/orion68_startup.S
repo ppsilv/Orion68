@@ -1,24 +1,12 @@
 .section .vectors
 
-.global _start
-.global _delay_ms
-.global printString
-.global UartWriteCh
-
-
-.extern duart_send_char
-.extern build_jump_table
-
-.equ WR_CHAR, 0xFF912B
-.equ DUART_BASE, 0x00FF9000
-
 _vectors:
-          .long    0x000FFFF0      /*                      0x0000*//* Pilha no topo real da RAM (ajuste se seu limite for outro) */
-          .long    _start          /*                      0x0004*/
-          .long    0x00080000      /*SvcBusError           0x0008*/
-          .long    0x00080006      /*Svcaddress_err        0x000c*/
-          .long    0x0008000c      /*SvcIllegalIns         0x0010*/
-          .long    0x00080012      /*SvcDiv0_handler       0x0014*/
+          .long    0x000FFFF0                   /*0x00000000*//* Pilha no topo real da RAM (ajuste se seu limite for outro) */
+          .long    _start                       /*0x00000004*/
+          .long    SvcBusError                  /*0x00000008*/
+          .long    Svcaddress_err               /*0x0000000C*/
+          .long    SvcIllegalIns                /*0x00000010*/
+          .long    SvcDiv0_handler              /*0x00000014*/
           .long    0x00080018      /*SvcChkIns             0x0018*/
           .long    0x0008001e      /*SvcTrapvIns           0x001c*/
           .long    0x00080024      /*SvcPrivViolation      0x0020*/
@@ -39,8 +27,8 @@ _vectors:
           .long    0x0008007e      /*bad_exception         0x005c*/
           .long    0x00080084      /*SpuriousHandler       0x0060*/
           .long    0x0008008a      /*Int1Handler           0x0064*/
-          .long    0x00080090      /*Int2Handler           0x0068*/
-          .long    0x00080096      /*Int3Handler           0x006c*/
+          .long    Int2Handler          /*0x00080090*/      /*Int2Handler           0x0068*/
+          .long    Int3Handler          /*0x00080096*/      /*Int3Handler           0x006c*/
           .long    0x0008009c      /*Int4Handler           0x0070*/
           .long    0x000800a2      /*Int5Handler           0x0074*/
           .long    0x000800a8      /*Int6Handler           0x0078*/
@@ -61,18 +49,42 @@ _vectors:
           .long    0x00080102      /*TrapDHandler          0x00b4*/
           .long    0x00080108      /*TrapEHandler          0x00b8*/
           .long    0x0008010e      /*TrapFHandler          0x00bc*/
-          /* User defined area for excetions 206 entries */
-          /*.long    0x00080114      User defined          0x00c0*/
-          /*.long    0x000805f4      User defined          0x03fc*/
+
+          .rept    207
+          .long    DefaultHandler
+          .endr
+
+.section .text
+
+.global _start
+.global _delay_ms
+.global printString
+.global UartWriteCh
+.global TrapFHandler
+
+.extern duart_send_char
+.extern build_jump_table
+.extern SvcBusError    
+.extern Svcaddress_err 
+.extern SvcIllegalIns  
+.extern SvcDiv0_handler
+.extern Int2Handler
+.extern Int3Handler
+.extern fdummy
+
+.equ WR_CHAR, 0xFF912B
+.equ DUART_BASE, 0x00FF9000
 
 _start:
         ORI.W   #0x0700,%SR         /* Desabilita interrupções no boot */
         LEA     0x000FFFF0,%A7      /* Garante o ponteiro da pilha limpo */
 
-        MOVE.L  #3,%D1        /* espera 5 segundos */
+        MOVE.L  #5,%D1        /* espera 5 segundos */
         JSR     delay_seconds
 
         MOVE.B  #'1',WR_CHAR
+
+        andi.w #0xF8FF,%SR
 /*
 ; Busca de RAM para m68k (Orion68)
 ; Retorna em A0 o endereço onde a RAM termina.
@@ -122,11 +134,7 @@ FIND_RAM:
 
         MOVE.B  #'5',WR_CHAR
 
-/*        MOVE.L  %A4,%D0
-//        ANDI.L  #0xFFFFFFFC,%D0
-//        MOVE.L  %D0,%A7
-*/
-    MOVE.B  #'6',WR_CHAR
+        MOVE.B  #'6',WR_CHAR
 
 /********************************************/
 /* 2. Carrega seção .data da ROM para a RAM */
@@ -167,11 +175,14 @@ go_ahead:
 
         lea     exception_string,%a0
         jsr     print_string
-
+        /*Para empilhar os parametros de uma função
+          começamos do ultimo para o primeiro.
+          e no retorno da função temos que somar (4 * total de parâmetros) no SP.      
+        */        
         | 1. Empilha o último argumento (count)
-        move.l  #254, -(%SP)
+        move.l  #50, -(%SP)            /*#254, -(%SP)*/
         | 2. Empilha o segundo argumento (target_addr)
-        move.l  #0x000805FA, -(%SP)
+        move.l  fdummy, -(%SP)
         | 3. Empilha o primeiro argumento (base_addr)
         move.l  #0x00080000, -(%SP)
         | Chama a função C
@@ -186,7 +197,6 @@ go_ahead:
 
 .dead:
         bra.s   .dead
-
 
 PicoWrCh:
         LEA     0x00FF8001,%A1
@@ -269,8 +279,8 @@ DELAY_1MS_4MHZ:
 ; ---------------------------------------------------------
 */
 delay_seconds:
-        MOVE.L  %D0,-(%A7)
-        MOVE.L  %D1,-(%A7)
+        MOVE.L  %D0,-(%SP)
+        MOVE.L  %D1,-(%SP)
 
         TST.L   %D1
         BEQ     .delay_seconds_done   /* se pediram 0 segundos, sai direto */
@@ -286,8 +296,8 @@ delay_seconds:
         BNE     .loop_outer
 
 .delay_seconds_done:
-        MOVE.L  (%A7)+,%D1
-        MOVE.L  (%A7)+,%D0
+        MOVE.L  (%SP)+,%D1
+        MOVE.L  (%SP)+,%D0
         RTS
 
 
@@ -300,9 +310,7 @@ bootstrap_string:
 exception_string:        
         .ascii  "Mounting exceptions table..."
         .byte   13, 10, 0
-.align 2        /* <--- CRÍTICO: Garante que o PRÓXIMO arquivo linkado comece em endereço PAR */
-/*
-SvcBusError:
+
 Svcaddress_err:
 SvcIllegalIns:
 SvcDiv0_handler:
@@ -313,10 +321,19 @@ SvcTrace:
 SvcLineA:
 SvcLineF:
 bad_exception:
+bad_exception:
+bad_exception:
+bad_exception:
+bad_exception:
+bad_exception:
+bad_exception:
+bad_exception:
+bad_exception:
+bad_exception:
+bad_exception:
+bad_exception:
 SpuriousHandler:
 Int1Handler:
-Int2Handler:
-Int3Handler:
 Int4Handler:
 Int5Handler:
 Int6Handler:
@@ -337,5 +354,7 @@ TrapCHandler:
 TrapDHandler:
 TrapEHandler:
 TrapFHandler:
-        rte         /* Só retorna sem quebrar nada */
-*/
+        rte
+DefaultHandler:
+        rte
+.align 2        /* <--- CRÍTICO: Garante que o PRÓXIMO arquivo linkado comece em endereço PAR */

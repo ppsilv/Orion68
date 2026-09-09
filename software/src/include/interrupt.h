@@ -1,6 +1,17 @@
 #ifndef __INTERRUPT_H__
 #define __INTERRUPT_H__
 
+
+static inline void m68k_disable_all_interrupts(){
+
+}
+static inline void m68k_enable_all_interrupts(){
+
+}
+
+
+#ifdef BUCETAO
+
 unsigned long get_system_tick_nmi_safe(void);
 
 //static inline unsigned int m68k_disable_interrupts(void) __attribute__((always_inline));
@@ -19,16 +30,7 @@ static inline void m68k_restore_interrupts(unsigned int old_sr) {
     );
 }
 
-// Esta função lê o SR, mascara APENAS até o nível 2, e retorna o SR antigo
-static inline unsigned int m68k_disable_level2(void) {
-    unsigned int sr;
-    __asm__ __volatile__ (
-        "move.w %%sr, %0\n\t"
-        "ori.w #0x0200, %%sr"  // Desabilita níveis 1 e 2 (onde está seu tick)
-        : "=d" (sr) : : "cc"
-    );
-    return sr;
-}
+
 static inline unsigned int m68k_disable_level2_perfect(void) {
     unsigned int sr;
     __asm__ __volatile__ (
@@ -49,8 +51,8 @@ static inline unsigned int m68k_disable_level3(void) {
     __asm__ __volatile__ (
         "move.w %%sr, %0\n\t"
         "ori.w #0x0300, %%sr"  // Desabilita níveis 1, 2 e 3
-        : "=d" (sr) 
-        : 
+        : "=d" (sr)
+        :
         : "cc"
     );
     return sr;
@@ -80,14 +82,13 @@ static inline void m68k_enable_all_interrupts(void) {
     );
 }
 
-// Força o SR a mascarar até o Nível 2 (Bloqueia o seu Tick de 5ms/10ms)
 static inline void m68k_disable_all_interrupts(void) {
     __asm__ __volatile__ (
-        "ori.w #0x0200, %%sr"   // Seta a máscara estritamente para o nível 2
+        "ori.w #0x0700, %%sr"
         : : : "cc"
     );
 }
 
 unsigned long get_system_tick(void);
-
+#endif
 #endif

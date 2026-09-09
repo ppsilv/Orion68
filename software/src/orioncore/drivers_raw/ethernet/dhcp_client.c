@@ -176,7 +176,7 @@ static uint16_t w5100_recv_udp_packet(uint8_t *buf, uint16_t buf_cap) {
 
     return data_len;
 }
-
+#ifdef SEND_BYTES121
 static void w5100_send_bytes121(const uint8_t *buf, uint16_t len) {
     /* Sincroniza explicitamente TX_WR com TX_RD antes de escrever.
        Isso evita que um valor residual de uma sessão anterior do
@@ -197,13 +197,14 @@ static void w5100_send_bytes121(const uint8_t *buf, uint16_t len) {
     
     w5100_cmd(CR_SEND);
 }
-
+#endif
 #define S0_TX_RD         0x0422 /* Corrigido para o endereço real do S0_TX_RD */
 #define S0_TX_WR         0x0424 /* S0_TX_WR */
 
 static void w5100_send_bytes(const uint8_t *buf, uint16_t len) {
     /* Lê o ponteiro de leitura atual do socket 0 (endereço 0x0422) */
-    uint16_t tx_rd = w5100_read16(0x0422); 
+    //uint16_t tx_rd = 
+    w5100_read16(0x0422); 
     
     /* O W5100 gerencia o envio baseado no TX_WR. Para enviar um novo bloco,
        pegamos o TX_WR atual ou sincronizamos com o TX_RD se o buffer estiver vazio. 
@@ -241,7 +242,7 @@ static uint16_t w5100_get_rx_size(void) {
 char *  utoa (unsigned value, char *str,  int base);
 void w5100_print_ip(void) {
     uint8_t ip[4];
-    uint8_t buf[20];
+    char buf[20];
     for (int i = 0; i < 4; i++) {
         ip[i] = w5100_read(W5100_SIPR + i);
     }

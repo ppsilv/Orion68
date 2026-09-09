@@ -37,10 +37,6 @@
 #define EXPID_IDENTREG          0xFE
 #define EXPID_REG(id, reg)      (*((volatile uint8_t *) (id + reg)))
 
-#define DISABLE_INTERRUPTS()    __asm__ volatile("move.w %%sr, %%d0; ori.w #0x0700, %%d0; move.w %%d0, %%sr" : : : "d0");
-#define ENABLE_INTERRUPTS()     __asm__ volatile("move.w %%sr, %%d0; andi.w #0xF8FF, %%d0; move.w %%d0, %%sr" : : : "d0");
-
-
 #include "timers.h"
 
 extern void set_ide_bus_mode(char mode);

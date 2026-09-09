@@ -24,7 +24,8 @@ CC       = m68k-elf-gcc
 AR       = m68k-elf-ar
 ARFLAGS  = rcs
 
-LIBS     = libc libdiskio libdrivers libfileio librtc libvideo
+#LIBS     = libc libdiskio libdrivers libfileio librtc libvideo
+LIBS     = libc/libc libc/libdiskio libc/libdrivers libc/libfileio libc/librtc libc/libvideo
 
 OBJ_DIR  = obj
 LIB_DIR  = ../lib
@@ -66,7 +67,9 @@ $(OBJ_DIR)/%.o: %.S
 
 clean:
 	rm -rf $(OBJ_DIR) $(LIB_DIR)/$(LIB_NAME)
-
+	for dir in $(LIBS); do \
+		$(MAKE) -C $$dir clean; \
+	done
 info:
 	@echo "=== CONTEUDO DA BIBLIOTECA ==="
 	@m68k-elf-ar -t $(LIB_DIR)/$(LIB_NAME)

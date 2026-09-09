@@ -1,3 +1,8 @@
+# 2026-09-08 ->RESOLVIDO
+        Bug: coloquei uma função getkbd() para ler por pooling o picow
+             isso tem um efeito colateral, porque a CPU para no DTACK
+             aguardando o picow levantar o detack, assim nada mais roda
+        A solução foi voltar para o ringbuffer.     
 # 2026-08-31 ->RESOLVIDO
         Bug do tBasic que precisava de <ENTER> 2 vezes para cada comando
         inclusive de programa rodando getchar passou a ser blocante então

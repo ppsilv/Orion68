@@ -2,7 +2,7 @@ MEMORY {
     /* Região da ROM onde o código vai rodar (VBut + Teclado embutido) */
     ROM (rx)  : ORIGIN = 0x00000000, LENGTH = 64K
 
-    /* Região da sua Shadow RAM alta para variáveis e pilha */
+    /* RAM 0x600 bytes is for vectors in ram */
     RAM (rwx) : ORIGIN = 0x00080600, LENGTH = 0x7FA00
 }
 

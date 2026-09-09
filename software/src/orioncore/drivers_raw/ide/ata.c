@@ -20,8 +20,8 @@ extern void vputs(char * str);
     m68k_disable_all_interrupts();                 \
 }
 
-#define UNLOCK(saved) {                     \
-    m68k_enable_all_interrupts(); \
+#define UNLOCK(saved) {                          \
+    asm("move.w %0, %%sr\n" : : "dm" ((saved)) : "cc"); \
 }
 
 
@@ -52,9 +52,9 @@ extern void vputs(char * str);
 #define ATA_ST_DATA_READY	0x08    // Data Request (tem dado pronto pra transferir)
 #define ATA_ST_ERROR    	0x01    // Error
 
-#define log_notice //vputs
-#define log_info   //vputs
-#define log_error  //vputs
+#define log_notice printf
+#define log_info   printf
+#define log_error  printf
 
 char ide_bus_mode=0;
 
@@ -99,6 +99,7 @@ static int ata_wait_busy_clear(void){
 }*/
 extern void _delay_ms();
 
+#ifdef WAIT_BUSY
 static int ata_wait_busy_clear_timed(uint32_t timeout_ms){
     uint32_t start = 0;   /* ajuste ao nome real da sua API de RTC */
     uint8_t status;
@@ -112,6 +113,8 @@ static int ata_wait_busy_clear_timed(uint32_t timeout_ms){
     } while (start < 1000);
     return 0;
 }
+#endif
+#ifdef MASTER_DISK4
 static int has_master_disk4(void){
     uint8_t status;
     *ATA_REG_DRIVE_HEAD = 0xA0;
@@ -138,6 +141,8 @@ static int has_master_disk4(void){
     }
     return 1;   /* disco presente e pronto */
 }
+#endif
+#ifdef MASTER_DISK3
 static int has_master_disk3(void){
     uint8_t status;
     /* Seleciona drive 0 (master) antes de testar - alguns
@@ -165,6 +170,7 @@ static int has_master_disk3(void){
     }
     return 1;   /* dispositivo presente */
 }
+#endif
 static int has_master_disk(void){
     // escreve um valor de teste em um registrador gravável
     *ATA_REG_SECTOR_COUNT = 0x55;
@@ -178,6 +184,7 @@ static int has_master_disk(void){
     // registrador responde normalmente, dispositivo presente
     return 1;
 }
+#ifdef MASTER_DISK2
 static int has_master_disk2(void){
     uint8_t status;
     // teste de assinatura
@@ -193,6 +200,7 @@ static int has_master_disk2(void){
     }
     return 1;
 }
+#endif
 int ata_detect(void){
 	uint8_t status;
 

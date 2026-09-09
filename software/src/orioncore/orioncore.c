@@ -8,6 +8,9 @@
 #include "orion68.h"
 #include "drv_ps2.h"
 #include "drivers_raw/kbd/ringbuffer.h"
+#include "interrupt.h"
+#include "jumptable.h"
+
 
 FATFS FatFs;      // Objeto de controle do sistema de arquivos (Work area)
 
@@ -18,6 +21,12 @@ extern void picovga_putchar(char ch);
 extern int dhcp_client(void);
 extern void duart_a_init_38400(void);
 extern void pico_write_ch(uint8_t ch);
+extern void Int2Handler(void);
+extern void Int3Handler(void);
+extern void setaVetorFuncao(uint8_t vetor, uint32_t funcao);
+
+volatile uint32_t tick_count = 0;
+volatile uint32_t systemTick = 0;
 
 //__attribute__((section(".mram"))) char vbug_buffer[256];
 //__attribute__((section(".minha_ram"))) int vbug_status_flag;
@@ -25,7 +34,7 @@ extern void pico_write_ch(uint8_t ch);
 //volatile __attribute__((section(".mram"))) unsigned int tick_count;
 //volatile __attribute__((section(".mram"))) unsigned int flg_system;
 
-uint32_t *last_mem_address = (volatile uint32_t *)0x80000UL;
+volatile uint32_t *last_mem_address = ( uint32_t *)0x80000UL;
 
 #include "./tools/build_counter.h"
 
@@ -34,8 +43,19 @@ extern char duart_getc(void);
 
 typedef void (*ProgramaXModem)(void);
 
-extern char getkbd();
 
+// Sua função de leitura atômica do tick continua linda aqui
+uint32_t get_system_tick(void) {
+    unsigned long tick;
+    //unsigned int status_antigo;
+    
+    //status_antigo = m68k_disable_level2_perfect(); 
+    tick = systemTick;                     
+    //m68k_restore_interrupts(status_antigo); 
+    
+    return tick;
+}
+ 
 void vputs(char * str){
     while(*str){
         picovga_putchar(*str);
@@ -79,9 +99,12 @@ void main(int argc, char *argv[]) {
     //vputs("        Last  sram address.........: %ld\n",*last_mem_address);
     //vputs("        CPU sram memory............: %ld words\n",*last_mem_address-0x80000);
     //vputs("        Total sram memory..........: %ld bytes\n",(*last_mem_address-0x80000)*2);
+    
     pico_write_ch('c');
-//    m68k_enable_all_interrupts();
-//    vputs("* - All Interrupts enabled.\n");
+    setaVetorFuncao(vect_Int2Handler,(uint32_t) Int2Handler );
+    setaVetorFuncao(vect_Int3Handler,(uint32_t) Int3Handler );
+    //m68k_enable_all_interrupts();
+    //vputs("* - All Interrupts enabled.\n");
 
     pico_write_ch('G');
     vputs("* - Initializing:\n");
@@ -107,9 +130,10 @@ void main(int argc, char *argv[]) {
 
     pico_write_ch('L');
     vputs("\n");
-    //ring_buf_init();
-    int delay=0;
-    char ch = getkbd();
+    ring_buf_init();
+
+    pico_write_ch('M');
+    char ch = ring_buf_get_char();
     if(ch == 0x7f){
         vputs("User wants do bypass Offline State\n");
         //LOAD SHELL.

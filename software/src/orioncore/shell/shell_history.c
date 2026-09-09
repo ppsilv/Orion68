@@ -5,12 +5,13 @@
  * seta pra baixo (0x11) -- byte unico, sem sequencia de escape, pelo
  * que voce reportou do seu terminal.
  *
- * INTEGRACAO: troque a leitura de caractere (getkbd_serial) e escrita
+ * INTEGRACAO: troque a leitura de caractere (ring_buf_get_char) e escrita
  * (picovga_putchar_serial/vputs_serial) pelas funcoes reais que seu shell ja
  * usa hoje pra ler/escrever no console.
  */
 #include <string.h>
 #include <stdint.h>
+#include "../drivers_raw/kbd/ringbuffer.h"
 
 #define HIST_SIZE   16    /* quantos comandos guardar -- ajuste como quiser */
 #define LINE_MAX    128   /* tamanho maximo de uma linha de comando */
@@ -20,7 +21,7 @@
 #define KEY_BS     0x08   /* AJUSTE se seu backspace for outro codigo (ex: 0x7F) */
 #define KEY_ENTER  '\r'   /* ou '\n', conforme seu terminal manda */
 
-extern int  getkbd(void);
+
 extern void picovga_putchar(char c);
 extern void vputs(const char *s);
 
@@ -71,7 +72,7 @@ void readline_with_history(char *buf)
     hist_cursor = -1;
 
     for (;;) {
-        int c = getkbd();
+        int c = ring_buf_get_char();
 
         if (c == KEY_ENTER) {
             picovga_putchar('\n');

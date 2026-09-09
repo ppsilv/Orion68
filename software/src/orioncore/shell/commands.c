@@ -7,10 +7,11 @@
 #include <fileio.h>
 
 #include "orion68.h"
-#include "commands.h"
 #include "decodecmd.h"
 #include "color.h"
-
+#include "jumptable.h"
+#include "interrupt.h"
+#include "../drivers_raw/kbd/ringbuffer.h"
 
 #define PICO_STATUS_REG  (*(volatile uint8_t *)0xFF9103)
 #define PICO_STATE_IDLE       0x00
@@ -26,7 +27,14 @@ static __attribute__((aligned(2)))FIL Arq;               // Objeto de controle d
 extern void printerro(int eno);
 extern const cmd_entry_t g_cmd_table[];
 extern void picovga_putchar(char c);
-extern char getkbd();
+
+extern void Int2Handler(void);
+extern void setaVetorFuncao(uint8_t vetor, uint32_t funcao);
+extern uint32_t get_system_tick();
+extern int orionbur();
+extern int receiver();
+
+
 static int fromhex(char c)
 {
     if (c >= '0' && c <= '9')
@@ -54,6 +62,26 @@ void do_help(int argc, char *argv[])
 	}
 }
 
+void do_int2ON(int argc, char *argv[])
+{
+    setaVetorFuncao(vect_Int2Handler,(uint32_t) Int2Handler );
+    m68k_enable_all_interrupts();
+}
+void do_receiver(int argc, char *argv[]){
+    receiver();
+}
+void do_orionbur(int argc, char *argv[]){
+    orionbur();
+}
+void do_ascii(int argc, char *argv[]){
+    while(1){
+        char ch = ring_buf_get_char();
+        printf("[%02x]",ch);
+        if( ch == 0x1b){
+            return;
+        }
+    }
+}
 
 void do_copyfile(int argc, char *argv[])
 {
@@ -151,7 +179,7 @@ void do_cat(int argc, char *argv[])
 
     } while (bytes_lidos > 0); // Enquanto ler mais que 0 bytes, o arquivo não acabou
 
-    printf("\n--------------------------------------------------\n");
+    printf("--------------------------------------------------\n");
 
     // Obrigatório: Fechar o arquivo para liberar o objeto na FatFs
     f_close(&Arq);
@@ -227,7 +255,7 @@ static void dump_memory(long addr,int size){
         
         //dump_registradores(); // Seu sensor invisível inline
         printf("Hit any <ENTER> to continue <ESC> to terminate: ");
-        ch = getkbd();
+        ch = ring_buf_get_char();
         if( ch == 0x1B ){ // ESC termina
             printf("\n");
             return;
@@ -309,7 +337,7 @@ void do_ls(int argc, char *argv[]){
         if( i>=30 ){
             printf("Press to continue: ");
             while ( res == true ){      //le do teclado ps2
-                res = getkbd();
+                res = ring_buf_get_char();
             }
             //ch = ring_buf_get();    //le do teclado ps2
             i=0;
@@ -604,18 +632,19 @@ void do_run(int argc, char *argv[])
     FIL     arquivo;
     FRESULT fr;
     UINT    bytes_escritos;
-    const void *origem = (const void *)0x82015;
+//    const void *origem = (const void *)0x82015;
+    const void *origem = (const void *)strtoul(argv[2], NULL, 16); //(const void *)argv[2];
     const char *nome_arquivo = argv[0];   /* usa direto, sem copiar */
     size_t tamanho;
 
-    if (argc < 2) {
-        printf("uso: save <nome_arquivo> <tamanho_hex>\n");
+    if (argc < 3) {
+        printf("uso: save <nome_arquivo> <tamanho_hex> <addr hex> \n");
         return;
     }
    
     tamanho = strtoul(argv[1], NULL, 16);
    
-    printf("Save file [%s] size of %d\n", nome_arquivo, tamanho);
+    printf("Save file [%s] from addr[%08x] size of %04x\n", nome_arquivo, origem,tamanho);
 
     if (origem == NULL || nome_arquivo == NULL || tamanho == 0) {
         printf("dump_memoria_para_arquivo: parametros invalidos\n");
@@ -649,7 +678,7 @@ extern void video_puts(const char *s);
 
 
 void do_shst(int argc, char *argv[]){
-    //printf("Systemtick = %ld\n",get_system_tick());
+    printf("Systemtick = %ld\n",get_system_tick());
     printf("Cria vergonha na cara e chama syscall\n");
 }
 void do_time(int argc, char *argv[])

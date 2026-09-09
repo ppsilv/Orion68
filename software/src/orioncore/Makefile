@@ -9,10 +9,10 @@ CFLAGS += -fomit-frame-pointer
 
 VASMFLAGS = -Felf -m68000 -quiet -I ./includes -I../include
 
-LDFLAGS = -T ./orioncore.ld -L../lib -nostdlib  -Map=orioncore.map
-LDLIBS = -lc68k 
+LDFLAGS = -T ./orioncore.ld -L./libc/lib -nostdlib  -Map=orioncore.map
+LDLIBS = -lc68bios
 # 1. ADICIONADO: Lista de arquivos em Assembly (.S)
-ASMS = ./bootstrap/orion68_startup.S \
+ASMS = ./bootstrap/orion68_startup.S  ./bootstrap/vectors_asm.S \
 ./drivers_raw/duart/duartasm.S 
 
 
@@ -30,7 +30,8 @@ SRCS = orioncore.c ./corelibs/printf.c ./bootstrap/jumptable.c \
 ../libs/libc/libfileio/src/fatfs/ff.c \
 ../libs/libc/libfileio/src/fatfs/ffsystem.c \
 ../libs/libc/libfileio/src/fatfs/ffunicode.c \
-./shell/elf_loader.c ./shell/shell.c ./shell/commands.c  ./shell/printerro.c ./shell/shell_history.c 
+./shell/elf_loader.c ./shell/shell.c ./shell/commands.c  ./shell/printerro.c ./shell/shell_history.c \
+./receiver/receiver.c ./orionburner/orionbur.c
 
 
 

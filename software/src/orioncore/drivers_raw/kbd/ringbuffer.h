@@ -17,5 +17,5 @@ uint8_t ring_buf_get(void);
 void    ring_buf_put(const uint8_t c);
 uint8_t ring_buf_is_empty(void);
 uint8_t ring_buf_is_full(void);
-
+uint8_t ring_buf_get_char(void);
 #endif
