@@ -31,8 +31,6 @@ extern void picovga_putchar(char c);
 extern void Int2Handler(void);
 extern void setaVetorFuncao(uint8_t vetor, uint32_t funcao);
 extern uint32_t get_system_tick();
-extern int orionbur();
-extern int receiver();
 
 
 static int fromhex(char c)
@@ -66,12 +64,6 @@ void do_int2ON(int argc, char *argv[])
 {
     setaVetorFuncao(vect_Int2Handler,(uint32_t) Int2Handler );
     m68k_enable_all_interrupts();
-}
-void do_receiver(int argc, char *argv[]){
-    receiver();
-}
-void do_orionbur(int argc, char *argv[]){
-    orionbur();
 }
 void do_ascii(int argc, char *argv[]){
     while(1){

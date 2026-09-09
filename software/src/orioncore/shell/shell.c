@@ -77,8 +77,6 @@ const cmd_entry_t g_cmd_table[] = {
     {"writemem",    2,  0, &do_writemem,    "Write memory <addr> [byte ...]" },
     {"writemem1",   2,  0, &do_writemem1,   "Write a memory location" },
     {"int2on",      0,  0, &do_int2ON,      "Turn on int3" },
-    {"receiver",    0,  0, &do_receiver,    "Program to receiver file from PC's sender2" },
-    {"orionbur",    0,  0, &do_orionbur,    "Program to burn firmware into eeprom" },
     {"ascii",       0,  0, &do_ascii,       "Print hex code of keyboard key" },
 
     {0, 0, 0, 0, 0 }

@@ -2,14 +2,21 @@ CC = m68k-elf-gcc
 LD = m68k-elf-ld
 OBJCOPY = m68k-elf-objcopy
 
-ROOT_DIR=../..
+ROOT_DIR=../../../
 
-APP = orionbur
+APP = ls2
 
-CFLAGS = -Wall -Os -Wa,-adhln=$(APP).lst -I$(ROOT_DIR)/include -ffreestanding -nostdlib -D __68000__ -D ALIGN_MEMORY
-LDFLAGS = -T ./linker.ld -L$(ROOT_DIR)/lib -nostdlib -L$(ROOT_DIR)/lib
-LDLIBS = -lc68k
-SRCS = $(wildcard *.c)
+CFLAGS = -Wall -O0 -Wa,-adhln=$(APP).lst -I$(ROOT_DIR)/include -I../include -ffreestanding -nostdlib -D __68000__ -D ALIGN_MEMORY
+LDFLAGS = -T ../linker.ld -L../../libc/lib -nostdlib
+LDLIBS = -lc68bios
+SRCS = $(APP).c \
+../apps_libs/fatfs/ff.c \
+../apps_libs/fatfs/ffsystem.c \
+../apps_libs/fatfs/ffunicode.c \
+../apps_libs/ide/ata.c \
+../apps_libs/picoVga/drv_picoVga.c \
+../apps_libs/ide/diskio.c
+
 OBJS = $(SRCS:.c=.o)
 ELFS = $(SRCS:.c=.elf)
 BINS = $(SRCS:.c=.bin)
@@ -21,7 +28,7 @@ all: $(APP).bin
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Regra específica para cada arquivo para evitar problemas com $<
-$(APP).elf: $(APP).o
+$(APP).elf: $(OBJS)
 	$(LD) $(LDFLAGS) $(OBJS) -o $@ $(LDLIBS)
 	@echo "Linked: $@"
 

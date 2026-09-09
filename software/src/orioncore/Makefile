@@ -30,9 +30,7 @@ SRCS = orioncore.c ./corelibs/printf.c ./bootstrap/jumptable.c \
 ../libs/libc/libfileio/src/fatfs/ff.c \
 ../libs/libc/libfileio/src/fatfs/ffsystem.c \
 ../libs/libc/libfileio/src/fatfs/ffunicode.c \
-./shell/elf_loader.c ./shell/shell.c ./shell/commands.c  ./shell/printerro.c ./shell/shell_history.c \
-./receiver/receiver.c ./orionburner/orionbur.c
-
+./shell/elf_loader.c ./shell/shell.c ./shell/commands.c  ./shell/printerro.c ./shell/shell_history.c
 
 
 #./sys/ethernet/dhcp_client.c \

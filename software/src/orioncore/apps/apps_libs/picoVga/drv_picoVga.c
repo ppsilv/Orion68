@@ -5,6 +5,22 @@
 
 // delay.c
 
+#define PICO_VGA_BASE 0x00FF8000
+#define WRITE_SCREEN   (*((volatile unsigned char *)(PICO_VGA_BASE + 0x01)))
+
+
+static uint32_t tamanho_total = 0;
+
+void vputc(char ch){
+    WRITE_SCREEN = ch;
+}
+
+void vputs(const char *s){
+    while (*s) {
+        vputc(*s++);
+    }
+}
+
 void delay_us(uint32_t us) {
     // Cada iteração do loop "dbra" leva ~8 ciclos.
     // 8MHz => 8 ciclos = 1us. 
@@ -44,26 +60,20 @@ void picovga_putchar( char ch){
     WRITE_SCREEN = ch;
 }
 
-/*
+
 void init_picoVga(){
 
 }
 inline void run_cmd(unsigned char cmd){
     RUN_CMD = cmd;
-    delay10ms(1);
 }
 
 void picovga_gotoxy(int col,int row){
-    delay10ms(5);
+
     REG_Y_LOW  = row; //(unsigned char)(row & 0x00FF);
-    delay10ms(5);
     REG_Y_HIGH = 0;   //(unsigned char)(row > 8);
-    delay10ms(5);
     REG_X_LOW  = col; //(unsigned char)(col & 0x00FF);
-    delay10ms(5);
     REG_X_HIGH = 0;   //(unsigned char)(col > 8);
-    delay10ms(5);
-    //RUN_CMD = CMD_SET_CUR_POS;
     run_cmd(CMD_SET_CUR_POS);
 }
 void picovga_gohome(){
@@ -73,12 +83,9 @@ void picovga_set_color(unsigned char txtcolor,unsigned char bgcolor){
     unsigned int color;
     color = (txtcolor << 4) &0xF0;
     color |= bgcolor;
-    delay10ms(1);
     SET_TXT_COLOR = color;
 }
 void clrscr(){
-    //RUN_CMD = CMD_CLEAR_SCREEN;
     run_cmd(CMD_CLEAR_SCREEN);
-    delay10ms(20);
 }
-*/
+

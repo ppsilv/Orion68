@@ -3,9 +3,10 @@
 #include <string.h>
 #include <fileio.h>
 #include "../../../include/fatfs/ff.h"
-
+//#include "drv_picoVga.h"
 
 FATFS FatFs;
+static uint32_t tamanho_total = 0;
 
 #define W5100_BASE       0xFE0000UL
 #define W5100_REG(off)   ((volatile uint8_t *)(W5100_BASE + ((off) * 2) + 1))
@@ -45,22 +46,24 @@ FATFS FatFs;
 #define S0_RX_BASE       0x6000
 #define S0_MASK          0x07FF
 
+extern void vputc(char ch);
+extern void vputs(const char *s);
 
-#define PICO_VGA_BASE 0x00FF8000
-#define WRITE_SCREEN   (*((volatile unsigned char *)(PICO_VGA_BASE + 0x01)))
-
-
-static uint32_t tamanho_total = 0;
-
-void vputc(char ch){
-    WRITE_SCREEN = ch;
-}
-
-void vputs(const char *s){
-    while (*s) {
-        vputc(*s++);
-    }
-}
+//#define PICO_VGA_BASE 0x00FF8000
+//#define WRITE_SCREEN   (*((volatile unsigned char *)(PICO_VGA_BASE + 0x01)))
+//
+//
+//static uint32_t tamanho_total = 0;
+//
+//void vputc(char ch){
+//    WRITE_SCREEN = ch;
+//}
+//
+//void vputs(const char *s){
+//    while (*s) {
+//        vputc(*s++);
+//    }
+//}
 
 void w5100_write(uint16_t reg, uint8_t val) {
     *W5100_REG(reg) = val;
@@ -285,6 +288,7 @@ static void ideinit()
         printf(": FAT success mounted!\n");
     }
 }
+
 int main(){
     printf("Receiver V1-NOPIC\nInitialing w5100\n");
     vputs("Calling ideinit\n");
