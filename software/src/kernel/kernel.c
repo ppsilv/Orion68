@@ -28,7 +28,7 @@ static void TaskA(void)
     for (;;) {
         count++;
         if ((count % 100000) == 0)
-            kprintf("Tarefa A: %lu\n", (unsigned long)count);
+            kprintf("Tarefa A: %x\n", (unsigned long)count);
     }
 }
 
@@ -36,9 +36,9 @@ static void TaskB(void)
 {
     uint32_t count = 0;
     for (;;) {
-        count++;
+        count+=2;
         if ((count % 100000) == 0)
-            kprintf("Tarefa B: %lu\n", (unsigned long)count);
+            kprintf("Tarefa B: %x\n", (unsigned long)count);
     }
 }
 
@@ -69,7 +69,10 @@ uint32_t tick_count=0;
 int kmain(){
     kernel_puts("Kernel on line\n");
     short saved_sr;
+
+    kmalloc_init(&__kernel_end, 0x10000);   /* ajuste o tamanho pro que sobrar de RAM ali */
     
+
     LOCK(saved_sr);
     sys_setramvector(0x00080090,(uint32_t)OS_TickISR);
     kernel_puts("1000 ");
@@ -81,7 +84,10 @@ int kmain(){
     UNLOCK(saved_sr);
     kernel_puts("1002 ");
 
-    while(1){
+    run_scheduler_test();
+
+    while(1)
+    {
     for(int i=0;i<0xFFFF; i++){
         volatile int j = 0; 
          (void)j;       
@@ -89,8 +95,6 @@ int kmain(){
     kernel_puts("wait... ");
     }
 
-    //kmalloc_init(&__kernel_end, 0x10000);   /* ajuste o tamanho pro que sobrar de RAM ali */
-    //run_scheduler_test();
 
     return 0;
 }

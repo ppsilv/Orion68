@@ -26,8 +26,8 @@ OS_StartHighRdy:
     rte                            | restaura PC e SR (6 bytes), salta pra tarefa
 
 OS_TickISROLD:
-    movem.l %D0-%D7/%A0-%A6, -(%A7)     | salva contexto da tarefa interrompida
-    move.l  current_task, %A0
+    |movem.l %D0-%D7/%A0-%A6, -(%A7)     | salva contexto da tarefa interrompida
+    |move.l  current_task, %A0
     move.l  %A7, (%A0)               | tcb->sp = %A7
 
     jsr     OS_Schedule            | escolhe a proxima tarefa, atualiza current_task
@@ -60,16 +60,17 @@ OS_TickISR:
         | cai direto pra .do_schedule
 
 .do_schedule:
-        movem.l (%sp)+,%d0-%d7/%a0-%a6
-        rte
         move.l  current_task,%a0
+        move.l  %a0, %d0        | copia pra D0
+        tstl    %d0             | testa D0
+        beq.s   .notask         
         move.l  %sp,(%a0)              | tcb->sp = pilha da tarefa que estava rodando
 
         jsr     OS_Schedule            | decide a proxima tarefa, atualiza current_task
 
         move.l  current_task,%a0
         move.l  (%a0),%sp              | pilha vira a da tarefa escolhida
-
+.notask:
         movem.l (%sp)+,%d0-%d7/%a0-%a6
         rte
 

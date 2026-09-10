@@ -11,7 +11,7 @@ tcb_t *current_task = NULL;
 
 static tcb_t task_pool[OS_MAX_TASKS];   /* armazenamento fixo dos TCBs -- sem malloc */
 static int   task_count = 0;
-
+extern void kernel_puts(const char *s) ;
 /*
  * ready_head: cabeca da fila circular de tarefas PRONTAS (TASK_READY
  * ou TASK_RUNNING). So essas tarefas estao encadeadas via 'next'.
@@ -113,8 +113,7 @@ static uint8_t *push16(uint8_t *sp, uint16_t val)
  *     [ PC ]                4 bytes
  *     [ Format/Vector ]     2 bytes  (0x0000 = formato 0, frame curto)
  */
-tcb_t *OS_TaskCreate(void (*entry)(void), void *arg,
-                      uint8_t *stack, uint32_t stack_size, int id)
+tcb_t *OS_TaskCreate(void (*entry)(void), void *arg, uint8_t *stack, uint32_t stack_size, int id)
 {
     if (task_count >= OS_MAX_TASKS || entry == NULL || stack == NULL)
         return NULL;
@@ -157,15 +156,20 @@ void OS_TaskExit(void)
 
 void OS_Schedule(void)
 {
+   // kernel_puts("Sched 1\n");
     if (ready_head == NULL)
         return;   /* nenhuma tarefa pronta -- nao deveria acontecer em uso normal, mas nao trava */
+   // kernel_puts("Sched 2\n");
 
     if (current_task && current_task->state == TASK_RUNNING)
         current_task->state = TASK_READY;
+   // kernel_puts("Sched 3\n");
 
     current_task = ready_head;
     ready_head   = ready_head->next;   /* proxima chamada comeca dali -- efetiva o round robin */
+  //  kernel_puts("Sched 4\n");
     current_task->state = TASK_RUNNING;
+  //  kernel_puts("Sched 5\n");
 }
 
 void OS_Start(void)
