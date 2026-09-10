@@ -12,21 +12,16 @@
 // ============================================================
 // FUNÇÃO DE SAÍDA (substitua pelo seu hardware!)
 // ============================================================
+#define PICO_VGA_BASE 0x00FF8000
+#define WRITE_SCREEN   (*((volatile unsigned char *)(PICO_VGA_BASE + 0x01)))
 
-static void putchar_kernel(char c) {
-    // ============================================================
-    // SUBSTITUA AQUI PELA SUA SAÍDA!
-    // Exemplo: video_putchar(c) ou uart_putchar(c)
-    // ============================================================
-    
-    // TODO: Implemente sua saída real aqui!
-    // Por enquanto, faz nada (evita warning)
-    (void)c;
+static void kernel_putchar(char ch) {
+    WRITE_SCREEN = ch;
 }
 
-static void puts_kernel(const char *s) {
+void kernel_puts(const char *s) {
     while (*s) {
-        putchar_kernel(*s++);
+        kernel_putchar(*s++);
     }
 }
 
@@ -137,7 +132,7 @@ void kprintf(const char *fmt, ...) {
     
     for (p = fmt; *p; p++) {
         if (*p != '%') {
-            putchar_kernel(*p);
+            kernel_putchar(*p);
             continue;
         }
         
@@ -147,7 +142,7 @@ void kprintf(const char *fmt, ...) {
         switch (*p) {
             case 'c': {
                 char c = (char)va_arg(args, int);
-                putchar_kernel(c);
+                kernel_putchar(c);
                 break;
             }
             
@@ -155,21 +150,21 @@ void kprintf(const char *fmt, ...) {
             case 'i': {
                 int val = va_arg(args, int);
                 itoa_kernel(val, buffer, 10);
-                puts_kernel(buffer);
+                kernel_puts(buffer);
                 break;
             }
             
             case 'u': {
                 unsigned int val = va_arg(args, unsigned int);
                 ultoa_kernel(val, buffer, 10);
-                puts_kernel(buffer);
+                kernel_puts(buffer);
                 break;
             }
             
             case 'x': {
                 unsigned int val = va_arg(args, unsigned int);
                 ultoa_kernel(val, buffer, 16);
-                puts_kernel(buffer);
+                kernel_puts(buffer);
                 break;
             }
             
@@ -183,37 +178,37 @@ void kprintf(const char *fmt, ...) {
                     }
                     s++;
                 }
-                puts_kernel(buffer);
+                kernel_puts(buffer);
                 break;
             }
             
             case 'p': {
                 void *ptr = va_arg(args, void*);
-                putchar_kernel('0');
-                putchar_kernel('x');
+                kernel_putchar('0');
+                kernel_putchar('x');
                 ultoa_kernel((unsigned long)ptr, buffer, 16);
-                puts_kernel(buffer);
+                kernel_puts(buffer);
                 break;
             }
             
             case 's': {
                 char *str = va_arg(args, char*);
                 if (str == NULL) {
-                    puts_kernel("(null)");
+                    kernel_puts("(null)");
                 } else {
-                    puts_kernel(str);
+                    kernel_puts(str);
                 }
                 break;
             }
             
             case '%': {
-                putchar_kernel('%');
+                kernel_putchar('%');
                 break;
             }
             
             default: {
-                putchar_kernel('%');
-                putchar_kernel(*p);
+                kernel_putchar('%');
+                kernel_putchar(*p);
                 break;
             }
         }
@@ -223,10 +218,10 @@ void kprintf(const char *fmt, ...) {
 }
 
 void kputc(char c) {
-    putchar_kernel(c);
+    kernel_putchar(c);
 }
 
 void kputs(const char *s) {
-    puts_kernel(s);
-    putchar_kernel('\n');
+    kernel_puts(s);
+    kernel_putchar('\n');
 }

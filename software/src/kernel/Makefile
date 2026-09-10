@@ -3,7 +3,7 @@ LD = m68k-elf-ld
 OBJCOPY = m68k-elf-objcopy
 VASM = vasmm68k_mot 
 
-CFLAGS = -Wall -O0 -I ./includes -I./include -ffreestanding -nostdlib
+CFLAGS = -Wall -O0 -I ./includes -I./include -I../include/sys -ffreestanding -nostdlib
 CFLAGS += -DCHIP_$(CHIP_TYPE) -DROM_SIZE_BYTES=$(ROM_SIZE)
 CFLAGS += -fomit-frame-pointer
 
@@ -13,12 +13,12 @@ LDFLAGS = -T ./kernel.ld -L../../lib -nostdlib -Map=kernel.map
 LDLIBS = 
 
 # 1. ADICIONADO: Lista de arquivos em Assembly (.S)
-ASMS = ctx_switch_68000.S
+ASMS =  crt0.S ctx_switch_68000.S
 
 VASMS =
 
 # Lista de arquivos C (CORRIGIDO: não tinha um espaço)
-SRCS =  kernel.c scheduler.c \
+SRCS =  kernel.c kmalloc.c scheduler.c trap_table.c task_create.c ./mm/slots.c kfunctions.c \
 ./lib/klibc/inttostr.c \
 ./lib/klibc/klibc.c \
 ./lib/klibc/kprintf.c \
@@ -40,8 +40,10 @@ SRCS =  kernel.c scheduler.c \
 ./lib/string/strstr.c ./lib/string/memccpy.c ./lib/string/memcmp.c ./lib/string/memmem.c ./lib/string/memset.c ./lib/string/strchr.c \
 ./lib/string/strcspn.c ./lib/string/strerror.c ./lib/string/strncat.c ./lib/string/strncpy.c ./lib/string/strnlen.c ./lib/string/strspn.c ./lib/string/strtok.c
 
+
+
 # 2. ALTERADO: Agora a lista de objetos junta os .o vindos do .c e do .S
-OBJS = $(SRCS:.c=.o) $(ASMS:.S=.o) $(VASMS:.asm=.o)
+OBJS =  $(ASMS:.S=.o) $(SRCS:.c=.o)$(VASMS:.asm=.o)
 
 # Tools
 TARGET := kernel

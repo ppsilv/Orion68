@@ -24,7 +24,7 @@ MEMORY
      * 0x00100000 (1MB) foi escolhido so como ponto de partida, assumindo
      * RAM total de 2MB e o kernel ocupando a parte mais baixa.
      */
-    USERRAM (rwx) : ORIGIN = 0x00082000, LENGTH = 0x00080000
+    USERRAM (rwx) : ORIGIN = 0x00082000, LENGTH = 0x0001FFFF
 }
 
 PHDRS
@@ -57,13 +57,14 @@ SECTIONS
      * entao nao e' preciso nenhum codigo de inicializacao extra pra isso.
      */
     .bss : {
-        _bss_start = .;
+        __bss_start = .;
         *(.bss*)
         *(COMMON)
-        _bss_end = .;
+        __bss_end = .;
     } > USERRAM :text
 
-    _end = .;
+    __kernel_end = .;
 
+     _estack = 0x000A1FF0;
     /DISCARD/ : { *(.comment) *(.note*) *(.eh_frame*) }
 }

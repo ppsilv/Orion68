@@ -1,0 +1,7 @@
+
+Lista os endereços
+clear ;m68k-elf-nm -n kernel.elf | grep -E "_bss_end|__kernel_end|_estack|_bss_start"
+
+Lista uma função em assembler
+m68k-elf-objdump -d kernel.elf | grep -A5 "kernel_putchar"
+

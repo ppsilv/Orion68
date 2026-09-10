@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 #include <kprintf.h>
+#include <interrupt.h>
+#include <critical.h>
 #include "scheduler.h"
 
 /*
@@ -54,9 +56,41 @@ void run_scheduler_test(void)
 }
 
 extern void run_scheduler_test(void);
+extern uint8_t __kernel_end;   /* símbolo do seu linker script, fim do .bss do kernel */
+extern void kmalloc_init(void *base, uint32_t size);
+extern void OS_TickISR();
+extern void sys_setramvector(uint32_t stub_addr, uint32_t handler_addr);
+void kernel_puts(const char *s);
 
-int main(){
-    kprintf("Kernel on line\n");
-    run_scheduler_test();
+uint32_t systemTick=0;
+uint32_t tick_count=0;
+
+
+int kmain(){
+    kernel_puts("Kernel on line\n");
+    short saved_sr;
+    
+    LOCK(saved_sr);
+    sys_setramvector(0x00080090,(uint32_t)OS_TickISR);
+    kernel_puts("1000 ");
+    for(int i=0;i<0xFFFF; i++){
+        volatile int j = 0; 
+         (void)j;       
+    }
+    kernel_puts("1001 ");
+    UNLOCK(saved_sr);
+    kernel_puts("1002 ");
+
+    while(1){
+    for(int i=0;i<0xFFFF; i++){
+        volatile int j = 0; 
+         (void)j;       
+    }
+    kernel_puts("wait... ");
+    }
+
+    //kmalloc_init(&__kernel_end, 0x10000);   /* ajuste o tamanho pro que sobrar de RAM ali */
+    //run_scheduler_test();
+
     return 0;
 }
