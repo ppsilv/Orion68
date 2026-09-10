@@ -3,7 +3,7 @@ LD = m68k-elf-ld
 OBJCOPY = m68k-elf-objcopy
 VASM = vasmm68k_mot 
 
-CFLAGS = -Wall -O0 -I ./includes -I../../include -ffreestanding -nostdlib
+CFLAGS = -Wall -O0 -I ./includes -I./include -ffreestanding -nostdlib
 CFLAGS += -DCHIP_$(CHIP_TYPE) -DROM_SIZE_BYTES=$(ROM_SIZE)
 CFLAGS += -fomit-frame-pointer
 
@@ -19,22 +19,22 @@ VASMS =
 
 # Lista de arquivos C (CORRIGIDO: não tinha um espaço)
 SRCS =  kernel.c scheduler.c \
-./lib/libc/inttostr.c \
-./lib/libc/klibc.c \
-./lib/libc/kprintf.c \
-./lib/libc/strtol.c	\
-./lib/libc/__divdi3.c  \
-./lib/libc/__divsi3.c  \
-./lib/libc/__moddi3.c  \
-./lib/libc/__modsi3.c  \
-./lib/libc/__muldi3.c  \
-./lib/libc/__mulsi3.c  \
-./lib/libc/__udivdi3.c \
-./lib/libc/__udivsi3.c \
-./lib/libc/__umoddi3.c \
-./lib/libc/__umodsi3.c \
-./lib/libc/__umuldi3.c \
-./lib/libc/__umulsi3.c \
+./lib/klibc/inttostr.c \
+./lib/klibc/klibc.c \
+./lib/klibc/kprintf.c \
+./lib/klibc/strtol.c	\
+./lib/klibc/__divdi3.c  \
+./lib/klibc/__divsi3.c  \
+./lib/klibc/__moddi3.c  \
+./lib/klibc/__modsi3.c  \
+./lib/klibc/__muldi3.c  \
+./lib/klibc/__mulsi3.c  \
+./lib/klibc/__udivdi3.c \
+./lib/klibc/__udivsi3.c \
+./lib/klibc/__umoddi3.c \
+./lib/klibc/__umodsi3.c \
+./lib/klibc/__umuldi3.c \
+./lib/klibc/__umulsi3.c \
 ./lib/string/malloc.c ./lib/string/memchr.c ./lib/string/memcpy.c ./lib/string/memmove.c ./lib/string/strcat.c ./lib/string/strcmp.c \
 ./lib/string/strcpy.c ./lib/string/strdup.c ./lib/string/strlen.c ./lib/string/strncmp.c ./lib/string/strndup.c ./lib/string/strrchr.c \
 ./lib/string/strstr.c ./lib/string/memccpy.c ./lib/string/memcmp.c ./lib/string/memmem.c ./lib/string/memset.c ./lib/string/strchr.c \

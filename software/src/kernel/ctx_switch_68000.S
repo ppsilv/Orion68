@@ -33,3 +33,7 @@ OS_TickISR:
     move.l  (%A0), %A7               | %A7 = tcb->sp da tarefa escolhida
     movem.l (%A7)+, %D0-%D7/%A0-%A6     | restaura contexto dela
     rte                            | volta a executar de onde ela parou
+
+
+
+

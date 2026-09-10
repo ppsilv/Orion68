@@ -1,3 +1,8 @@
+/* ata)v2.c It is prepared to work with more than one fisical driver.
+ *
+ *
+ */
+
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -73,14 +78,14 @@ void go_8bits_mode()
 	}
 	if(ide_bus_mode == 1){ // Ou a lógica que você usar para mudar para 16-bit
 		// Set 16-bit mode (Disable 8-bit PIO)
-		(*ATA_REG_FEATURE) = 0x81; 
+		(*ATA_REG_FEATURE) = 0x81;
 		(*ATA_REG_COMMAND) = ATA_CMD_SET_FEATURE;
 		ATA_WAIT();
-	}	
+	}
 }
 /* Ajuste esse valor conforme a frequência da sua rotina de delay.
  * Datasheets de CF tipicamente pedem até 30s no pior caso (spin-up),
- * mas CF de estado sólido normalmente responde em poucos ms. 
+ * mas CF de estado sólido normalmente responde em poucos ms.
  */
 #define ATA_TIMEOUT_LOOPS   1000000UL
 /*
@@ -90,11 +95,11 @@ static int ata_wait_busy_clear(void){
     do {
         status = *ATA_REG_STATUS;
         if (!(status & ATA_ST_BUSY)) {
-            return 1;   // saiu de BUSY, sucesso 
+            return 1;   // saiu de BUSY, sucesso
         }
         timeout--;
     } while (timeout > 0);
-    return 0;   // timeout - disco não respondeu a tempo 
+    return 0;   // timeout - disco não respondeu a tempo
 }*/
 extern void _delay_ms();
 
@@ -210,7 +215,7 @@ int ata_detect(void){
 	//}
 	//if (!(status & ATA_ST_DRDY)) {
 	//	return 0;   // não ocupado, mas ainda não sinalizou "pronto"
-	//}	
+	//}
 	if( ! has_master_disk() ){
 		return 0;
 	}
@@ -503,3 +508,153 @@ int ata_read_identity(void)
 	return 0;
 }
 
+
+/* ===================================================================
+ * SEGUNDO DISCO: cartão SD via Pico2W, mapeado em memória como
+ * registradores simples (D0-D7, /WR, /CS, /DTACK gerado pela Pico).
+ *
+ * IMPORTANTE: os offsets abaixo assumem 1 byte por endereço (0x0,0x1,
+ * 0x2...). Se as suas linhas de endereço estiverem ligadas do mesmo
+ * jeito que no ATA_REG_BASE (A1 pra cima, A0 não usado), troque os
+ * offsets para 0x0, 0x2, 0x4... (múltiplos de 2) igual lá em cima.
+ * =================================================================== */
+
+#define SD_REG_BASE 0x00FF9100
+
+#define SD_REG_DATA			((volatile uint8_t *) (SD_REG_BASE + 0x0))
+#define SD_REG_LBA0			((volatile uint8_t *) (SD_REG_BASE + 0x1))
+#define SD_REG_LBA1			((volatile uint8_t *) (SD_REG_BASE + 0x2))
+#define SD_REG_LBA2			((volatile uint8_t *) (SD_REG_BASE + 0x3))
+#define SD_REG_LBA3			((volatile uint8_t *) (SD_REG_BASE + 0x4))
+#define SD_REG_SECTOR_COUNT	((volatile uint8_t *) (SD_REG_BASE + 0x5))
+#define SD_REG_STATUS		((volatile uint8_t *) (SD_REG_BASE + 0x6))
+#define SD_REG_COMMAND		((volatile uint8_t *) (SD_REG_BASE + 0x6))
+
+#define SD_CMD_READ_SECTOR	0x20	// mesmo valor do ATA_CMD_READ_SECTORS, só por familiaridade
+#define SD_CMD_WRITE_SECTOR	0x30
+#define SD_CMD_IDENTIFY		0xEC	// opcional, pra um "sd_detect" que pergunta se tem cartão
+
+#define SD_ST_BUSY			0x80	// Pico está ocupado acessando o cartão físico
+#define SD_ST_DATA_READY	0x08	// buffer de 512 bytes pronto pra ser lido/escrito
+#define SD_ST_ERROR			0x01
+
+/* Igual o ATA_WAIT(): espera o BUSY cair. Aqui o BUSY é "de verdade"
+ * (o Pico está lendo/escrevendo o cartão), então não precisa do
+ * ATA_DELAY() artificial que existe por causa de peculiaridade do
+ * barramento ATA real. */
+#define SD_WAIT()			{ while (*SD_REG_STATUS & SD_ST_BUSY) { } }
+#define SD_WAIT_FOR_DATA()	{ while (!((*SD_REG_STATUS) & SD_ST_DATA_READY)) { } }
+
+int sd_detect(void)
+{
+	uint8_t status = *SD_REG_STATUS;
+
+	// se o barramento está "flutuando" (nada respondendo), normalmente
+	// isso volta 0xFF. Ajuste esse teste depois que tiver o firmware
+	// do Pico respondendo, pode ser diferente no seu caso.
+	if (status == 0xFF) {
+		return 0;
+	}
+	return 1;
+}
+
+int sd_read_sector(int sector, char *buffer)
+{
+	short saved_status;
+
+	LOCK(saved_status);
+
+	(*SD_REG_LBA0) = (uint8_t) (sector);
+	(*SD_REG_LBA1) = (uint8_t) (sector >> 8);
+	(*SD_REG_LBA2) = (uint8_t) (sector >> 16);
+	(*SD_REG_LBA3) = (uint8_t) (sector >> 24);
+	(*SD_REG_SECTOR_COUNT) = 1;
+	(*SD_REG_COMMAND) = SD_CMD_READ_SECTOR;
+
+	SD_WAIT();	// espera o Pico terminar de ler o cartão
+
+	if (*SD_REG_STATUS & SD_ST_ERROR) {
+		log_error("Error while reading sd: status %x\n", *SD_REG_STATUS);
+		UNLOCK(saved_status);
+		return 0;
+	}
+
+	SD_WAIT_FOR_DATA();
+
+	for (int i = 0; i < 512; i++) {
+		buffer[i] = (*SD_REG_DATA);
+	}
+
+	UNLOCK(saved_status);
+	return 512;
+}
+
+int sd_write_sector(int sector, const char *buffer)
+{
+	short saved_status;
+
+	LOCK(saved_status);
+
+	(*SD_REG_LBA0) = (uint8_t) (sector);
+	(*SD_REG_LBA1) = (uint8_t) (sector >> 8);
+	(*SD_REG_LBA2) = (uint8_t) (sector >> 16);
+	(*SD_REG_LBA3) = (uint8_t) (sector >> 24);
+	(*SD_REG_SECTOR_COUNT) = 1;
+	(*SD_REG_COMMAND) = SD_CMD_WRITE_SECTOR;
+
+	SD_WAIT_FOR_DATA();	// Pico avisa que já pode receber os 512 bytes
+
+	for (int i = 0; i < 512; i++) {
+		(*SD_REG_DATA) = buffer[i];
+	}
+
+	SD_WAIT();	// espera o Pico terminar de gravar no cartão
+
+	if (*SD_REG_STATUS & SD_ST_ERROR) {
+		log_error("Error writing sd sector %d: status %x\n", sector, *SD_REG_STATUS);
+	}
+
+	UNLOCK(saved_status);
+	return 512;
+}
+
+int sd_init(void)
+{
+	for (short i = 0; i < PARTITION_MAX; i++) {
+		drives[1].parts[i].base = 0;
+	}
+
+	if (!sd_detect()) {
+		log_info("sd: no device detected\n");
+		return 0;
+	}
+
+	char buffer[1024];
+
+	sd_read_sector(0, buffer);
+	read_partition_table(buffer, drives[1].parts);
+
+	for (short i = 0; i < PARTITION_MAX; i++) {
+		if (drives[1].parts[i].size) {
+			//log_notice("sd%d: found partition with %d sectors\n", i, drives[1].parts[i].size);
+		}
+	}
+
+	return 1;
+}
+
+int sd_disk_status(void)
+{
+	if (sd_detect()) {
+		return 0; //RES_OK
+	}
+	return 1; //RES_ERROR
+}
+
+int sd_disk_initialize(void)
+{
+	if (sd_init()) {
+		return 0; //RES_OK
+	}
+	return 1; //RES_ERROR
+}

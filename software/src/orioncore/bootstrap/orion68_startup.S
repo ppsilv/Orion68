@@ -27,8 +27,8 @@ _vectors:
           .long    0x0008007e      /*bad_exception         0x005c*/
           .long    0x00080084      /*SpuriousHandler       0x0060*/
           .long    0x0008008a      /*Int1Handler           0x0064*/
-          .long    Int2Handler          /*0x00080090*/      /*Int2Handler           0x0068*/
-          .long    Int3Handler          /*0x00080096*/      /*Int3Handler           0x006c*/
+          .long    0x00080090      /*Int2Handler           0x0068*/
+          .long    Int3Handler     /*0x00080096*/      /*Int3Handler           0x006c*/
           .long    0x0008009c      /*Int4Handler           0x0070*/
           .long    0x000800a2      /*Int5Handler           0x0074*/
           .long    0x000800a8      /*Int6Handler           0x0078*/
@@ -71,6 +71,9 @@ _vectors:
 .extern Int2Handler
 .extern Int3Handler
 .extern fdummy
+.extern dump_memory
+.extern ring_buf_is_empty
+.extern set_ram_vector
 
 .equ WR_CHAR, 0xFF912B
 .equ DUART_BASE, 0x00FF9000
@@ -84,7 +87,6 @@ _start:
 
         MOVE.B  #'1',WR_CHAR
 
-        andi.w #0xF8FF,%SR
 /*
 ; Busca de RAM para m68k (Orion68)
 ; Retorna em A0 o endereço onde a RAM termina.
@@ -190,6 +192,27 @@ go_ahead:
         | Limpa a pilha após o retorno (3 argumentos * 4 bytes = 12 bytes)
         ADDA.L  #12, %SP
 
+
+        move.l  #Int2Handler, -(%SP)     | handler_addr = OS_TickISR (empilhado 1o, e' o ultimo parametro)
+        move.l  #0x00080090, -(%SP)      | stub_addr = 0x00080090 (empilhado 2o, e' o 1o parametro)
+        BSR     set_ram_vector           | Chama a função C
+        ADDA.L  #8, %SP                  | 2 argumentos * 4 bytes = 8 (o comentario diz "3 argumentos", mas a conta certa e' 2)
+
+        move.l  #5,%D1
+        BSR     delay_seconds
+/*
+        move.l  #255, -(%SP)
+        move.l  #0x00080000, -(%SP)
+        | Chama a função C
+        BSR     dump_memory
+        | Limpa a pilha após o retorno (3 argumentos * 4 bytes = 12 bytes)
+        ADDA.L  #8, %SP
+.waitkey:
+        BSR     ring_buf_is_empty
+        TST.L   %D0            | ajusta as flags conforme o valor de D0
+        BNE     .waitkey       | se D0 != 0 (ou seja, =1, buffer vazio) -> continua esperando
+*/  
+        andi.w #0xF8FF,%SR
 
         MOVE.B  #'9',WR_CHAR
 

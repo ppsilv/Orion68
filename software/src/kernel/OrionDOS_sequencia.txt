@@ -1,0 +1,88 @@
+
+apps
+  |
+libc      (monta os argumentos, poe a syscall em D0, chama TRAP #x)
+  |
+kernel    (trap handler decodifica D0, olha a tabela de dispatch)
+  |
+VFS       (abstração open/read/write, decide pra qual driver mandar)
+  |
+drivers   (char ou bloco)
+
+A lógica de cada camada:
+
+libc → kernel : a libc não faz nada "de verdade", só prepara
+(via trap)    registradores e chama a trap. Isso é o único ponto de transição
+              user→kernel, e é exatamente essa a ideia de abandonar as 4 traps
+              individuais (conin/video/RTC/fatfs) por uma só com tabela de dispatch.
+
+kernel → VFS: nem toda syscall passa pela VFS. Coisas como leitura de
+              teclado ou escrita em vídeo, por exemplo, podem ir direto do dispatch
+              do kernel pro driver de char, sem passar pela abstração de arquivo.
+              A VFS entra especificamente pras syscalls que operam sobre um file
+              descriptor (open/read/write/close) — que é justamente o que você já tem.
+
+
+
+"Freestanding" é um termo da própria especificação do C (C99/C11), que define dois
+tipos de ambiente de execução:
+
+**1. Hosted environment** — o "normal": tem um SO por baixo, toda a biblioteca
+padrão do C está disponível (`stdio.h` com `printf`/`fopen`, `stdlib.h` com
+`malloc` de verdade, etc), porque existem syscalls pra dar suporte a essas funções.
+
+**2. Freestanding environment** — não assume SO nenhum por baixo. É o que você
+tem quando o próprio código *é* o SO (ou é firmware, bootloader, etc) — não tem
+ninguém pra atender uma syscall, porque você é a camada mais baixa que existe.
+
+No ambiente freestanding, a norma do C garante que só alguns headers vão funcionar,
+porque eles não dependem de I/O nem de SO:
+
+- `stddef.h` (`size_t`, `NULL`, etc)
+- `stdint.h` (`uint32_t`, `int8_t` — que você já usa no seu código)
+- `limits.h`, `float.h`
+- `stdarg.h` (varargs — necessário pra implementar algo como `kprintf`)
+
+Tudo que depende de recursos externos (arquivo, heap gerenciada por SO, terminal)
+**não** é garantido: `stdio.h`, `stdlib.h` (a parte de `malloc`/`exit`), `time.h`,
+etc. Se você quer essas funcionalidades, você mesmo implementa a partir do que
+tem disponível (registradores, memória mapeada, sua própria driver de vídeo).
+
+**Como isso se aplica no seu caso especificamente:**
+
+- Seu **orioncore** (a antiga bios) é freestanding por natureza — ele roda antes
+de qualquer SO existir, então o `printf` próprio que você mencionou ter feito lá
+é exatamente isso: uma reimplementação freestanding, porque não pode contar com
+nada.
+- Seu **kernel** também é freestanding, pelo mesmo motivo do que conversamos: ele
+não pode chamar a libc de userspace porque essa libc pressupõe que as syscalls
+(que o próprio kernel implementa) já existem.
+- Sua **libc para apps** (a `libc68k_pic.a`) já é hosted — ela pressupõe que existe
+um kernel por baixo respondendo trap, então pode ter `fopen`, heap via alguma forma
+de alocação, etc.
+
+Um jeito prático de pensar: **freestanding = "compilo com `-ffreestanding` e não
+posso contar com nada que dependa de um SO already running"**. É basicamente a
+mesma situação do cc65 pra 6502 quando você não tem um SO embaixo — você já vive
+nessa realidade, só que agora sabe o nome formal do conceito.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

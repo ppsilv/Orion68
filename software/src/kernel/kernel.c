@@ -56,6 +56,7 @@ void run_scheduler_test(void)
 extern void run_scheduler_test(void);
 
 int main(){
+    kprintf("Kernel on line\n");
     run_scheduler_test();
     return 0;
 }

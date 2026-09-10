@@ -1,0 +1,163 @@
+Boa, e tem um perigo real escondido nesse plano — se você usar o `build_jump_table` pra apontar o `Int2Handler` direto pro `OS_TickISR`, você vai **corromper o próprio `OS_TickISR`**.
+
+## Por que não pode usar `build_jump_table` aqui
+
+Repara no final da função:
+
+```c
+p = (uint8_t *)target_addr;
+*p++ = 0x4E;
+*p++ = 0x73;
+```
+
+Ela sempre escreve um `RTE` (0x4E73) **em cima do `target_addr`**. Isso faz sentido quando `target_addr` é um endereço "vazio" que você só quer que funcione como "não faz nada, retorna" — mas se você chamar `build_jump_table(0x00080090, (uint32_t) OS_TickISR, 1)`, ela vai:
+1. Escrever o `JMP OS_TickISR` certinho em `0x00080090` (isso você quer)
+2. **E também** escrever `0x4E 0x73` (RTE) nos dois primeiros bytes do `OS_TickISR` de verdade, estourando o começo da sua rotina de troca de contexto.
+
+Ou seja, essa função foi feita só pra popular vetores com um handler-padrão "vazio" (tipo inicializar tudo com um RTE genérico), não pra apontar pro handler final.
+
+## O jeito certo: só escrever o JMP, sem tocar no target
+
+```c
+void set_ram_vector(uint32_t stub_addr, uint32_t handler_addr)
+{
+    uint8_t *p = (uint8_t *) stub_addr;
+
+    *p++ = 0x4E;
+    *p++ = 0xF9;   /* JMP absoluto de 32 bits */
+
+    *p++ = (uint8_t)((handler_addr >> 24) & 0xFF);
+    *p++ = (uint8_t)((handler_addr >> 16) & 0xFF);
+    *p++ = (uint8_t)((handler_addr >> 8)  & 0xFF);
+    *p++ = (uint8_t)( handler_addr        & 0xFF);
+}
+```
+
+E a chamada:
+
+```c
+extern void OS_TickISR(void);
+
+set_ram_vector(0x00080090, (uint32_t) OS_TickISR);
+```
+
+Isso deixa a cadeia assim: vetor real (endereço 0x68) → `0x00080090` (JMP) → `OS_TickISR` direto. Sem passar pelo RTE genérico no meio.
+
+## Ordem de chamada importa (senão trava com ponteiro nulo)
+
+Olhando o seu `scheduler.c`: `current_task` começa `NULL`. Se o `OS_TickISR` disparar **antes** de você chamar `OS_Start()`, ele vai fazer `move.l current_task,%A0` com `current_task == NULL` e depois `move.l (%A0),%A7` — desreferenciando nulo, trava na hora.
+
+Sequência segura:
+
+1. `OS_Init()`
+2. `OS_TaskCreate(...)` pra cada tarefa
+3. `set_ram_vector(0x00080090, (uint32_t) OS_TickISR)` — pode ser aqui ou antes, contanto que interrupções continuem desabilitadas
+4. `OS_Start()` — que chama `OS_StartHighRdy()`, e é o próprio `rte` dessa função que restaura o SR da primeira tarefa (`0x2000`, todas as interrupções habilitadas) e **só nesse momento** o systick pode disparar de verdade — e `current_task` já vai estar setado.
+
+Se em algum lugar do seu boot as interrupções forem reabilitadas **antes** do passo 4, é queda na certa.
+
+## O que ainda falta e pode ser a causa do bug antigo
+
+O `OS_TickISR` que você me passou não faz **nenhum** acknowledge do hardware do timer — ele só salva contexto, escalona, restaura. Se o chip que gera essa INT2 exige que você limpe uma flag de "interrupção pendente" (a maioria dos PITs/DUARTs exige), e essa limpeza sumiu quando você trocou o handler antigo ("conta até 1400") pelo `OS_TickISR`, é bem provável que seja **o mesmo bug** que você já tinha visto (interrupção para de disparar depois de um tempo).
+
+Você tem o código do handler antigo (o que contava até 1400) ou sabe qual chip/registrador gera essa interrupção? Se mandar, eu já te digo onde encaixar o ack dentro do `OS_TickISR` antes de ele devolver o `rte`.
+
+
+
+Quase certo — a lógica de empilhar os argumentos na ordem certa (direita pra esquerda) está correta, mas tem um erro que vai fazer isso não funcionar (ou pior, criar um loop infinito), e o motivo é sutil.
+
+## O problema: falta o `#` antes de `Int2Handler`
+
+```asm
+move.l  Int2Handler, -(%SP)
+```
+
+Sem o `#`, isso em GAS significa **"pegue os 4 bytes que estão gravados no endereço de memória `Int2Handler` e empilhe esse valor"** — ou seja, é um `move.l` com modo de endereçamento absoluto, uma leitura de memória. Não é "empilhe o número `Int2Handler`".
+
+Você quer empilhar o **endereço/valor** `Int2Handler` (ou seja, tratá-lo como uma constante/imediato), não o conteúdo gravado lá. Pra isso, precisa do `#`:
+
+```asm
+move.l  #Int2Handler, -(%SP)
+```
+
+Sem o `#`, o valor empilhado vai ser lixo (o que estiver, por acaso, gravado nesses 4 bytes de memória) em vez do endereço do handler — e seu `set_ram_vector` vai escrever um `JMP <lixo>` em `0x00080090`. Isso combina exatamente com o tipo de bug "às vezes funciona, às vezes trava do nada".
+
+## Segundo problema: `Int2Handler` não deveria ser o segundo argumento
+
+Reveja o que você mesmo definiu antes: `Int2Handler` era o **nome/valor do endereço do stub** (`0x00080090`) — é o que fica *dentro da tabela de vetores real*, apontando pra essa posição de RAM. Ele não é o handler final.
+
+O `set_ram_vector` espera `(stub_addr, handler_addr)`. O `handler_addr` — o segundo argumento, o que deve realmente rodar o `OS_TickISR` — não é `Int2Handler`, é o `OS_TickISR` mesmo:
+
+```asm
+.extern OS_TickISR
+
+move.l  #OS_TickISR, -(%SP)      | handler_addr = OS_TickISR (empilhado 1o, e' o ultimo parametro)
+move.l  #0x00080090, -(%SP)      | stub_addr = 0x00080090 (empilhado 2o, e' o 1o parametro)
+BSR     set_ram_vector
+ADDA.L  #8, %SP                  | 2 argumentos * 4 bytes = 8 (o comentario diz "3 argumentos", mas a conta certa e' 2)
+```
+
+Se você empilhar `Int2Handler` (que vale `0x00080090`) como `handler_addr`, o `JMP` gerado em `0x00080090` vai apontar **pra ele mesmo** — o processador entra lá, dá `jmp 0x00080090` de novo, e fica preso num loop infinito nesse endereço, nunca chega no `OS_TickISR`.
+
+Fazendo essa troca, a cadeia fica correta: vetor real (offset `0x68`) → aponta pra `0x00080090` → `JMP OS_TickISR` → executa o scheduler de verdade.
+
+
+
+Você tem toda razão — eu bati o olho no `OS_TickISR` e falei "aponta pra ele e pronto", mas isso **descartaria** o `systemTick`, o `tick_count` e as duas ações em `0xFF901D`/`0xFF901F` que esse `Int2Handler` já faz. Isso não pode sumir.
+
+E tem um motivo técnico pra isso não dar simplesmente pra "chamar os dois": o `OS_TickISR` termina com `rte` — ele não é uma sub-rotina que você chama com `jsr` e espera voltar, ele **é** o fim do tratamento da interrupção. Se você fizer `Int2Handler` fazer o trabalho dele e depois dar `jsr OS_TickISR`, quando o `OS_TickISR` disparar o `rte`, ele vai restaurar contexto e devolver o processador pra tarefa nova — só que a pilha nesse ponto já tem o frame duplicado (o `movem` que o `Int2Handler` fez lá em cima + o `movem` que o `OS_TickISR` faz de novo). Ia empilhar registrador em cima de registrador errado.
+
+A solução é fundir os dois em **um handler só**, porque o `Int2Handler` já faz o `movem`/`rte` que o `OS_TickISR` faria de qualquer jeito — só falta ele, no meio do caminho, trocar de pilha (`current_task->sp`) e chamar o `OS_Schedule`:
+
+```asm
+.extern current_task
+.extern OS_Schedule
+.extern systemTick
+
+Int2Handler:
+        movem.l %d0-%d7/%a0-%a6,-(%sp)
+
+        move.l  #systemTick,%a0
+        addq.l  #1,(%a0)
+
+        addq.w  #1,tick_count
+        cmpi.w  #400,tick_count
+        beq.s   .action_100
+        cmpi.w  #800,tick_count
+        beq.s   .action_200
+        bra.s   .do_schedule
+
+.action_100:
+        move.b  #0x08,0xFF901D
+        bra.s   .do_schedule
+
+.action_200:
+        move.b  #0x08,0xFF901F
+        clr.w   tick_count
+        | cai direto pra .do_schedule
+
+.do_schedule:
+        move.l  current_task,%a0
+        move.l  %sp,(%a0)              | tcb->sp = pilha da tarefa que estava rodando
+
+        jsr     OS_Schedule            | decide a proxima tarefa, atualiza current_task
+
+        move.l  current_task,%a0
+        move.l  (%a0),%sp              | pilha vira a da tarefa escolhida
+
+        movem.l (%sp)+,%d0-%d7/%a0-%a6
+        rte
+```
+
+O que mudou em relação ao seu original:
+- As três saídas duplicadas (`movem.l (%sp)+,...;rte`) viraram uma só, no rótulo `.do_schedule`.
+- Antes de restaurar registradores, ele salva a pilha atual no TCB, chama `OS_Schedule` (que decide se troca de tarefa ou mantém a mesma), e recarrega `%sp` do `current_task` — que pode ser a mesma tarefa de antes ou uma nova, dependendo do que o `OS_Schedule` decidiu.
+- `systemTick`, `tick_count` e as ações em `0xFF901D`/`0xFF901F` continuam rodando **todo tick**, exatamente como antes — não dependem de qual tarefa está rodando.
+
+Com isso, o `OS_TickISR` do `ctx_switch_68000.s` fica **sem uso** — ele foi útil como referência de "como fazer", mas na prática o trabalho dele já mora aqui dentro do `Int2Handler` fundido. O `set_ram_vector` deve apontar pro endereço RAM desse `Int2Handler` fundido, não mais pro `OS_TickISR` separado:
+
+```c
+set_ram_vector(0x00080090, (uint32_t) Int2Handler);
+```
+
+Uma pergunta antes de você compilar isso: o `0xFF901D`/`0xFF901F` — é algum tipo de watchdog/refresh que precisa continuar batendo mesmo com o kernel rodando, ou era algo específico do modo "maintenance shell" do orioncore que não faz sentido mais uma vez que o kernel assumiu?

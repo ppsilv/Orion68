@@ -89,6 +89,8 @@ const char MsgOrionInit[] =
     "-----------------------------------------------\n\n";
 extern volatile unsigned char debug_pkt;
 extern int shell(int argc, char *argv[]);
+void jump_to_kernel(void);
+int load_kernel_flat(const char *path);
 
 void main(int argc, char *argv[]) {
     pico_write_ch('A');
@@ -141,6 +143,12 @@ void main(int argc, char *argv[]) {
         shell(argc,argv);
     }else{
         vputs("Loading oKernel\n");
+        if (load_kernel_flat("kernel.sys")) {
+            jump_to_kernel();
+        } else {
+            vputs("No kernel, loading oshell\n");
+            shell(argc,argv);
+        }        
     }
 
     while (1){
@@ -150,3 +158,37 @@ void main(int argc, char *argv[]) {
     }
 
 }
+
+void jump_to_kernel(void)
+{
+    m68k_disable_all_interrupts();
+    asm volatile(
+        "jmp 0x82000\n"
+    );
+}
+
+#define KERNEL_LOAD_ADDR ((void *) 0x82000)
+
+int load_kernel_flat(const char *path)
+{
+    FIL fil;
+    FRESULT fr;
+    UINT br;
+
+    fr = f_open(&fil, path, FA_READ);
+    if (fr != FR_OK) {
+        vputs("kernel: falha ao abrir kernel.bin\n");
+        return 0;
+    }
+
+    fr = f_read(&fil, KERNEL_LOAD_ADDR, f_size(&fil), &br);
+    f_close(&fil);
+
+    if (fr != FR_OK || br == 0) {
+        vputs("kernel: falha ao ler kernel.bin\n");
+        return 0;
+    }
+
+    return 1;
+}
+

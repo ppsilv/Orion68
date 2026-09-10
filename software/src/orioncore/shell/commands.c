@@ -203,7 +203,7 @@ void do_delete(int argc, char *argv[])
        printerro(fr);
     }
 }
-static void dump_memory(long addr,int size){
+void dump_memory(long addr,int size){
     unsigned char * pcharhex;
     unsigned char * pcharasc;
     unsigned char ch;
@@ -244,7 +244,6 @@ static void dump_memory(long addr,int size){
             }
             printf("\n");
         }
-        
         //dump_registradores(); // Seu sensor invisível inline
         printf("Hit any <ENTER> to continue <ESC> to terminate: ");
         ch = ring_buf_get_char();
