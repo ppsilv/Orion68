@@ -13,12 +13,13 @@ LDFLAGS = -T ./kernel.ld -L../../lib -nostdlib -Map=kernel.map
 LDLIBS = 
 
 # 1. ADICIONADO: Lista de arquivos em Assembly (.S)
-ASMS =  crt0.S ctx_switch_68000.S
+ASMS =  crt0.S ctx_switch_68000.S ./exceptions/exceptions_asm.S
 
 VASMS =
 
 # Lista de arquivos C (CORRIGIDO: não tinha um espaço)
-SRCS =  kernel.c kmalloc.c scheduler.c trap_table.c task_create.c ./mm/slots.c kfunctions.c \
+SRCS =  kernel.c kmalloc.c scheduler.c trap_table.c task_create.c ./mm/slots.c kfunctions.c  \
+./exceptions/exceptions.c \
 ./lib/klibc/inttostr.c \
 ./lib/klibc/klibc.c \
 ./lib/klibc/kprintf.c \

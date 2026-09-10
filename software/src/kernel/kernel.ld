@@ -65,6 +65,6 @@ SECTIONS
 
     __kernel_end = .;
 
-     _estack = 0x000A1FF0;
+    __estack = 0x000A1FF0;
     /DISCARD/ : { *(.comment) *(.note*) *(.eh_frame*) }
 }

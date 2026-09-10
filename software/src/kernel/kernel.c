@@ -5,7 +5,7 @@
 #include <interrupt.h>
 #include <critical.h>
 #include "scheduler.h"
-
+#include "./exceptions/exceptions.h"
 /*
  * Teste isolado: duas tarefas bobas, cada uma so incrementando um
  * contador proprio e imprimindo de vez em quando. Se elas alternarem
@@ -68,7 +68,8 @@ void run_scheduler_test(void)
 }
 
 extern void run_scheduler_test(void);
-extern uint8_t __kernel_end;   /* símbolo do seu linker script, fim do .bss do kernel */
+extern uint32_t __kernel_end;   /* símbolo do seu linker script, fim do .bss do kernel */
+extern uint32_t __estack; 
 extern void kmalloc_init(void *base, uint32_t size);
 extern void OS_TickISR();
 extern void sys_setramvector(uint32_t stub_addr, uint32_t handler_addr);
@@ -83,7 +84,7 @@ int kmain(){
     short saved_sr;
 
     uint32_t heap_base = (uint32_t)&__kernel_end;
-    uint32_t heap_size = _estack - heap_base - 0x4000;  /* 16 KB de folga pra pilha */
+    uint32_t heap_size = __estack - heap_base - 0x4000;  /* 16 KB de folga pra pilha */
     kmalloc_init((void*)heap_base, heap_size);
 
     kprintf("heap_base[%d] heap_size[%d]\n",heap_base,heap_size);
@@ -95,9 +96,16 @@ int kmain(){
 
     LOCK(saved_sr);
     sys_setramvector(0x00080090,(uint32_t)OS_TickISR);
-    //sys_setramvector(0x00080008, (uint32_t)bus_error_handler);
-    //sys_setramvector(0x0008000C, (uint32_t)address_error_handler);
-    //sys_setramvector(0x00080010, (uint32_t)illegal_instruction_handler);
+    
+    sys_setramvector(0x00080008, (uint32_t)exc_bus_error);
+    sys_setramvector(0x0008000C, (uint32_t)exc_address_error);
+    sys_setramvector(0x00080010, (uint32_t)exc_illegal);
+    sys_setramvector(0x00080014, (uint32_t)exc_div0);
+    sys_setramvector(0x00080020, (uint32_t)exc_priv);
+    sys_setramvector(0x0008001C, (uint32_t)exc_trapv);
+    sys_setramvector(0x00080028, (uint32_t)exc_linea);
+    sys_setramvector(0x0008002C, (uint32_t)exc_linef);
+
     kernel_puts("1000 ");
     for(int i=0;i<0xFFFF; i++){
         volatile int j = 0; 

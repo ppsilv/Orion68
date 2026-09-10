@@ -3,10 +3,10 @@
 _vectors:
           .long    0x000FFFF0                   /*0x00000000*//* Pilha no topo real da RAM (ajuste se seu limite for outro) */
           .long    _start                       /*0x00000004*/
-          .long    SvcBusError                  /*0x00000008*/
-          .long    Svcaddress_err               /*0x0000000C*/
-          .long    SvcIllegalIns                /*0x00000010*/
-          .long    SvcDiv0_handler              /*0x00000014*/
+          .long    0x00080008      /*SvcBusError           0x0008*/
+          .long    0x0008000c      /*Svcaddress_err        0x000C*/
+          .long    0x00080010      /*SvcIllegalIns         0x0010*/
+          .long    0x00080014      /*SvcDiv0_handler       0x0014*/
           .long    0x00080018      /*SvcChkIns             0x0018*/
           .long    0x0008001e      /*SvcTrapvIns           0x001c*/
           .long    0x00080024      /*SvcPrivViolation      0x0020*/

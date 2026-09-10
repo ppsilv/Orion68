@@ -24,7 +24,14 @@ void kernel_puts(const char *s) {
         kernel_putchar(*s++);
     }
 }
-
+void kernel_puthex(uint32_t v) {
+    const char *hex = "0123456789ABCDEF";
+    kernel_putchar('0');
+    kernel_putchar('x');
+    for (int i = 28; i >= 0; i -= 4) {
+        kernel_putchar(hex[(v >> i) & 0xF]);
+    }
+}
 // ============================================================
 // CONVERSÃO DE NÚMEROS
 // ============================================================

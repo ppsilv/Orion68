@@ -83,7 +83,7 @@ void do_ideinit(int argc, char *argv[])
 
 const char MsgOrionInit[] = 
   "\nPDS317-Hardware Copyright 2026(C) pdsilva(pgordao).\n"
-    "Orioncore V1.0.0 M68k Firmware Copyright 2026(C) pdsilva(pgordao)\n"
+    "Orioncore V1.0.1 M68k Firmware Copyright 2026(C) pdsilva(pgordao)\n"
     "Build Date: " __DATE__ " - " __TIME__ "\n"
     "Build Counter: " BUILD_COUNTER "\n"
     "-----------------------------------------------\n\n";
@@ -91,16 +91,16 @@ extern volatile unsigned char debug_pkt;
 extern int shell(int argc, char *argv[]);
 void jump_to_kernel(void);
 int load_kernel_flat(const char *path);
-
+extern uint8_t ring_buf_is_empty(void);
 void main(int argc, char *argv[]) {
     pico_write_ch('A');
     vputs("Memory: Rom start addr.............: 0\n");
     vputs("        Rom installed  low and high: 65536 2 of 32768\n");
     vputs("        Rom space end..............: 524287\n");
     vputs("        First sram address.........: 524288\n");
-    //vputs("        Last  sram address.........: %ld\n",*last_mem_address);
-    //vputs("        CPU sram memory............: %ld words\n",*last_mem_address-0x80000);
-    //vputs("        Total sram memory..........: %ld bytes\n",(*last_mem_address-0x80000)*2);
+    printf("        Last  sram address.........: %ld\n",*last_mem_address);
+    printf("        CPU sram memory............: %ld words\n",*last_mem_address-0x80000);
+    printf("        Total sram memory..........: %ld bytes\n",(*last_mem_address-0x80000)*2);
     
     pico_write_ch('c');
     setaVetorFuncao(vect_Int2Handler,(uint32_t) Int2Handler );
@@ -135,7 +135,17 @@ void main(int argc, char *argv[]) {
     ring_buf_init();
 
     pico_write_ch('M');
-    char ch = ring_buf_get_char();
+
+    uint32_t timeout = systemTick;
+    timeout += 5000;
+    char ch = 0;
+    vputs("Pressione DELETE to go offline system!\n");
+    while( systemTick < timeout ){
+        if( ! ring_buf_is_empty() ){
+            ch = ring_buf_get_char();
+            break;
+        } 
+    }
     if(ch == 0x7f){
         vputs("User wants do bypass Offline State\n");
         //LOAD SHELL.
