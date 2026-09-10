@@ -22,29 +22,41 @@
 static uint8_t stack_task_a[STACK_SIZE];
 static uint8_t stack_task_b[STACK_SIZE];
 
+void kernel_puts(const char *s);
+void long_to_string(long value, char *str, int base);
+
 static void TaskA(void)
 {
     uint32_t count = 0;
+    char str[32];
     for (;;) {
         count++;
-        if ((count % 100000) == 0)
-            kprintf("Tarefa A: %x\n", (unsigned long)count);
+        long_to_string(count, str,16);
+        if (count >= 1000) {
+            count = 0;
+            kernel_puts("\nTask A: ");
+            kernel_puts(str);
+        }
     }
 }
-
 static void TaskB(void)
 {
     uint32_t count = 0;
+    char str[32];
     for (;;) {
-        count+=2;
-        if ((count % 100000) == 0)
-            kprintf("Tarefa B: %x\n", (unsigned long)count);
+        count++;
+        long_to_string(count, str,16);
+        if (count >= 1000) {
+            count = 0;
+            kernel_puts("\nTask B: ");
+            kernel_puts(str);
+        }
+
     }
 }
 
 void run_scheduler_test(void)
 {
-    OS_Init();
 
     /* arg = NULL porque essas tarefas nao precisam de nenhum dado externo */
     OS_TaskCreate(TaskA, NULL, stack_task_a, STACK_SIZE, /*id=*/1);
@@ -70,11 +82,22 @@ int kmain(){
     kernel_puts("Kernel on line\n");
     short saved_sr;
 
+    uint32_t heap_base = (uint32_t)&__kernel_end;
+    uint32_t heap_size = _estack - heap_base - 0x4000;  /* 16 KB de folga pra pilha */
+    kmalloc_init((void*)heap_base, heap_size);
+
+    kprintf("heap_base[%d] heap_size[%d]\n",heap_base,heap_size);
+
     kmalloc_init(&__kernel_end, 0x10000);   /* ajuste o tamanho pro que sobrar de RAM ali */
-    
+
+    OS_Init();
+
 
     LOCK(saved_sr);
     sys_setramvector(0x00080090,(uint32_t)OS_TickISR);
+    //sys_setramvector(0x00080008, (uint32_t)bus_error_handler);
+    //sys_setramvector(0x0008000C, (uint32_t)address_error_handler);
+    //sys_setramvector(0x00080010, (uint32_t)illegal_instruction_handler);
     kernel_puts("1000 ");
     for(int i=0;i<0xFFFF; i++){
         volatile int j = 0; 
