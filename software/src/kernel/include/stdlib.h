@@ -35,12 +35,6 @@ extern unsigned long long int strtoull (const char *__restrict __nptr, char **__
 extern int strcasecmp(const char *s1, const char *s2) __attribute__((nonnull (1,2)));
 extern uintmax_t strntoumax(const char *nptr, char **endptr, int base, unsigned int n) __attribute__((nonnull (1)));
 
-/* Allocate SIZE bytes of memory.  */
-extern void *malloc (size_t __size);
-extern void *calloc (size_t __nmemb, size_t __size);
-extern void *realloc (void *__ptr, size_t __size);
-extern void free (void *__ptr);
-
 extern int atoi (const char *__nptr) __attribute__((nonnull (1)));
 extern long int atol (const char *__nptr) __attribute__((nonnull (1)));
 extern long long int atoll (const char *__nptr) __attribute__((nonnull (1)));

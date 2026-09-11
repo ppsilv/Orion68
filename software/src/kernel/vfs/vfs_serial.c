@@ -1,5 +1,6 @@
 #include <stdint.h>
-#include "vfs.h"
+#include <sys/vfs.h>
+
 
 // ============================================
 // ENDEREÇOS DA SERIAL (68k: só D0-D7 ligado,

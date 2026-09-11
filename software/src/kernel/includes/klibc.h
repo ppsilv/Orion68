@@ -19,6 +19,7 @@ unsigned long long __umoddi3(unsigned long long a, unsigned long long b);
 unsigned int       __umodsi3(unsigned int a, unsigned int b);
 unsigned long long __umuldi3(unsigned long long a, unsigned long long b);
 unsigned int       __umulsi3(unsigned int a, unsigned int b);
+int ksprintf(char *str, const char *format, ...);
 
 
 #endif

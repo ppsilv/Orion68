@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "vfs.h"
+#include <sys/vfs.h>
+#include <sys/kmalloc.h>
 #include "fileio.h" 
 
 // ============================================
@@ -63,9 +64,9 @@ File *get_file_from_fd(int fd) {
 }
 
 // ============================================
-// FREE_FD
+// kfree_FD
 // ============================================
-void free_fd(int fd) {
+void kfree_fd(int fd) {
     if (fd >= 0 && fd < 256) {
         fd_table[fd] = NULL;
         fd_count--;
@@ -78,38 +79,51 @@ void free_fd(int fd) {
 // vfs.c - vfs_open()
 extern int fat_open(File *file, const char *path, int flags);
 int vfs_open(const char *path, int flags) {
-    
-    File *file = (File*)malloc(sizeof(File));
-    if (!file) return -1;
+    //kprintf("path[%s] flags[%x]\n",path,flags);
+    File *file = (File*)kmalloc(sizeof(File));
+    //kprintf("kmalloc\n");
+    if (!file) {
+            //kprintf("essa merda deu erro logo no malloc\n");
+        return -1;
+    }
+    //kprintf("89\n");
     memset(file, 0, sizeof(File));
+    //kprintf("91\n");
     file->name = strdup(path);
+    //kprintf("93\n");
     
     if (fat_open(file, path, flags) == 0) {
         int fd = allocate_fd(file);
         if (fd >= 0) {
+            //kprintf("essa merda funcionou\n");
             return fd;
         }
-        free(file->name);
-        free(file);
+        kfree(file->name);
+        kfree(file);
+
         return -1;
     }
+    //kprintf("104\n");
     
     for (int i = 0; drivers[i].path != NULL; i++) {
-        //printf("vfs_open: comparando '%s' com '%s'\n", path, drivers[i].path);
+        //kprintf("vfs_open: comparando '%s' com '%s'\n", path, drivers[i].path);
         if (strcmp(path, drivers[i].path) == 0) {
            // printf("vfs_open: ENCONTROU! i=%d\n", i);
             if (drivers[i].open(file, path, flags) == 0) {
                 int fd = allocate_fd(file);
                 if (fd >= 0) {
-                    //printf("vfs_open: fd=%d (SUCESSO!)\n", fd);
+                    //kprintf("vfs_open: fd=%d (SUCESSO!)\n", fd);
                     return fd;
                 }
             }
         }
     }
+    //kprintf("119\n");
     
-    free(file->name);
-    free(file);
+    kfree(file->name);
+    kfree(file);
+    //kprintf("essa merda deu erro\n");
+
     return -1;
 }
 
@@ -143,9 +157,9 @@ int vfs_close(int fd) {
     int result = 0;
     if (file->close) result = file->close(file);
     
-    free(file->name);
-    free(file);
-    free_fd(fd);
+    kfree(file->name);
+    kfree(file);
+    kfree_fd(fd);
     return result;
 }
 
@@ -180,7 +194,7 @@ size_t vfs_lseek(int fd, size_t offset, int whence) {
 // ============================================
 // VFS_INIT
 // ============================================
-void vfs_init(void) {
+void vfs_inita(void) {
     memset(fd_table, 0, sizeof(fd_table));
     fd_count = 0;
     
@@ -204,5 +218,28 @@ void vfs_init(void) {
         fd_count--;
     }
     
-    printf("VFS inicializado: stdin=0, stdout=1, stderr=2\n");
+    //kprintf("VFS inicializado: stdin=0, stdout=1, stderr=2\n");
+}
+
+
+void vfs_init(void) {
+    //kprintf("vfs_init: memset\n");
+    memset(fd_table, 0, sizeof(fd_table));
+    fd_count = 0;
+
+    //kprintf("vfs_init: abrindo fd0\n");
+    int fd0 = vfs_open("/dev/tty", O_RDWR);
+    //kprintf("vfs_init: fd0 =[%d] ",fd0);
+
+    //kprintf("vfs_init: abrindo fd1\n");
+    int fd1 = vfs_open("/dev/tty", O_RDWR);
+    //kprintf("vfs_init: fd2 =[%d] ",fd1);
+
+    //kprintf("vfs_init: abrindo fd2\n");
+    int fd2 = vfs_open("/dev/tty", O_RDWR);
+    //kprintf("vfs_init: fd2 =[%d] ",fd2);
+
+    //kprintf("vfs_init: ajustando\n");
+    /* ... */
+    //kprintf("vfs_init: OK\n");
 }

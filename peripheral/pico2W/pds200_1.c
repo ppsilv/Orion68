@@ -623,14 +623,15 @@ void core1_entry(void) {
     
     while (true) {
         cyw43_arch_poll();
-        kbd_poll();                    /* nunca bloqueia -- consome o que a UART tiver */
-
-        int ch = get_char_nonblocking();
-        if (ch >= 0) {
-            printf("%c", (char)ch);
-            pio_sm_put(pio0, 0, (char)ch);
-            kbd_int_on();
-        }
+        
+        //ISSO FOI PARA O CORE 0
+        //kbd_poll();                    /* nunca bloqueia -- consome o que a UART tiver */
+        //int ch = get_char_nonblocking();
+        //if (ch >= 0) {
+        //    printf("%c", (char)ch);
+        //    pio_sm_put(pio0, 0, (char)ch);
+        //    kbd_int_on();
+        //}
         tight_loop_contents();
     }
 /*

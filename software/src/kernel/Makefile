@@ -18,11 +18,10 @@ ASMS =  crt0.S ctx_switch_68000.S ./exceptions/exceptions_asm.S
 VASMS =
 
 # Lista de arquivos C (CORRIGIDO: não tinha um espaço)
-SRCS =  kernel.c kmalloc.c scheduler.c trap_table.c task_create.c ./mm/slots.c kfunctions.c  \
+SRCS =  kernel.c kmalloc.c scheduler.c ./syscall/trap_table.c task_create.c ./mm/slots.c kfunctions.c  \
 ./exceptions/exceptions.c \
 ./lib/klibc/inttostr.c \
 ./lib/klibc/klibc.c \
-./lib/klibc/kprintf.c \
 ./lib/klibc/strtol.c	\
 ./lib/klibc/__divdi3.c  \
 ./lib/klibc/__divsi3.c  \
@@ -36,11 +35,19 @@ SRCS =  kernel.c kmalloc.c scheduler.c trap_table.c task_create.c ./mm/slots.c k
 ./lib/klibc/__umodsi3.c \
 ./lib/klibc/__umuldi3.c \
 ./lib/klibc/__umulsi3.c \
-./lib/string/malloc.c ./lib/string/memchr.c ./lib/string/memcpy.c ./lib/string/memmove.c ./lib/string/strcat.c ./lib/string/strcmp.c \
+./lib/stdio/kprintf.c \
+./lib/stdio/ksprintf.c \
+./lib/string/memchr.c ./lib/string/memcpy.c ./lib/string/memmove.c ./lib/string/strcat.c ./lib/string/strcmp.c \
 ./lib/string/strcpy.c ./lib/string/strdup.c ./lib/string/strlen.c ./lib/string/strncmp.c ./lib/string/strndup.c ./lib/string/strrchr.c \
 ./lib/string/strstr.c ./lib/string/memccpy.c ./lib/string/memcmp.c ./lib/string/memmem.c ./lib/string/memset.c ./lib/string/strchr.c \
-./lib/string/strcspn.c ./lib/string/strerror.c ./lib/string/strncat.c ./lib/string/strncpy.c ./lib/string/strnlen.c ./lib/string/strspn.c ./lib/string/strtok.c
-
+./lib/string/strcspn.c ./lib/string/strerror.c ./lib/string/strncat.c ./lib/string/strncpy.c ./lib/string/strnlen.c ./lib/string/strspn.c ./lib/string/strtok.c \
+./vfs/vfs.c  ./vfs/vfs_drivers.c  ./vfs/vfs_fat.c  ./vfs/vfs_null.c  ./vfs/vfs_proc.c  ./vfs/vfs_serial.c  ./vfs/vfs_tty.c  ./vfs/vfs_zero.c \
+./drivers/duart/duart.c \
+./drivers/ide/ata.c \
+./drivers/ide/diskio.c \
+./drivers/fatfs/ff.c \
+./drivers/fatfs/ffsystem.c \
+./drivers/fatfs/ffunicode.c
 
 
 # 2. ALTERADO: Agora a lista de objetos junta os .o vindos do .c e do .S

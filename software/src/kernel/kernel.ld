@@ -2,69 +2,52 @@ OUTPUT_FORMAT("elf32-m68k")
 OUTPUT_ARCH(m68k)
 
 /*
- * ENTRY(main): o programa carregado NAO precisa de crt0/_start.
- * O load_elf_executable() chama o entry point como uma funcao C normal:
- *     int (*entry)(int, char**) = (int(*)(int,char**))header.entry;
- *     entry(argc, argv);
- * Como isso e' uma chamada de funcao comum (jsr/rts), a propria main()
- * compilada pelo GCC ja e' um alvo valido -- ela segue a ABI padrao
- * (argumentos empilhados, retorno em D0), entao serve como entry point
- * direto, sem stub em assembly.
+ * ENTRY(_start): diferente do script das aplicacoes, o kernel NAO e'
+ * chamado como funcao C por um loader -- o orioncore faz jmp 0x82000
+ * direto no primeiro byte do binario flat. Por isso precisa de um
+ * stub em assembly (_start, em crt0_kernel.s) garantidamente primeiro
+ * no .text, que ajusta o SP e zera o .bss antes de chamar kernel_main.
  */
-ENTRY(main)
+ENTRY(_start)
 
 MEMORY
 {
     /*
-     * AJUSTE conforme o mapa de memoria real do seu sistema:
-     * - ORIGIN deve ser uma regiao de RAM livre, que NAO colida com
-     *   onde o monitor/kernel do Orion68 roda, nem com a pilha dele.
-     * - LENGTH e' o espaco maximo reservado pra esse programa (ajuste
-     *   pro tamanho que fizer sentido pros seus programas carregaveis).
-     * 0x00100000 (1MB) foi escolhido so como ponto de partida, assumindo
-     * RAM total de 2MB e o kernel ocupando a parte mais baixa.
+     * Kernel ocupa 0x82000 ateh 0xA2000 (128K). Slots de 256K das
+     * tasks comecam em 0xA2000 -- NAO pode invadir dai pra frente.
      */
-    USERRAM (rwx) : ORIGIN = 0x00082000, LENGTH = 0x0001FFFF
-}
-
-PHDRS
-{
-    /* Um unico segmento PT_LOAD, com todas as permissoes -- mantem o
-       loader simples (ele so entende PT_LOAD, PT_NULL, PT_NOTE, PT_PHDR
-       de forma neutra, e rejeita PT_DYNAMIC/PT_INTERP). */
-    text PT_LOAD FLAGS(7);
+    KERNEL (rwx) : ORIGIN = 0x00082000, LENGTH = 0x00020000
 }
 
 SECTIONS
 {
-    . = ORIGIN(USERRAM);
+    . = ORIGIN(KERNEL);
 
     .text : {
+        crt0.o(.text)   /* forca o stub a ser o primeiro codigo do binario */
         *(.text*)
         *(.rodata*)
-    } > USERRAM :text
+    } > KERNEL
 
     .data : {
         *(.data*)
-    } > USERRAM :text
+    } > KERNEL
 
     /*
-     * .bss nao ocupa espaco no arquivo (SHT_NOBITS) -- fica de fora do
-     * p_filesz do segmento, mas dentro do p_memsz. O load_elf_executable
-     * ja zera essa regiao sozinho:
-     *     if (progHeader.memsz > progHeader.filesz)
-     *         memset(...);
-     * entao nao e' preciso nenhum codigo de inicializacao extra pra isso.
+     * .bss nao ocupa espaco no arquivo (SHT_NOBITS). Como o kernel e'
+     * carregado por f_read() cru (load_kernel_flat), NAO tem nenhum
+     * loader zerando isso igual acontece com o .elf das aplicacoes --
+     * o crt0_kernel.s tem que zerar __bss_start ateh __bss_end na mao.
      */
     .bss : {
         __bss_start = .;
         *(.bss*)
         *(COMMON)
         __bss_end = .;
-    } > USERRAM :text
+    } > KERNEL
 
-    __kernel_end = .;
+    __kernel_end = .;                 /* base da heap da kmalloc */
+    __estack = 0x000A1FF0;            /* topo da pilha do kernel, 16 bytes de folga antes do 0xA2000 */
 
-    __estack = 0x000A1FF0;
     /DISCARD/ : { *(.comment) *(.note*) *(.eh_frame*) }
 }

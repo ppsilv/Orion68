@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "vfs.h"
+#include <sys/vfs.h>
 
 // ============================================
 // FUNÇÕES DO SISTEMA
@@ -60,7 +60,7 @@ int tty_close(File *file) {
 int tty_ioctl(File *file, int cmd, void *arg) {
     switch (cmd) {
         case TIOC_CLEAR:
-            printf("\033[2J\033[H");
+            kprintf("\033[2J\033[H");
             return 0;
         default:
             return -1;

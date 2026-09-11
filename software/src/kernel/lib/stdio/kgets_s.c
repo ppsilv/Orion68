@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-char * gets_s( char* str, int n ){
+char * kgets_s( char* str, int n ){
 
     n--;
     while(n--){

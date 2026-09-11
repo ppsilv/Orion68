@@ -1,6 +1,5 @@
 
 #include <stdio.h>
-#include <kprintf.h>
 #include <interrupt.h>
 #include <critical.h>
 #include "scheduler.h"

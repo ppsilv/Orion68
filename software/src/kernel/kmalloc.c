@@ -19,7 +19,7 @@ alto como flag "livre" e o resto como tamanho) pra garantir que tudo fique sempr
 alinhado, sem depender de padding do compilador.
 
 */
-#include "kmalloc.h"
+#include <sys/kmalloc.h>
 #include "interrupt.h"   /* pra m68k_disable_all_interrupts, usado dentro de LOCK() */
 #include <critical.h>    /* macros LOCK/UNLOCK -- precisa vir depois de interrupt.h */
 #include <string.h>

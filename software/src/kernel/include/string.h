@@ -33,7 +33,7 @@ extern char *strerror (int __errnum);
 bool malloc_init(const void *base, const void *limit, const size_t heap_blocks, const size_t split_thresh, const size_t alignment);
 void* malloc(size_t size);
 void* calloc(size_t n, size_t size);
-void free(void* ptr);
+void kfree(void* ptr);
 
 #endif
 

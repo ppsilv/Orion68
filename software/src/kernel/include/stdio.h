@@ -3,15 +3,14 @@
 
 #include <stddef.h>
 
-void putchar(char c);
-char getchar(void);
 
-int printf(const char *format, ...);
-int sprintf(char *str, const char *format, ...);
-
-void puts(const char *str);
-char* gets_s( char* str, int n );
-char kbdhit(void);
+extern void  kputchar(char c);
+extern char  kgetchar(void);
+extern int   kprintf(const char *format, ...);
+extern int   ksprintf(char *str, const char *format, ...);
+extern void  kputs(char *str);
+extern char* kgets_s( char* str, int n );
+extern char kbdhit(void);
 
 
 #endif

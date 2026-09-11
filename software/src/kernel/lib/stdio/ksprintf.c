@@ -9,7 +9,7 @@ extern char *itoudec(unsigned int value, char *str);
 extern char *itox(unsigned int value, char *str);
 extern void pad_zeros(char *str, int width);
 
-int sprintf(char *str, const char *format, ...) {
+int ksprintf(char *str, const char *format, ...) {
     va_list args;
     va_start(args, format);
 

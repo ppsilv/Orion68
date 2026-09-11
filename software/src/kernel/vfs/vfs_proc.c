@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "vfs.h"
+#include <sys/vfs.h>
+#include <sys/kmalloc.h>
+
 
 // ============================================
 // ESTRUTURA DE DADOS DO /proc
@@ -16,7 +18,7 @@ typedef struct {
 // FUNÇÕES AUXILIARES
 // ============================================
 int get_total_memory(void) { return 1024; }
-int get_free_memory(void)  { return 512; }
+int get_kfree_memory(void)  { return 512; }
 const char *get_cpu_name(void) { return "Motorola 68000"; }
 int get_cpu_clock(void) { return 8; }
 
@@ -45,8 +47,8 @@ int proc_read(File *file, void *buffer, size_t size) {
 int proc_close(File *file) {
     ProcData *data = (ProcData*)file->private_data;
     if (data) {
-        free(data->data);
-        free(data);
+        kfree(data->data);
+        kfree(data);
         file->private_data = NULL;
     }
     return 0;
@@ -77,19 +79,19 @@ size_t proc_lseek(File *file, size_t offset, int whence) {
 // PROC_MEMINFO_OPEN
 // ============================================
 int proc_meminfo_open(File *file, const char *path, int flags) {
-    ProcData *data = (ProcData*)malloc(sizeof(ProcData));
+    ProcData *data = (ProcData*)kmalloc(sizeof(ProcData));
     if (!data) return -1;
     
     char buffer[256];
-    sprintf(buffer,
+    ksprintf(buffer,
         "MemTotal: %d KB\n"
-        "MemFree:  %d KB\n"
+        "Memkfree:  %d KB\n"
         "MemUsed:  %d KB\n"
         "MemAvail: %d KB\n",
         get_total_memory(),
-        get_free_memory(),
-        get_total_memory() - get_free_memory(),
-        get_free_memory() / 2
+        get_kfree_memory(),
+        get_total_memory() - get_kfree_memory(),
+        get_kfree_memory() / 2
     );
     
     data->data = strdup(buffer);
@@ -111,11 +113,11 @@ int proc_meminfo_open(File *file, const char *path, int flags) {
 // PROC_CPUINFO_OPEN
 // ============================================
 int proc_cpuinfo_open(File *file, const char *path, int flags) {
-    ProcData *data = (ProcData*)malloc(sizeof(ProcData));
+    ProcData *data = (ProcData*)kmalloc(sizeof(ProcData));
     if (!data) return -1;
     
     char buffer[256];
-    sprintf(buffer,
+    ksprintf(buffer,
         "CPU:       %s\n"
         "Clock:     %d MHz\n"
         "Features:  FPU (sim)\n"
@@ -144,14 +146,14 @@ int proc_cpuinfo_open(File *file, const char *path, int flags) {
 // PROC_UPTIME_OPEN
 // ============================================
 int proc_uptime_open(File *file, const char *path, int flags) {
-    ProcData *data = (ProcData*)malloc(sizeof(ProcData));
+    ProcData *data = (ProcData*)kmalloc(sizeof(ProcData));
     if (!data) return -1;
     
     static int uptime = 0;
     uptime += 10;
     
     char buffer[64];
-    sprintf(buffer, "%d seconds\n", uptime);
+    ksprintf(buffer, "%d seconds\n", uptime);
     
     data->data = strdup(buffer);
     data->size = strlen(buffer);

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "vfs.h"
-#include "fileio.h"  // SUA libfileio!
+#include <sys/vfs.h>
+#include <sys/kmalloc.h>
 
 // ============================================
 // ESTRUTURA PRIVADA PARA ARQUIVOS FATFS
@@ -22,7 +22,7 @@ static int fat_read(File *file, void *buffer, size_t size) {
     if (!priv) return -1;
     
     UINT bytes_read;
-    FRESULT result = fread(priv->fat_file, buffer, (UINT)size, &bytes_read);
+    FRESULT result = f_read(priv->fat_file, buffer, (UINT)size, &bytes_read);
     
     if (result != FR_OK) return -1;
     file->position += bytes_read;
@@ -40,12 +40,12 @@ static int fat_write(File *file, const void *buffer, size_t size) {
     // ANTES DE ESCREVER, VAI PARA O FINAL DO ARQUIVO!
     // ============================================
     if (priv->mode & FA_OPEN_APPEND) {
-        printf("Appending...\n");
+        //kprintf("Appending...\n");
         f_lseek(priv->fat_file, f_size(priv->fat_file));  // ← VAI PARA O FINAL!
     }
 
     UINT bytes_written;
-    FRESULT result = fwrite(priv->fat_file, buffer, (UINT)size, &bytes_written);
+    FRESULT result = f_write(priv->fat_file, buffer, (UINT)size, &bytes_written);
     
     if (result != FR_OK) return -1;
     file->position += bytes_written;
@@ -64,9 +64,9 @@ static int fat_close(File *file) {
     FatPrivate *priv = (FatPrivate*)file->private_data;
     if (!priv) return -1;
     
-    FRESULT result = fclose(priv->fat_file);
-    free(priv->fat_file);
-    free(priv);
+    FRESULT result = f_close(priv->fat_file);
+    kfree(priv->fat_file);
+    kfree(priv);
     file->private_data = NULL;
     
     return (result == FR_OK) ? 0 : -1;
@@ -80,7 +80,7 @@ static size_t fat_lseek(File *file, size_t offset, int whence) {
     if (!priv) return (size_t)-1;
     
     FSIZE_t new_pos;
-    FSIZE_t current = ftell(priv->fat_file);
+    FSIZE_t current = f_tell(priv->fat_file);
     
     switch (whence) {
         case 0: new_pos = (FSIZE_t)offset; break;
@@ -89,7 +89,7 @@ static size_t fat_lseek(File *file, size_t offset, int whence) {
         default: return (size_t)-1;
     }
     
-    FRESULT result = flseek(priv->fat_file, new_pos);
+    FRESULT result = f_lseek(priv->fat_file, new_pos);
     if (result != FR_OK) return (size_t)-1;
     
     file->position = (size_t)new_pos;
@@ -102,9 +102,9 @@ static size_t fat_lseek(File *file, size_t offset, int whence) {
 // vfs_fat.c - CORRIGIDO
 // vfs_fat.c - fat_open()
 int fat_open(File *file, const char *path, int flags) {
-    //printf("fat_open: path='%s', flags=0x%x\n", path, flags);
+    //kprintf("fat_open: path='%s', flags=0x%x\n", path, flags);
     
-    FIL *fat_file = (FIL*)malloc(sizeof(FIL));
+    FIL *fat_file = (FIL*)kmalloc(sizeof(FIL));
     if (!fat_file) return -1;
     
     BYTE fat_mode = 0;
@@ -126,35 +126,35 @@ int fat_open(File *file, const char *path, int flags) {
     }
     
     if (flags & O_APPEND) {
-        printf("fat_open: O_APPEND detectado!\n");
+        //kprintf("fat_open: O_APPEND detectado!\n");
         fat_mode |= FA_OPEN_APPEND;
     }
     
-    //printf("fat_open: fat_mode=0x%x\n", fat_mode);
+    //kprintf("fat_open: fat_mode=0x%x\n", fat_mode);
     
     // CHAMA SUA fopen() (trap #12)
-    FRESULT result = fopen(fat_file, path, fat_mode);
-   // printf("fat_open: fopen result=%d\n", result);
+    FRESULT result = f_open(fat_file, path, fat_mode);
+   //kprintf("fat_open: fopen result=%d\n", result);
     
     if (result != FR_OK) {
-       // printf("fat_open: fopen falhou com erro %d!\n", result);
-        free(fat_file);
+       //kprintf("fat_open: fopen falhou com erro %d!\n", result);
+        kfree(fat_file);
         return -1;
     }
     
-   // printf("fat_open: FATFS abriu!\n");
+   //kprintf("fat_open: FATFS abriu!\n");
     
     // Configura o File
-    FatPrivate *priv = (FatPrivate*)malloc(sizeof(FatPrivate));
+    FatPrivate *priv = (FatPrivate*)kmalloc(sizeof(FatPrivate));
     if (!priv) {
-        fclose(fat_file);
-        free(fat_file);
+        f_close(fat_file);
+        kfree(fat_file);
         return -1;
     }
     
     priv->fat_file = fat_file;
     priv->mode = fat_mode;
-    priv->size = fsize(fat_file);
+    priv->size = f_size(fat_file);
     
     file->private_data = priv;
     file->position = 0;

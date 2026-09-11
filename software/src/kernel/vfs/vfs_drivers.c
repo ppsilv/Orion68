@@ -1,4 +1,4 @@
-#include "vfs.h"
+#include <sys/vfs.h>
 
 /*
  *
@@ -61,6 +61,14 @@ extern int serial_write(File *file, const void *buffer, size_t size);
 extern int serial_close(File *file);
 extern size_t serial_lseek(File *file, size_t offset, int whence);
 
+
+extern int duartA_open(File *file, const char *path, int flags);
+extern int duartA_read(File *file, void *buffer, size_t size);
+extern int duartA_write(File *file, const void *buffer, size_t size);
+extern int duartA_ioctl(File *file, int cmd, void *arg);
+extern int duartA_close(File *file);
+extern size_t duartA_lseek(File *file, size_t offset, int whence);
+
 // ============================================
 // TABELA DE DRIVERS
 // ============================================
@@ -83,5 +91,6 @@ DeviceDriver drivers[] = {
     {"/proc/meminfo", proc_meminfo_open, proc_read,   NULL,         proc_close,   NULL,         proc_lseek},
     {"/proc/cpuinfo", proc_cpuinfo_open, proc_read,   NULL,         proc_close,   NULL,         proc_lseek},
     {"/proc/uptime",  proc_uptime_open,  proc_read,   NULL,         proc_close,   NULL,         proc_lseek},
+    {"/dev/tty0",     duartA_open,       duartA_read, duartA_write, duartA_close, duartA_ioctl, duartA_lseek},
     {NULL, NULL, NULL, NULL, NULL, NULL, NULL}
 };

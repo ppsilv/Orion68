@@ -455,7 +455,7 @@ Disassembly of section .text:
 1000041c:	612c      	str	r4, [r5, #16]
 1000041e:	f000 fbdd 	bl	10000bdc <kbd_int_on>
 10000422:	e7eb      	b.n	100003fc <main+0x188>
-10000424:	0003d090 	.word	0x0003d090
+10000424:	000249f0 	.word	0x000249f0
 10000428:	10018be4 	.word	0x10018be4
 1000042c:	1000075d 	.word	0x1000075d
 10000430:	1001adbc 	.word	0x1001adbc

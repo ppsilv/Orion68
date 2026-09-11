@@ -18,6 +18,7 @@
 /
 /----------------------------------------------------------------------------*/
 
+#include <sys/kmalloc.h>
 
 #ifndef FF_DEFINED
 #define FF_DEFINED	80386	/* Revision ID */

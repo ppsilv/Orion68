@@ -194,15 +194,13 @@ long kernel_syscall_dispatcher(long trap_num, long *stack_args) {
         // Tratar erro de syscall inválida
         return -1;
     }
-
     // Pega o ponteiro da função direto na tabela
     sys_call_t func = sys_call_table[trap_num];
-
     if (!func) {
         return -1;
     }
-
     // Executa diretamente. A própria assinatura da função em C
     // dita quantos argumentos ela consome da pilha/ponteiro.
     return func();
 }
+
