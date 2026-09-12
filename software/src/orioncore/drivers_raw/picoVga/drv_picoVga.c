@@ -44,7 +44,19 @@ extern void duart_a_send_char(unsigned char ch);
 
 void picovga_putchar( char ch){
     WRITE_SCREEN = ch;
-    duart_a_send_char(ch);
+    //duart_a_send_char(ch);
+}
+
+void vputs(char * str){
+    while(*str){
+        picovga_putchar(*str);
+        str++;
+    }
+}
+extern char *  utoa (unsigned value, char *str,  int base);
+void vputi(unsigned long i){
+    char buf[32];
+    vputs(utoa(i,buf,10));
 }
 
 /*

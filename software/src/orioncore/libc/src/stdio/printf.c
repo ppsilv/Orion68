@@ -39,8 +39,8 @@
  */
 
 extern void picovga_putchar(char x);
-extern void vputs(char *x);
-
+extern void vputs( char *s);
+       
 // Conversão de hexadecimal usando shifts (sem divisão)
 char *itox(unsigned int value, char *str) {
     char *ptr = str;

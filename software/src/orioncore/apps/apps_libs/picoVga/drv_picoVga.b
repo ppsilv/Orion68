@@ -15,7 +15,7 @@ void vputc(char ch){
     WRITE_SCREEN = ch;
 }
 
-void vputs(const char *s){
+void vputs( char *s){
     while (*s) {
         vputc(*s++);
     }

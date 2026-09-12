@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <vga_video.h>
@@ -16,14 +17,14 @@ FATFS FatFs;      // Objeto de controle do sistema de arquivos (Work area)
 
 extern void _delay_ms();
 extern int ata_read_identity(void);
-extern void duart_init_canal_a(void);
 extern void picovga_putchar(char ch);
 extern int dhcp_client(void);
-extern void duart_a_init_38400(void);
-extern void pico_write_ch(uint8_t ch);
+extern void duart_init_canal_a(void);
 extern void Int2Handler(void);
 extern void Int3Handler(void);
 extern void setaVetorFuncao(uint8_t vetor, uint32_t funcao);
+extern void vputs(char * str);
+extern void vputi(unsigned long i);
 
 volatile uint32_t tick_count = 0;
 volatile uint32_t systemTick = 0;
@@ -34,12 +35,10 @@ volatile uint32_t systemTick = 0;
 //volatile __attribute__((section(".mram"))) unsigned int tick_count;
 //volatile __attribute__((section(".mram"))) unsigned int flg_system;
 
-volatile uint32_t *last_mem_address = ( uint32_t *)0x80000UL;
+volatile uint32_t *last_mem_address = ( uint32_t *)0x80600UL;
 
 #include "./tools/build_counter.h"
 
-extern void duart_putc(char c);
-extern char duart_getc(void);
 
 typedef void (*ProgramaXModem)(void);
 
@@ -56,20 +55,6 @@ uint32_t get_system_tick(void) {
     return tick;
 }
  
-void vputs(char * str){
-    while(*str){
-        picovga_putchar(*str);
-       // duart_putc(*str);
-        str++;
-    }
-}
-extern char *  utoa (unsigned value, char *str,  int base);
-
-void vputi(unsigned long i){
-    char buf[32];
-    vputs(utoa(i,buf,10));
-}
-
 void do_ideinit(int argc, char *argv[])
 {
     FRESULT fr;
@@ -93,48 +78,38 @@ void jump_to_kernel(void);
 int load_kernel_flat(const char *path);
 extern uint8_t ring_buf_is_empty(void);
 void main(int argc, char *argv[]) {
-    pico_write_ch('A');
-    vputs("Memory: Rom start addr.............: 0\n");
-    vputs("        Rom installed  low and high: 65536 2 of 32768\n");
-    vputs("        Rom space end..............: 524287\n");
+   // vputs("Memory: Rom start addr.............: 0\n");
+   // vputs("        Rom installed  low and high: 65536 2 of 32768\n");
+   // vputs("        Rom space end..............: 524287\n");
     vputs("        First sram address.........: 524288\n");
     printf("        Last  sram address.........: %ld\n",*last_mem_address);
-    printf("        CPU sram memory............: %ld words\n",*last_mem_address-0x80000);
+    printf("        CPU sram memory............: %ld words\n",*last_mem_address-0x80600);
     printf("        Total sram memory..........: %ld bytes\n",(*last_mem_address-0x80000)*2);
     
-    pico_write_ch('c');
-    setaVetorFuncao(vect_Int2Handler,(uint32_t) Int2Handler );
     setaVetorFuncao(vect_Int3Handler,(uint32_t) Int3Handler );
     //m68k_enable_all_interrupts();
     //vputs("* - All Interrupts enabled.\n");
 
-    pico_write_ch('G');
     vputs("* - Initializing:\n");
     vputs("    * duart GPIO\n");
     duart_opr_init();
-    pico_write_ch('H');
+
     vputs("    * duart A\n");
-    duart_a_init_38400();
-    pico_write_ch('I');
-   // vputs("    * duart B\n");
-   // duart_init_canal_a();
+    duart_init_canal_a();
+
     
 #ifdef DEBUG_ON
     ata_read_identity();    
 #endif
     vputs("    * IDE ");
     do_ideinit(0,NULL);
-    pico_write_ch('J');
 
-    pico_write_ch('K');
+   
     vputs("    * Ethernet board: ");
     dhcp_client();
 
-    pico_write_ch('L');
     vputs("\n");
     ring_buf_init();
-
-    pico_write_ch('M');
 
     uint32_t timeout = systemTick;
     timeout += 5000;
@@ -161,11 +136,6 @@ void main(int argc, char *argv[]) {
         }        
     }
 
-    while (1){
-        char ch=duart_getc();
-        duart_putc(ch);
-        picovga_putchar(ch);
-    }
 
 }
 

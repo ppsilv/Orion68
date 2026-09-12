@@ -20,9 +20,9 @@ DESCRIPTION
 Modo simple.
 
 Sintese
-galasm || galette  dtack.pld
+galasm || galette  dtack-ide.pld
 
 Use aquele que funcionar porque a sintaxe é a mesm
 
 Gravar
-minipro -p GAL20V8A -w dtack.jed
+minipro -p GAL20V8A -w dtack-ide.jed

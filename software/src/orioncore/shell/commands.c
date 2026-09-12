@@ -669,7 +669,7 @@ extern void video_puts(const char *s);
 
 
 void do_shst(int argc, char *argv[]){
-    printf("Systemtick = %ld\n",get_system_tick());
+  //  printf("Systemtick = %ld\n",get_system_tick());
     printf("Cria vergonha na cara e chama syscall\n");
 }
 void do_time(int argc, char *argv[])

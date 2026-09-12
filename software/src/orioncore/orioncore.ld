@@ -3,7 +3,7 @@ MEMORY {
     ROM (rx)  : ORIGIN = 0x00000000, LENGTH = 64K
 
     /* RAM 0x600 bytes is for vectors in ram */
-    RAM (rwx) : ORIGIN = 0x00080600, LENGTH = 0x7FA00
+    RAM (rwx) : ORIGIN = 0x00080608, LENGTH = 0x7FA00
 }
 
 SECTIONS {

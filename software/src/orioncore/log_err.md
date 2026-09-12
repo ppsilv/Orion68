@@ -1,3 +1,27 @@
+# 2026-09-12 -> RESOLVIDO
+                Erro: Sistema rodando o kernel travou não entrava mais no ar.   
+                Resumo:
+                Fou um acumulo de erros.
+                Talvez iniciado por balançar o conjunto de placas.NÃO É A PRIMEIRA
+                VEZ QUE ACONTECE, PARECE QUE DEVO LIMPAR TODA E QUAISQUER SOLDAS
+                DEPOIS DE FAZÊ-LAS.de bug de software fantasma até solda encostando 
+                dois pinos de dados. Faz todo sentido em retrospecto: D0 curto com 
+                D2 explica muita coisa maluca que você viu no meio do caminho 
+                (a instabilidade que "convivia e voltava" lá no início provavelmente 
+                já era esse mesmo respingo, com contato variando por vibração/temperatura 
+                antes de fechar de vez).
+                Um minúsculo, mas pequenino mesmo precisei de de lupa para
+                 ver, respingo de solda entre os pinos 24 e 25 da DUART resolveu 
+                 agir de um hora para outra, com isso o sistema parou de entrar 
+                 no ar porque d0 e d2 estavam curto-circuitados, essa foi a causa 
+                 raiz, depois disso foram problemas postos por mim mesmo por falta 
+                 de um procedimento bem definido para procurar bug de hardware na 
+                 minha pŕopria placa.
+
+                De agora em diante vou manter um hardware mínimo sempre funcionando, 
+                tomarei cuidado no codigo para não precisar de todos os hardwares 
+                envolvidos, assim melhorando a forma de voltar o sistema.
+
 # 2026-09-08 ->RESOLVIDO
         Bug: coloquei uma função getkbd() para ler por pooling o picow
              isso tem um efeito colateral, porque a CPU para no DTACK

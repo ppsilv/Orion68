@@ -62,7 +62,6 @@ _vectors:
 .global UartWriteCh
 .global TrapFHandler
 
-.extern duart_send_char
 .extern build_jump_table
 .extern SvcBusError    
 .extern Svcaddress_err 
@@ -78,6 +77,9 @@ _vectors:
 .equ WR_CHAR, 0xFF912B
 .equ DUART_BASE, 0x00FF9000
 
+.equ    PICO_VGA_BASE, 0x00FF8000
+.equ    WRITE_SCREEN,  PICO_VGA_BASE + 0x01
+
 _start:
         ORI.W   #0x0700,%SR         /* Desabilita interrupções no boot */
         LEA     0x000FFFF0,%A7      /* Garante o ponteiro da pilha limpo */
@@ -85,6 +87,7 @@ _start:
         MOVE.L  #5,%D1        /* espera 5 segundos */
         JSR     delay_seconds
 
+        /*move.b  #'1',WRITE_SCREEN*/
         MOVE.B  #'1',WR_CHAR
 
 /*
@@ -117,7 +120,6 @@ FIND_RAM:
         /*; A0 contém o endereço do fim da RAM.*/
         MOVE.L  %A0,%A4
         /*; A4 contém o endereço do fim da RAM.*/
-
     MOVE.B  #'4',WR_CHAR
 
 /********************************************/
@@ -131,12 +133,10 @@ FIND_RAM:
         CMPA.L  %A0,%A1
         BHI     .ClearLoop
 
-        LEA     0x080000,%A0
+        LEA     0x080600,%A0
         MOVE.L  %A4,(%A0)
 
         MOVE.B  #'5',WR_CHAR
-
-        MOVE.B  #'6',WR_CHAR
 
 /********************************************/
 /* 2. Carrega seção .data da ROM para a RAM */
@@ -150,27 +150,7 @@ copy_data:
         bra.s   copy_data
 go_ahead:
 
-        MOVE.B  #'7',WR_CHAR
-
-        /* Duart A init */
-        // DUART_ACR = 0x00; (seleciona baud Set 1)
-        move.b #0x00, (DUART_BASE + 0x09).l
-        // DUART_SRA_CSRA = 0xCC; (Rx/Tx = 38400 baud, cristal 3.6864MHz)
-        move.b #0xCC, (DUART_BASE + 0x03).l
-        // DUART_CRA = 0x10; (reseta ponteiro MR -> aponta p/ MR1A)
-        move.b #0x10, (DUART_BASE + 0x05).l
-        // DUART_MR1A_MR2A = 0x13; (MR1A: 8 bits, sem paridade, char mode)
-        move.b #0x13, (DUART_BASE + 0x01).l
-        // DUART_MR1A_MR2A = 0x07; (MR2A: modo normal, 1 stop bit)
-        move.b #0x07, (DUART_BASE + 0x01).l
-        // DUART_CRA = 0x20; (reset receiver)
-        move.b #0x20, (DUART_BASE + 0x05).l
-        // DUART_CRA = 0x30; (reset transmitter)
-        move.b #0x30, (DUART_BASE + 0x05).l
-        // DUART_CRA = 0x05; (habilita Rx e Tx)
-        move.b #0x05, (DUART_BASE + 0x05).l
-
-        MOVE.B  #'8',WR_CHAR
+        MOVE.B  #'6',WR_CHAR
 
         lea     bootstrap_string,%a0
         jsr     print_string
@@ -192,6 +172,7 @@ go_ahead:
         | Limpa a pilha após o retorno (3 argumentos * 4 bytes = 12 bytes)
         ADDA.L  #12, %SP
 
+        MOVE.B  #'7',WR_CHAR
 
         move.l  #Int2Handler, -(%SP)     | handler_addr = OS_TickISR (empilhado 1o, e' o ultimo parametro)
         move.l  #0x00080090, -(%SP)      | stub_addr = 0x00080090 (empilhado 2o, e' o 1o parametro)
@@ -200,22 +181,13 @@ go_ahead:
 
         move.l  #5,%D1
         BSR     delay_seconds
-/*
-        move.l  #255, -(%SP)
-        move.l  #0x00080000, -(%SP)
-        | Chama a função C
-        BSR     dump_memory
-        | Limpa a pilha após o retorno (3 argumentos * 4 bytes = 12 bytes)
-        ADDA.L  #8, %SP
-.waitkey:
-        BSR     ring_buf_is_empty
-        TST.L   %D0            | ajusta as flags conforme o valor de D0
-        BNE     .waitkey       | se D0 != 0 (ou seja, =1, buffer vazio) -> continua esperando
-*/  
+        MOVE.B  #'8',WR_CHAR
+
+        lea     interrupt_status,%a0
+        jsr     print_string
         andi.w #0xF8FF,%SR
 
         MOVE.B  #'9',WR_CHAR
-
         jsr     main
 
 .dead:
@@ -237,8 +209,8 @@ printString:
 print_string:
         move.b  (%A0)+,%d0
         beq     .end_print_string
-        jsr     duart_send_char
-        /*jsr     PicoWrCh*/
+        
+        jsr     PicoWrCh
         bra     print_string
 .end_print_string:
         RTS
@@ -334,6 +306,10 @@ exception_string:
         .ascii  "Mounting exceptions table..."
         .byte   13, 10, 0
 
+interrupt_status:        
+        .ascii  "Interrupt status: ENABLED..."
+        .byte   13, 10, 0
+
 Svcaddress_err:
 SvcIllegalIns:
 SvcDiv0_handler:
@@ -381,3 +357,34 @@ TrapFHandler:
 DefaultHandler:
         rte
 .align 2        /* <--- CRÍTICO: Garante que o PRÓXIMO arquivo linkado comece em endereço PAR */
+
+        /* Duart A init 
+        // DUART_ACR = 0x00; (seleciona baud Set 1)
+        move.b #0x00, (DUART_BASE + 0x09).l
+        // DUART_SRA_CSRA = 0xCC; (Rx/Tx = 38400 baud, cristal 3.6864MHz)
+        move.b #0xCC, (DUART_BASE + 0x03).l
+        // DUART_CRA = 0x10; (reseta ponteiro MR -> aponta p/ MR1A)
+        move.b #0x10, (DUART_BASE + 0x05).l
+        // DUART_MR1A_MR2A = 0x13; (MR1A: 8 bits, sem paridade, char mode)
+        move.b #0x13, (DUART_BASE + 0x01).l
+        // DUART_MR1A_MR2A = 0x07; (MR2A: modo normal, 1 stop bit)
+        move.b #0x07, (DUART_BASE + 0x01).l
+        // DUART_CRA = 0x20; (reset receiver)
+        move.b #0x20, (DUART_BASE + 0x05).l
+        // DUART_CRA = 0x30; (reset transmitter)
+        move.b #0x30, (DUART_BASE + 0x05).l
+        // DUART_CRA = 0x05; (habilita Rx e Tx)
+        move.b #0x05, (DUART_BASE + 0x05).l
+        */
+/*
+        move.l  #255, -(%SP)
+        move.l  #0x00080000, -(%SP)
+        | Chama a função C
+        BSR     dump_memory
+        | Limpa a pilha após o retorno (3 argumentos * 4 bytes = 12 bytes)
+        ADDA.L  #8, %SP
+.waitkey:
+        BSR     ring_buf_is_empty
+        TST.L   %D0            | ajusta as flags conforme o valor de D0
+        BNE     .waitkey       | se D0 != 0 (ou seja, =1, buffer vazio) -> continua esperando
+*/  

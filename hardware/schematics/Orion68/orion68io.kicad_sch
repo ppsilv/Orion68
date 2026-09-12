@@ -15517,16 +15517,6 @@
 		)
 		(uuid "428aed64-0d75-4caa-9fa5-5ee48275e300")
 	)
-	(label "{slash}CS_MULTIO_C"
-		(at 208.28 177.8 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "4422a9fb-97f8-496d-8894-ce7605a2b50a")
-	)
 	(label "{slash}iord"
 		(at 391.16 36.83 0)
 		(effects
@@ -16573,6 +16563,16 @@
 		)
 		(uuid "c8191573-73f2-4a4f-b8b6-9a1dac00270c")
 	)
+	(label "{slash}CS_MIO"
+		(at 208.28 177.8 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c8e66449-7c14-4a7d-acb2-de77463dbedb")
+	)
 	(label "D0"
 		(at 369.57 21.59 0)
 		(effects
@@ -16612,16 +16612,6 @@
 			(justify right bottom)
 		)
 		(uuid "cdc14578-23bc-45bc-9320-d0606557168b")
-	)
-	(label "{slash}CS_RTC"
-		(at 55.88 254 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "cef2af50-d7ab-46c3-aa71-6cf9e48dadc9")
 	)
 	(label "A6"
 		(at 147.32 182.88 180)

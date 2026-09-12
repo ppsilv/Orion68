@@ -3,7 +3,7 @@ LD = m68k-elf-ld
 OBJCOPY = m68k-elf-objcopy
 VASM = vasmm68k_mot 
 
-CFLAGS = -Wall -Os -I ./includes -I../include -ffreestanding -nostdlib
+CFLAGS = -m68000 -Wall -Os -I ./includes -I../include -ffreestanding -nostdlib
 CFLAGS += -DCHIP_$(CHIP_TYPE) -DROM_SIZE_BYTES=$(ROM_SIZE)
 CFLAGS += -fomit-frame-pointer
 
@@ -12,7 +12,7 @@ VASMFLAGS = -Felf -m68000 -quiet -I ./includes -I../include
 LDFLAGS = -T ./orioncore.ld -L./libc/lib -nostdlib  -Map=orioncore.map
 LDLIBS = -lc68bios
 # 1. ADICIONADO: Lista de arquivos em Assembly (.S)
-ASMS = ./bootstrap/orion68_startup.S  ./bootstrap/vectors_asm.S \
+ASMS = ./bootstrap/orion68_startup.S ./bootstrap/print_hex.S ./bootstrap/vectors_asm.S \
 ./drivers_raw/duart/duartasm.S 
 
 
@@ -35,7 +35,7 @@ SRCS = orioncore.c ./corelibs/printf.c ./bootstrap/jumptable.c \
 
 #./sys/ethernet/dhcp_client.c \
 #./tst_fat/tstfat.c
-#./picoVga/drv_picoVga.c \
+
 
 # 2. ALTERADO: Agora a lista de objetos junta os .o vindos do .c e do .S
 OBJS = $(SRCS:.c=.o) $(ASMS:.S=.o) $(VASMS:.asm=.o)

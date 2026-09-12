@@ -18,8 +18,8 @@
   14   | NC       | NC
   15   | NC       | NC
   16   | NC       | NC
-  17   | CSRTC    | Output
+  17   | CSRTC    | NC
   18   | CSMIO    | Output
-  19   | CSKBD    | Output
+  19   | DUART    | Output
   20   | VCC      | VCC
 
