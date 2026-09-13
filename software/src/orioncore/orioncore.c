@@ -78,6 +78,8 @@ void jump_to_kernel(void);
 int load_kernel_flat(const char *path);
 extern uint8_t ring_buf_is_empty(void);
 void main(int argc, char *argv[]) {
+        duart_init_canal_a();
+
    // vputs("Memory: Rom start addr.............: 0\n");
    // vputs("        Rom installed  low and high: 65536 2 of 32768\n");
    // vputs("        Rom space end..............: 524287\n");
@@ -94,8 +96,8 @@ void main(int argc, char *argv[]) {
     vputs("    * duart GPIO\n");
     duart_opr_init();
 
-    vputs("    * duart A\n");
-    duart_init_canal_a();
+//    vputs("    * duart A\n");
+//    duart_init_canal_a();
 
     
 #ifdef DEBUG_ON

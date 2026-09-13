@@ -44,7 +44,7 @@ extern void duart_a_send_char(unsigned char ch);
 
 void picovga_putchar( char ch){
     WRITE_SCREEN = ch;
-    //duart_a_send_char(ch);
+    duart_a_send_char(ch);
 }
 
 void vputs(char * str){
