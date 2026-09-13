@@ -304,4 +304,4 @@ static void __not_in_flash_func(dma_memcpy)(void *dest, const void *src, size_t 
 
 
 
-#endif
+#endif /*__NEW_SCROLL__*/

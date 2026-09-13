@@ -77,12 +77,13 @@ extern int shell(int argc, char *argv[]);
 void jump_to_kernel(void);
 int load_kernel_flat(const char *path);
 extern uint8_t ring_buf_is_empty(void);
-void main(int argc, char *argv[]) {
-        duart_init_canal_a();
 
-   // vputs("Memory: Rom start addr.............: 0\n");
-   // vputs("        Rom installed  low and high: 65536 2 of 32768\n");
-   // vputs("        Rom space end..............: 524287\n");
+void main(int argc, char *argv[]) {
+    duart_init_canal_a();
+
+    vputs("Memory: Rom start addr.............: 0\n");
+    vputs("        Rom installed  low and high: 65536 2 of 32768\n");
+    vputs("        Rom space end..............: 524287\n");
     vputs("        First sram address.........: 524288\n");
     printf("        Last  sram address.........: %ld\n",*last_mem_address);
     printf("        CPU sram memory............: %ld words\n",*last_mem_address-0x80600);

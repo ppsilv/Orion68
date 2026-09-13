@@ -1,0 +1,123 @@
+Memory: Rom start addr.............: 0
+        Rom installed  low and high: 65536 2 of 32768
+        Rom space end..............: 524287
+        First ram address..........: 524288
+        Last  ram address..........: 1572864
+        Total ram..................: 1048576 words
+* - All Interrupts enabled.
+* - Console output seted to picoVGA.
+* - Console input seted to ps2 keyboard.
+* - Initializing:
+    * duart GPIO
+    * duart A
+    * duart B
+    * IDE : FAT success mounted!
+    * RTC: RTC-present
+    * Ethernet board: IP obtido: 192.168.1.173
+A:/>
+Memory: Rom start addr.............: 0
+        Rom installed  low and high: 65536 2 of 32768
+        Rom space end..............: 524287
+        First ram address..........: 524288
+        Last  ram address..........: 2097152
+        Total ram..................: 1572864 words
+* - All Interrupts enabled.
+* - Console output seted to picoVGA.
+* - Console input seted to ps2 keyboard.
+* - Initializing:
+    * duart GPIO
+    * duart A
+    * duart B
+    * IDE : FAT success mounted!
+    * RTC: RTC-present
+    * Ethernet board: IP obtido: 192.168.1.173
+A:/>
+
+
+Vectors:
+          .long    0x80000         /*SvcBusError                  0x00000008    513024=7D400₁₆*/
+          .long    0x80006         /*Svcaddress_err               0x0000000C*/
+          .long    0x8000C         /*SvcIllegalIns                0x00000010*/
+          .long    0x80012         /*SvcDiv0_handler              0x00000014*/
+          .long    0x80018         /*SvcChkIns                    0x00000018*/
+          .long    0x8001E         /*SvcTrapvIns                  0x0000001C*/
+          .long    0x80024         /*SvcPrivViolation             0x00000020*/
+          .long    0x8002A         /*SvcTrace                     0x00000024*/
+          .long    0x80030        /*SvcLineA                     0x00000028*/
+          .long    0x80036         /*SvcLineF                     0x0000002C*/
+          .long    0x8003C         /*bad_exception                0x00000030*/
+          .long    0x80042         /*bad_exception                0x00000034*/
+          .long    0x80048         /*bad_exception                0x00000038*/
+          .long    0x8004E         /*bad_exception                0x0000003C*/
+          .long    0x80054         /*bad_exception                0x00000040*/
+          .long    0x8005A         /*bad_exception                0x00000044*/
+          .long    0x80060         /*bad_exception                0x00000048*/
+          .long    0x80066         /*bad_exception                0x0000004C*/
+          .long    0x8006C         /*bad_exception                0x00000050*/
+          .long    0x80072         /*bad_exception                0x00000054*/
+          .long    0x80078         /*bad_exception                0x00000058*/
+          .long    0x8007E         /*bad_exception                0x0000005C*/
+          .long    0x80084         /*SpuriousHandler              0x00000060*/
+          .long    0x8008A         /*Int1Handler                  0x00000064*/
+          .long    0x80090         /*Int2Handler                  0x00000068*/
+          .long    0x80096         /*Int3Handler                  0x0000006C*/
+          .long    0x8009C         /*Int4Handler                  0x00000070*/
+          .long    0x800A2         /*Int5Handler                  0x00000074*/
+          .long    0x800A8         /*Int6Handler                  0x00000078*/
+          .long    0x800AE         /*Int7Handler                  0x0000007C*/
+          .long    0x800B4         /*Trap0Handler                 0x00000080*/
+          .long    0x800BA         /*Trap1Handler                 0x00000084*/
+          .long    0x800C0         /*Trap2Handler                 0x00000088*/
+          .long    0x800C6         /*Trap3Handler                 0x0000008C*/
+          .long    0x800CC         /*Trap4Handler                 0x00000090*/
+          .long    0x800D2         /*Trap5Handler                 0x00000094*/
+          .long    0x800D8         /*Trap6Handler                 0x00000098*/
+          .long    0x800DE         /*Trap7Handler                 0x0000009C*/
+          .long    0x800E4         /*Trap8Handler                 0x000000A0*/
+          .long    0x800EA         /*Trap9Handler                 0x000000A4*/
+          .long    0x800F0         /*TrapAHandler                 0x000000A8*/
+          .long    0x800F6         /*TrapBHandler                 0x000000AC*/
+          .long    0x800FC         /*TrapCHandler                 0x000000B0*/
+          .long    0x80102         /*TrapDHandler                 0x000000B4*/
+          .long    0x80108         /*TrapEHandler                 0x000000B8*/
+          .long    0x8010E         /*TrapFHandler                 0x000000800E4B800EAC*/
+
+
+init_trampolines:
+    LEA     ROM_Source_Table(PC), A0    ; Onde estão os dados/instruções na ROM
+    MOVEA.L #0x0007D400, A1             ; Endereço base onde os JMPs vão morar na RAM
+    MOVEQ   #5, D0                      ; Quantidade de vetores para copiar (ex: 6 vetores)
+
+copy_loop:
+    ; Como o JMP absoluto ocupa 6 bytes, copiamos palavra por palavra ou long + word
+    MOVE.L  (A0)+, (A1)+                ; Copia a instrução JMP (opc) + parte do endereço
+    MOVE.W  (A0)+, (A1)+                ; Copia o resto do endereço absoluto
+    DBRA    D0, copy_loop
+    RTS
+
+; Tabela pré-formatada na ROM com os opcodes do JMP (4EF9) seguidos dos endereços dos handlers
+ROM_Source_Table:
+    ; Vetor 1 (Bus Error) -> JMP 0x007E0000 (exemplo de endereço do handler)
+    DC.W    0x4EF9                      ; Opcode para JMP absoluto longo
+    DC.L    0x007E0000                  ; Endereço real do handler na RAM
+
+    ; Vetor 2 (Address Error) -> JMP 0x007E0006
+    DC.W    0x4EF9
+    DC.L    0x007E0006
+
+    ; Vetor 3 (Illegal Instruction) -> JMP 0x007E000C
+    DC.W    0x4EF9
+    DC.L    0x007E000C
+    ; ... repita para os demais vetores          
+
+
+JUMPERS NA RAM TOTAL EM BYTES = 1524 ((256*4)-8(SP _start) ENTRADAS DE 4 BYTES)*6(jmp addr)= 1524
+80000+1524 = jmp para exceções em ram.
+81530+470 = Inicio da área de uso do oriocore. 470 bytes de ram
+82000-91FFFF = kernel
+92000-93FFFF = shell do kernel
+
+254 vezes esse codigo  a partir de 0x80000
+DC.W 0x4EF9     2 BYTES JMP 
+DC.L 0x80000    4 BYTES ADDRESS
+

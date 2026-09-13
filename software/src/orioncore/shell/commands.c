@@ -46,6 +46,10 @@ static int fromhex(char c)
 
     return -1;
 }
+extern int recvmain();
+void do_receiver(int argc, char *argv[]){
+    recvmain();
+}
 
 void do_help(int argc, char *argv[])
 {

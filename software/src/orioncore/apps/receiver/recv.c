@@ -5,12 +5,11 @@
 #include "../../../include/fatfs/ff.h"
 //#include "drv_picoVga.h"
 
-FATFS FatFs;
 static uint32_t tamanho_total = 0;
 
 #define W5100_BASE       0xFE0000UL
 #define W5100_REG(off)   ((volatile uint8_t *)(W5100_BASE + ((off) * 2) + 1))
-#define BUFFER_ARQUIVO   ((uint8_t *)0x00082000UL)
+#define BUFFER_ARQUIVO   ((uint8_t *)0x000A2000UL)
 
 /* Tabela de registradores comuns */
 #define W5100_MR    0x0000 /* Mode Register */
@@ -20,7 +19,6 @@ static uint32_t tamanho_total = 0;
 #define W5100_SIPR  0x000F /* Source IP Address (4 bytes) */
 #define W5100_RMSR  0x001A /* RX Memory Size Register */
 #define W5100_TMSR  0x001B /* TX Memory Size Register */
-
 
 #define S0_MR            0x0400
 #define S0_CR            0x0401
@@ -65,11 +63,11 @@ extern void vputs(const char *s);
 //    }
 //}
 
-void w5100_write(uint16_t reg, uint8_t val) {
+static void w5100_write(uint16_t reg, uint8_t val) {
     *W5100_REG(reg) = val;
 }
 
-uint8_t w5100_read(uint16_t reg) {
+static uint8_t w5100_read(uint16_t reg) {
     return *W5100_REG(reg);
 }
 
@@ -126,9 +124,9 @@ void dump_hex(const char *label, const void *buf, size_t len) {
     printf("--- %s (%zu bytes) ---\n", label, len);
     for (size_t i = 0; i < len; i++) {
         printf("%02X ", p[i]);
-        if ((i + 1) % 16 == 0) printf("\n");
+        if ((i + 1) % 16 == 0) vputs("\n");
     }
-    printf("\n");
+    vputs("\n");
 }
 int w5100_getter_loop() {
     uint8_t status = *W5100_REG(S0_SR);
@@ -143,7 +141,7 @@ int w5100_getter_loop() {
             w5100_cmd(CR_OPEN);
             estado = ESTADO_HEADER;
             bytes_recebidos = 0;
-            printf("Listening on 4243\n");
+            vputs("Listening on 4243\n");
             break;
 
         case SOCK_INIT:
@@ -278,21 +276,11 @@ void saving_file(){
     }
     printf("\n");
 }
-static void ideinit()
-{
-    FRESULT fr;
-    fr = f_mount(&FatFs, "", 0);
-    if (fr != FR_OK) {
-        printf("PANIC: Erro ao montar FAT\n");
-    }else{
-        printf(": FAT success mounted!\n");
-    }
-}
 
-int main(){
+int recvmain(){
     printf("Receiver V1orioncor-NOPIC\nInitialing w5100\n");
-    vputs("Calling ideinit\n");
-    ideinit();
+   // vputs("Calling ideinit\n");
+   // ideinit();
     vputs("Calling w5100_init\n");
     w5100_init();
     printf("Calling w5100_getter_loop()\n");
