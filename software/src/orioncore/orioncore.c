@@ -108,7 +108,7 @@ void main(int argc, char *argv[]) {
     do_ideinit(0,NULL);
 
    
-    vputs("    * Ethernet board: ");
+    vputs("    * Ethernet board: ");//no board and no call to dhcpclient");
     dhcp_client();
 
     vputs("\n");

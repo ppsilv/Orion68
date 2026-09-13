@@ -246,13 +246,14 @@ void w5100_print_ip(void) {
     for (int i = 0; i < 4; i++) {
         ip[i] = w5100_read(W5100_SIPR + i);
     }
-    vputs(   utoa(ip[0],buf,10)  ) ;
+    utoa(ip[0],buf,10); vputs( buf ) ;
     vputs(".");
-    vputs(   utoa(ip[1],buf,10)  ) ;
+    utoa(ip[1],buf,10); vputs( buf ) ;
     vputs(".");
-    vputs(   utoa(ip[2],buf,10)  ) ;
+    utoa(ip[2],buf,10); vputs( buf ) ;
     vputs(".");
-    vputs(   utoa(ip[3],buf,10)  ) ;
+    utoa(ip[3],buf,10); vputs( buf ) ;
+
 }
 
 /* ---------------------------------------------------------- */

@@ -16,7 +16,7 @@ Pin 23 = NC           S0 = 0   S1 = 0
 
 Pin 22 = Y1           S0 = 0   S1 = 1
  10  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 11  ---- -x-- -x-- -x-x -x-- -x-- -x-- -x-- x--- -x-x ----
+ 11  ---- -x-- -x-- -x-x -xx- -xx- -xx- -xx- x--- -x-- ----
  12  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  13  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  14  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -142,7 +142,7 @@ Pin 15 = NC           S0 = 0   S1 = 0
 120  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 121  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 14 = IOCS1        S0 = 0   S1 = 1
+Pin 14 = IOCS1        S0 = 0   S1 = 0
 122  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 123  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 124  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx

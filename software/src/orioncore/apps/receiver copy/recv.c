@@ -65,11 +65,11 @@ extern void vputs(const char *s);
 //    }
 //}
 
-void w5100_write(uint16_t reg, uint8_t val) {
+static void w5100_write(uint16_t reg, uint8_t val) {
     *W5100_REG(reg) = val;
 }
 
-uint8_t w5100_read(uint16_t reg) {
+static uint8_t w5100_read(uint16_t reg) {
     return *W5100_REG(reg);
 }
 
@@ -289,7 +289,7 @@ static void ideinit()
     }
 }
 
-int main_old(){
+int main (){
     printf("Receiver V1orioncor-NOPIC\nInitialing w5100\n");
     vputs("Calling ideinit\n");
     ideinit();
@@ -304,17 +304,4 @@ int main_old(){
     return(0);
 }
 
-int recvmain(){
-    printf("Receiver V1orioncor-NOPIC\nInitialing w5100\n");
-   // vputs("Calling ideinit\n");
-   // ideinit();
-    vputs("Calling w5100_init\n");
-    w5100_init();
-    printf("Calling w5100_getter_loop()\n");
-    char resp= w5100_getter_loop();
-    while(resp){
-        resp = w5100_getter_loop();
-    }
-    saving_file();
-    return(0);
-}
+ 
