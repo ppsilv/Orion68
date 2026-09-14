@@ -1,0 +1,39 @@
+Agora tenho a estrutura completa e confirmada — parece ser justamente a 
+edição que você tem em mãos (a versão RISC-V, que é a distribuída hoje 
+em dia). Os assuntos existem, sim, só que com nomes de capítulo que não 
+batem com o vocabulário que eu usei — por isso não pularam aos olhos no 
+sumário.
+
+Capítulo 4 — Traps and system calls
+Aqui está o "trap dispatch": seção 4.3 (Code: Calling system calls) 
+mostra exatamente o mecanismo de número de syscall em registrador + 
+tabela de function pointers (syscalls[]) que você decidiu adotar. A 
+seção 4.1/4.2 mostra a mecânica de baixo nível do trap em si 
+(registradores de controle, salvar/restaurar estado) — o equivalente 
+conceitual ao que você faz manualmente em 68k com o vetor de exceção da 
+TRAP.
+
+Capítulo 7 — Scheduling
+Este é o capítulo mais relevante pra você:
+
+7.2 Code: Context switching — a troca de contexto (swtch.S), equivalente
+ ao seu ctx_switch.s.
+7.3 Code: Scheduling — o loop do scheduler().
+7.5 e 7.6 — Sleep and wakeup / Code: Sleep and wakeup — é exatamente o 
+mecanismo de bloqueio que discutimos (a task dorme associada a um chan, 
+e wakeup(chan) acorda quem está esperando). Está tudo aqui.
+7.7 Code: Pipes — usa sleep/wakeup na prática, bom exemplo de "produtor/
+consumidor" com fila.
+
+Capítulo 2 — Operating system organization
+Seção 2.5/2.6 é o "fluxo de processo" que eu mencionei: como o kernel 
+cria o primeiro processo, monta o frame inicial, e como ele começa a 
+rodar — próximo do que você quer fazer na etapa de "transformar um ELF 
+carregado numa task de verdade".
+
+Uma dica prática pra navegar o PDF: o sumário lista por conceito (ex: 
+"Interrupts and device drivers" é o capítulo 5, separado de "Traps and 
+system calls" no capítulo 4), então "trap dispatch" fica dividido entre 
+os capítulos 4 e 5 dependendo se é syscall ou interrupção de dispositivo 
+— vale ler os dois junto, já que no seu caso ambos passam pela mesma 
+TRAP única.
