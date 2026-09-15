@@ -1,35 +1,35 @@
 #ifndef __SYSCALL_H__
 #define __SYSCALL_H__
-
+#include "orion_rtc.h"
 
 #define SYS_EXIT               0x0000
 #define SYS_SPAWN              0x0001
 #define SYS_SLEEP              0x0002
 #define SYS_YIELD              0x0003
-#define SYS_OPEN               0x0004
-#define SYS_CLOSE              0x0005
-#define SYS_READ               0x0006
-#define SYS_WRITE              0x0007
-#define SYS_SINC               0x0008
-#define SYS_LSEEK              0x0009
-#define SYS_IOCTL              0x000A
+#define SYS_FOPEN              0x0004
+#define SYS_FCLOSE             0x0005
+#define SYS_FREAD              0x0006
+#define SYS_FWRITE             0x0007
+#define SYS_FSYNC              0x0008
+#define SYS_FLSEEK             0x0009
+#define SYS_FIOCTL             0x000A
 #define SYS_DUP                0x000B
-#define SYS_UNLINK             0x000C
+#define SYS_FUNLINK            0x000C
 #define SYS_CHMOD              0x000D
-#define SYS_TELL               0x000E
-#define SYS_SIZE               0x000F
-#define SYS_EOF                0x0010
-#define SYS_RENAME             0x0011
-#define SYS_STAT               0x0012
-#define SYS_OPENDIR            0x0013
-#define SYS_READDIR            0x0014
-#define SYS_MOUNT              0x0015
-#define SYS_CLOSEDIR           0x0016
+#define SYS_FTELL              0x000E
+#define SYS_FSIZE              0x000F
+#define SYS_FEOF               0x0010
+#define SYS_FRENAME            0x0011
+#define SYS_FSTAT               0x0012
+#define SYS_FOPENDIR            0x0013
+#define SYS_FREADDIR            0x0014
+#define SYS_FMOUNT              0x0015
+#define SYS_FCLOSEDIR           0x0016
 #define SYS_FMKDIR             0x0017
-#define SYS_UNMOUNT            0x0018
-#define SYS_FINDFIRST          0x0019
-#define SYS_FINDNEXT           0x001A
-#define SYS_VGA_PUTCHAR        0x001B
+#define SYS_FUNMOUNT           0x0018
+#define SYS_FFINDFIRST          0x0019
+#define SYS_FFINDNEXT           0x001A
+#define SYS_VGAPUTCHAR        0x001B
 #define SYS_GOTOXY             0x001C
 #define SYS_GOHOME             0x001D
 #define SYS_SETTEXTCOLOR       0x001E
@@ -72,3 +72,14 @@
 #define SYS_SETSOCKOPT         0x0043
 #define SYS_GETPID             0x0044
 #define SYS_SETRAMVECTOR       0x0044
+#define SYS_READRTC            0x0045
+#define SYS_WRITERTC           0x0046
+#define SYS_OPEN               0x0047
+#define SYS_CLOSE              0x0048
+#define SYS_READ               0x0049
+#define SYS_WRITE              0x0050
+#define SYS_SINC               0x0051
+#define SYS_LSEEK              0x0052
+#define SYS_IOCTL              0x0053
+
+#endif

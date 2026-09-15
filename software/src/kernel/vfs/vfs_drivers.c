@@ -92,5 +92,6 @@ DeviceDriver drivers[] = {
     {"/proc/cpuinfo", proc_cpuinfo_open, proc_read,   NULL,         proc_close,   NULL,         proc_lseek},
     {"/proc/uptime",  proc_uptime_open,  proc_read,   NULL,         proc_close,   NULL,         proc_lseek},
     {"/dev/tty0",     duartA_open,       duartA_read, duartA_write, duartA_close, duartA_ioctl, duartA_lseek},
+    {"/dev/console",  duartA_open,       duartA_read, duartA_write, duartA_close, duartA_ioctl, duartA_lseek},
     {NULL, NULL, NULL, NULL, NULL, NULL, NULL}
 };

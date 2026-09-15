@@ -22,7 +22,7 @@ extern int strncmp (const char *__s1, const char *__s2, size_t __n) __attribute_
 extern size_t strlen (const char *__s) __attribute__((nonnull (1)));
 extern size_t strnlen (const char *__string, size_t __maxlen) __attribute__((nonnull (1)));
 extern size_t strcspn(const char *s, const char *reject)  __attribute__((nonnull (1, 2)));
-extern char *strdup (const char *__s) __attribute__((nonnull (1)));
+extern char *strdup (const char *__s);
 extern char *strndup (const char *__string, size_t __n) __attribute__((nonnull (1)));
 extern char *strchr (char *__s, int __c) __attribute__((nonnull (1)));
 extern char *strstr (const char *__haystack, const char *__needle) __attribute__((nonnull (1, 2)));
