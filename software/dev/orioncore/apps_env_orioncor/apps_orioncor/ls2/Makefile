@@ -7,15 +7,15 @@ SYS_ROOT=../../../../..
 APP = ls2
 
 CFLAGS = -Wall -O0 -Wa,-adhln=$(APP).lst -I$(SYS_ROOT)/include -I$(ORIONCOR_DIR)/includes -I  -ffreestanding -nostdlib -D __68000__ -D ALIGN_MEMORY
-LDFLAGS = -T ../linker.ld -L$(ORIONCOR_DIR)libc/lib -nostdlib
+LDFLAGS = -T ../linker.ld -L$(ORIONCOR_DIR)/libc/lib -nostdlib
 LDLIBS = -lc68bios
 SRCS = $(APP).c \
-../apps_libs/fatfs/ff.c \
-../apps_libs/fatfs/ffsystem.c \
-../apps_libs/fatfs/ffunicode.c \
-../apps_libs/ide/ata.c \
-../apps_libs/picoVga/drv_picoVga.c \
-../apps_libs/ide/diskio.c
+../../apps_libs/fatfs/ff.c \
+../../apps_libs/fatfs/ffsystem.c \
+../../apps_libs/fatfs/ffunicode.c \
+../../apps_libs/ide/ata.c \
+../../apps_libs/picoVga/drv_picoVga.c \
+../../apps_libs/ide/diskio.c
 
 OBJS = $(SRCS:.c=.o)
 ELFS = $(SRCS:.c=.elf)

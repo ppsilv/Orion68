@@ -143,7 +143,7 @@ int w5100_getter_loop() {
             w5100_cmd(CR_OPEN);
             estado = ESTADO_HEADER;
             bytes_recebidos = 0;
-            vputs("Listening on 4243\n");
+            puts("\nListening on 4243\n");
             break;
 
         case SOCK_INIT:
@@ -281,21 +281,23 @@ void saving_file(){
 static void ideinit()
 {
     FRESULT fr;
+    puts("Initializing ide ");
     fr = f_mount(&FatFs, "", 0);
     if (fr != FR_OK) {
-        printf("PANIC: Erro ao montar FAT\n");
+        puts("PANIC: Erro ao montar FAT\n");
     }else{
-        printf(": FAT success mounted!\n");
+        puts(": FAT success mounted!\n");
     }
 }
 
 int main (){
-    printf("Receiver V1orioncor-NOPIC\nInitialing w5100\n");
-    vputs("Calling ideinit\n");
+    puts("Receiver V2 copyright 2026(c) pdsilva (aka pgordao)\n");
+    puts("Receiver orioncor-NOPIC\nInitialing w5100\n");
+
     ideinit();
-    vputs("Calling w5100_init\n");
+
     w5100_init();
-    printf("Calling w5100_getter_loop()\n");
+
     char resp= w5100_getter_loop();
     while(resp){
         resp = w5100_getter_loop();
