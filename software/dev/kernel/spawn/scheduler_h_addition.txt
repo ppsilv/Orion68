@@ -1,0 +1,4 @@
+/* COLE ISTO no scheduler.h, perto de onde ja esta declarado OS_TaskCreate: */
+
+tcb_t *OS_TaskCreatePIC(void (*entry)(void), void *arg, uint8_t *stack,
+                         uint32_t stack_size, int id, uint32_t a5_value);
