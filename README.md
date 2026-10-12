@@ -11,3 +11,5 @@ Orion68 a litle system for mc68000
      |--libc_pic
      |--libm68
      |--liborion
+
+2025/10/12: aparentemente essa foi a última versão que kernel carregou e rodou duart.elf     
